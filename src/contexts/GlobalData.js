@@ -439,9 +439,10 @@ const getGlobalTransactions = async () => {
 const getEthPrice = async () => {
   const utcCurrentTime = dayjs()
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').startOf('minute').unix()
+  //const utcOneDayBack = 600
 
-  let ethPrice = 0
-  let ethPriceOneDay = 0
+  let ethPrice = 3.68
+  let ethPriceOneDay = 3.48
   let priceChangeETH = 0
 
   try {
@@ -462,6 +463,11 @@ const getEthPrice = async () => {
   } catch (e) {
     console.log(e)
   }
+
+  ethPrice = 3.68
+  ethPriceOneDay = 3.48
+
+  priceChangeETH = getPercentChange(ethPrice, ethPriceOneDay)
 
   return [ethPrice, ethPriceOneDay, priceChangeETH]
 }
@@ -670,7 +676,7 @@ export function useTopLps() {
             if (results) {
               return results.liquidityPositions
             }
-          } catch (e) {}
+          } catch (e) { }
         })
       )
 
