@@ -1,5 +1,7 @@
 export const FACTORY_ADDRESS = '0x844878d73B3088666189c8478b66Cc540A9Ad6e2'
 
+export const WAVAX_ADDRESS = '0xdcd29f325060f8e9f6c21671adc74dabd0fd5ff5'
+
 export const BUNDLE_ID = '1'
 
 export const timeframeOptions = {

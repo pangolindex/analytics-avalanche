@@ -38,22 +38,22 @@ export default function Warning({ type, show, setShow, address }) {
   const textContent = below800 ? (
     <div>
       <Text fontWeight={500} lineHeight={'145.23%'} mt={'10px'}>
-        Anyone can create and name any ERC20 token on Ethereum, including creating fake versions of existing tokens and
+        Anyone can create and name any ERC-20 token on Avalanche, including creating fake versions of existing tokens and
         tokens that claim to represent projects that do not have a token.
       </Text>
       <Text fontWeight={500} lineHeight={'145.23%'} mt={'10px'}>
-        Similar to Etherscan, this site automatically tracks analytics for all ERC20 tokens independent of token
-        integrity. Please do your own research before interacting with any ERC20 token.
+        Similar to Etherscan, this site automatically tracks analytics for all ERC-20 tokens independent of token
+        integrity. Please do your own research before interacting with any ERC-20 token.
       </Text>
     </div>
   ) : (
-    <Text fontWeight={500} lineHeight={'145.23%'} mt={'10px'}>
-      Anyone can create and name any ERC20 token on Ethereum, including creating fake versions of existing tokens and
-      tokens that claim to represent projects that do not have a token. Similar to Etherscan, this site automatically
-      tracks analytics for all ERC20 tokens independent of token integrity. Please do your own research before
-      interacting with any ERC20 token.
-    </Text>
-  )
+      <Text fontWeight={500} lineHeight={'145.23%'} mt={'10px'}>
+        Anyone can create and name any ERC-20 token on Avalanche, including creating fake versions of existing tokens and
+        tokens that claim to represent projects that do not have a token. Similar to Etherscan, this site automatically
+        tracks analytics for all ERC-20 tokens independent of token integrity. Please do your own research before
+        interacting with any ERC-20 token.
+      </Text>
+    )
 
   return (
     <WarningWrapper show={show}>
@@ -72,7 +72,7 @@ export default function Warning({ type, show, setShow, address }) {
                 fontWeight={500}
                 lineHeight={'145.23%'}
                 color={'#2172E5'}
-                href={'https://etherscan.io/address/' + address}
+                href={'https://cchain.explorer.avax.network/address/' + address}
                 target="_blank"
               >
                 View {type === 'token' ? 'token' : 'pair'} contract on Etherscan
@@ -86,23 +86,23 @@ export default function Warning({ type, show, setShow, address }) {
             </RowBetween>
           </div>
         ) : (
-          <RowBetween style={{ marginTop: '10px' }}>
-            <Hover>
-              <Link
-                fontWeight={500}
-                lineHeight={'145.23%'}
-                color={'#2172E5'}
-                href={'https://etherscan.io/address/' + address}
-                target="_blank"
-              >
-                View {type === 'token' ? 'token' : 'pair'} contract on Etherscan
+            <RowBetween style={{ marginTop: '10px' }}>
+              <Hover>
+                <Link
+                  fontWeight={500}
+                  lineHeight={'145.23%'}
+                  color={'#2172E5'}
+                  href={'https://cchain.explorer.avax.network/address/' + address}
+                  target="_blank"
+                >
+                  View {type === 'token' ? 'token' : 'pair'} contract on Etherscan
               </Link>
-            </Hover>
-            <ButtonDark color={'#f82d3a'} style={{ minWidth: '140px' }} onClick={() => setShow(false)}>
-              I understand
+              </Hover>
+              <ButtonDark color={'#f82d3a'} style={{ minWidth: '140px' }} onClick={() => setShow(false)}>
+                I understand
             </ButtonDark>
-          </RowBetween>
-        )}
+            </RowBetween>
+          )}
       </AutoColumn>
     </WarningWrapper>
   )

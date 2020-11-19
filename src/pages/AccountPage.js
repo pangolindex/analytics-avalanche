@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react'
 import styled from 'styled-components'
-import { useUserTransactions, useUserPositions, useMiningPositions } from '../contexts/User'
+import { useUserTransactions, useUserPositions } from '../contexts/User'
 import TxnList from '../components/TxnList'
 import Panel from '../components/Panel'
 import { formattedNum } from '../utils'
@@ -9,9 +9,8 @@ import { AutoColumn } from '../components/Column'
 import UserChart from '../components/UserChart'
 import PairReturnsChart from '../components/PairReturnsChart'
 import PositionList from '../components/PositionList'
-import MiningPositionList from '../components/MiningPositionList'
 import { TYPE } from '../Theme'
-import { ButtonDropdown, ButtonLight } from '../components/ButtonStyled'
+import { ButtonDropdown } from '../components/ButtonStyled'
 import { PageWrapper, ContentWrapper, StyledIcon } from '../components'
 import DoubleTokenLogo from '../components/DoubleLogo'
 import { Bookmark, Activity } from 'react-feather'
@@ -91,7 +90,6 @@ function AccountPage({ account }) {
   // get data for this account
   const transactions = useUserTransactions(account)
   const positions = useUserPositions(account)
-  const miningPositions = useMiningPositions(account)
 
   // get data for user stats
   const transactionCount = transactions?.swaps?.length + transactions?.burns?.length + transactions?.mints?.length
@@ -100,8 +98,8 @@ function AccountPage({ account }) {
   let totalSwappedUSD = useMemo(() => {
     return transactions?.swaps
       ? transactions?.swaps.reduce((total, swap) => {
-          return total + parseFloat(swap.amountUSD)
-        }, 0)
+        return total + parseFloat(swap.amountUSD)
+      }, 0)
       : 0
   }, [transactions])
 
@@ -134,12 +132,12 @@ function AccountPage({ account }) {
   const positionValue = useMemo(() => {
     return dynamicPositions
       ? dynamicPositions.reduce((total, position) => {
-          return (
-            total +
-            (parseFloat(position?.liquidityTokenBalance) / parseFloat(position?.pair?.totalSupply)) *
-              position?.pair?.reserveUSD
-          )
-        }, 0)
+        return (
+          total +
+          (parseFloat(position?.liquidityTokenBalance) / parseFloat(position?.pair?.totalSupply)) *
+          position?.pair?.reserveUSD
+        )
+      }, 0)
       : null
   }, [dynamicPositions])
 
@@ -158,7 +156,7 @@ function AccountPage({ account }) {
         <RowBetween>
           <TYPE.body>
             <BasicLink to="/accounts">{'Accounts '}</BasicLink>→{' '}
-            <Link lineHeight={'145.23%'} href={'https://etherscan.io/address/' + account} target="_blank">
+            <Link lineHeight={'145.23%'} href={'https://cchain.explorer.avax.network/address/' + account} target="_blank">
               {' '}
               {account?.slice(0, 42)}{' '}
             </Link>
@@ -169,8 +167,8 @@ function AccountPage({ account }) {
           <RowBetween>
             <span>
               <TYPE.header fontSize={24}>{account?.slice(0, 6) + '...' + account?.slice(38, 42)}</TYPE.header>
-              <Link lineHeight={'145.23%'} href={'https://etherscan.io/address/' + account} target="_blank">
-                <TYPE.main fontSize={14}>View on Etherscan</TYPE.main>
+              <Link lineHeight={'145.23%'} href={'https://cchain.explorer.avax.network/address/' + account} target="_blank">
+                <TYPE.main fontSize={14}>View on the C-Chain Explorer</TYPE.main>
               </Link>
             </span>
             <AccountWrapper>
@@ -262,8 +260,8 @@ function AccountPage({ account }) {
                       {positionValue
                         ? formattedNum(positionValue, true)
                         : positionValue === 0
-                        ? formattedNum(0, true)
-                        : '-'}
+                          ? formattedNum(0, true)
+                          : '-'}
                     </TYPE.header>
                   </RowFixed>
                 </AutoColumn>
@@ -287,8 +285,8 @@ function AccountPage({ account }) {
                 {activePosition ? (
                   <PairReturnsChart account={account} position={activePosition} />
                 ) : (
-                  <UserChart account={account} position={activePosition} />
-                )}
+                    <UserChart account={account} position={activePosition} />
+                  )}
               </Panel>
             </PanelWrapper>
           )}
@@ -301,24 +299,6 @@ function AccountPage({ account }) {
             }}
           >
             <PositionList positions={positions} />
-          </Panel>
-          <TYPE.main fontSize={'1.125rem'} style={{ marginTop: '3rem' }}>
-            Liquidity Mining Pools
-          </TYPE.main>
-          <Panel
-            style={{
-              marginTop: '1.5rem',
-            }}
-          >
-            {miningPositions && <MiningPositionList miningPositions={miningPositions} />}
-            {!miningPositions && (
-              <AutoColumn gap="8px" justify="flex-start">
-                <TYPE.main>No Staked Liquidity.</TYPE.main>
-                <AutoRow gap="8px" justify="flex-start">
-                  <ButtonLight style={{ padding: '4px 6px', borderRadius: '4px' }}>Learn More</ButtonLight>{' '}
-                </AutoRow>{' '}
-              </AutoColumn>
-            )}
           </Panel>
           <TYPE.main fontSize={'1.125rem'} style={{ marginTop: '3rem' }}>
             Transactions

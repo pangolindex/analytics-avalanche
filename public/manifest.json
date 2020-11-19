@@ -1,9 +1,9 @@
 {
-  "short_name": "Uniswap Info",
-  "name": "View statistics for Uniswap exchanges.",
+  "short_name": "avaXwap Info",
+  "name": "View statistics for avaXwap exchanges.",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "favicon.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     }

@@ -285,6 +285,7 @@ async function getGlobalData(ethPrice, oldEthPrice) {
 
       // format the total liquidity in USD
       data.totalLiquidityUSD = data.totalLiquidityETH * ethPrice
+
       const liquidityChangeUSD = getPercentChange(
         data.totalLiquidityETH * ethPrice,
         oneDayData.totalLiquidityETH * oldEthPrice
@@ -439,11 +440,10 @@ const getGlobalTransactions = async () => {
 const getEthPrice = async () => {
   const utcCurrentTime = dayjs()
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').startOf('minute').unix()
-  //const utcOneDayBack = 600
 
-  let ethPrice = 3.68
-  let ethPriceOneDay = 3.48
-  let priceChangeETH = 0
+  let ethPrice
+  let ethPriceOneDay
+  let priceChangeETH
 
   try {
     let oneDayBlock = await getBlockFromTimestamp(utcOneDayBack)
@@ -463,11 +463,6 @@ const getEthPrice = async () => {
   } catch (e) {
     console.log(e)
   }
-
-  ethPrice = 3.68
-  ethPriceOneDay = 3.48
-
-  priceChangeETH = getPercentChange(ethPrice, ethPriceOneDay)
 
   return [ethPrice, ethPriceOneDay, priceChangeETH]
 }
