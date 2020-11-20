@@ -3,6 +3,7 @@
   "private": true,
   "homepage": "https://info.uniswap.org",
   "devDependencies": {
+    "@babel/preset-env": "7.8.7",
     "@popperjs/core": "^2.4.2",
     "@reach/portal": "^0.10.3",
     "@reach/router": "^1.2.1",
@@ -88,5 +89,8 @@
       "last 1 safari version"
     ]
   },
-  "license": "GPL-3.0-or-later"
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "coingecko-api": "^1.0.10"
+  }
 }

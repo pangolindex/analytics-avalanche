@@ -5,7 +5,6 @@ import utc from 'dayjs/plugin/utc'
 import { useTimeframe } from './Application'
 import {
   getPercentChange,
-  getBlockFromTimestamp,
   getBlocksFromTimestamps,
   get2DayPercentChange,
   getTimeframe,
@@ -14,13 +13,13 @@ import {
   GLOBAL_DATA,
   GLOBAL_TXNS,
   GLOBAL_CHART,
-  ETH_PRICE,
   ALL_PAIRS,
   ALL_TOKENS,
   TOP_LPS_PER_PAIRS,
 } from '../apollo/queries'
 import weekOfYear from 'dayjs/plugin/weekOfYear'
 import { useAllPairData } from './PairData'
+import CoinGecko from 'coingecko-api'
 const UPDATE = 'UPDATE'
 const UPDATE_TXNS = 'UPDATE_TXNS'
 const UPDATE_CHART = 'UPDATE_CHART'
@@ -29,6 +28,8 @@ const ETH_PRICE_KEY = 'ETH_PRICE_KEY'
 const UPDATE_ALL_PAIRS_IN_UNISWAP = 'UPDAUPDATE_ALL_PAIRS_IN_UNISWAPTE_TOP_PAIRS'
 const UPDATE_ALL_TOKENS_IN_UNISWAP = 'UPDATE_ALL_TOKENS_IN_UNISWAP'
 const UPDATE_TOP_LPS = 'UPDATE_TOP_LPS'
+
+const coinGeckoClient = new CoinGecko()
 
 // format dayjs with the libraries that we need
 dayjs.extend(utc)
@@ -439,29 +440,32 @@ const getGlobalTransactions = async () => {
  */
 const getEthPrice = async () => {
   const utcCurrentTime = dayjs()
-  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').startOf('minute').unix()
+  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').startOf('minute').unix() * 1000
 
-  let ethPrice
-  let ethPriceOneDay
-  let priceChangeETH
+  let result = await coinGeckoClient.simple.price({
+    ids: ['avalanche'],
+    vs_currencies: ['usd'],
+    include_24hr_change: ['true']
+  })
 
-  try {
-    let oneDayBlock = await getBlockFromTimestamp(utcOneDayBack)
-    let result = await client.query({
-      query: ETH_PRICE(),
-      fetchPolicy: 'cache-first',
-    })
-    let resultOneDay = await client.query({
-      query: ETH_PRICE(oneDayBlock),
-      fetchPolicy: 'cache-first',
-    })
-    const currentPrice = result?.data?.bundles[0]?.ethPrice
-    const oneDayBackPrice = resultOneDay?.data?.bundles[0]?.ethPrice
-    priceChangeETH = getPercentChange(currentPrice, oneDayBackPrice)
-    ethPrice = currentPrice
-    ethPriceOneDay = oneDayBackPrice
-  } catch (e) {
-    console.log(e)
+  let ethPrice = result['data']['avalanche']['usd']
+  let priceChangeETH = result['usd_24h_change']
+
+  result = await coinGeckoClient.coins.fetchMarketChart('avalanche-2', {
+    days: 1,
+    vs_currency: 'usd'
+  })
+
+  let ethPriceOneDay = 0
+
+  let i
+  let snapshot
+  for (i = 0; i < result['data']['prices'].length; i++) {
+    snapshot = result['data']['prices'][i]
+    if (snapshot[0] > utcOneDayBack) {
+      ethPriceOneDay = snapshot[1]
+      break
+    }
   }
 
   return [ethPrice, ethPriceOneDay, priceChangeETH]
