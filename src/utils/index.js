@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import { ethers } from 'ethers'
 import utc from 'dayjs/plugin/utc'
 import { client, blockClient } from '../apollo/client'
-import { GET_BLOCK, GET_BLOCKS, SHARE_VALUE } from '../apollo/queries'
+import { GET_BLOCK, GET_BLOCKS, GET_BLOCK_BEFORE, GET_BLOCK_AFTER, SHARE_VALUE } from '../apollo/queries'
 import { Text } from 'rebass'
 import _Decimal from 'decimal.js-light'
 import toFormat from 'toformat'
@@ -129,7 +129,7 @@ export async function getBlockFromTimestamp(timestamp) {
     query: GET_BLOCK,
     variables: {
       timestampFrom: timestamp,
-      timestampTo: timestamp + 60 * 60 * 24,
+      timestampTo: timestamp + 60 * 60 * 24 * 7,
     },
     fetchPolicy: 'cache-first',
   })
@@ -162,6 +162,38 @@ export async function getBlocksFromTimestamps(timestamps, skipCount = 500) {
     }
   }
   return blocks
+}
+
+/**
+ * @notice Fetches block objects for an array of timestamps.
+ * @dev blocks are returned in chronological order (ASC) regardless of input.
+ * @dev blocks are returned at string representations of Int
+ * @dev timestamps are returns as they were provided; not the block time.
+ * @param {Array} timestamps
+ */
+export async function getMostRecentBlockSinceTimestamp(timestamp, skipCount = 500) {
+  let result = await blockClient.query({
+    query: GET_BLOCK_AFTER,
+    variables: {
+      timestampFrom: timestamp,
+    },
+    fetchPolicy: 'cache-first',
+  })
+
+  let block = result?.data?.blocks?.[0]?.number
+
+  if (block === undefined) {
+    result = await blockClient.query({
+      query: GET_BLOCK_BEFORE,
+      variables: {
+        timestampTo: timestamp,
+      },
+      fetchPolicy: 'cache-first',
+    })
+    block = result?.data?.blocks?.[0]?.number
+  }
+
+  return block
 }
 
 export async function getLiquidityTokenBalanceOvertime(account, timestamps) {

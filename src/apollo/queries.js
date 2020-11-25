@@ -61,10 +61,36 @@ export const GET_BLOCK = gql`
   }
 `
 
+export const GET_BLOCK_BEFORE = gql`
+  query blocks($timestampTo: Int!) {
+    blocks(
+      first: 1
+      orderBy: timestamp
+      orderDirection: desc
+      where: { timestamp_lt: $timestampTo }
+    ) {
+      number
+    }
+  }
+`
+
+export const GET_BLOCK_AFTER = gql`
+  query blocks($timestampFrom: Int!) {
+    blocks(
+      first: 1
+      orderBy: timestamp
+      orderDirection: desc
+      where: { timestamp_gt: $timestampFrom }
+    ) {
+      number
+    }
+  }
+`
+
 export const GET_BLOCKS = (timestamps) => {
   let queryString = 'query blocks {'
   queryString += timestamps.map((timestamp) => {
-    return `t${timestamp}:blocks(first: 1, orderBy: timestamp, orderDirection: desc, where: { timestamp_gt: ${timestamp}, timestamp_lt: ${timestamp + 60 * 60 * 24
+    return `t${timestamp}:blocks(first: 1, orderBy: timestamp, orderDirection: desc, where: { timestamp_gt: ${timestamp}, timestamp_lt: ${timestamp + 60 * 60 * 24 * 7
       } }) {
       number
     }`
