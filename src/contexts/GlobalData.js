@@ -443,12 +443,12 @@ const getEthPrice = async () => {
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').startOf('minute').unix() * 1000
 
   let result = await coinGeckoClient.simple.price({
-    ids: ['avalanche'],
+    ids: ['avalanche-2'],
     vs_currencies: ['usd'],
     include_24hr_change: ['true']
   })
 
-  let ethPrice = result['data']['avalanche']['usd']
+  let ethPrice = result['data']['avalanche-2']['usd']
   let priceChangeETH = result['usd_24h_change']
 
   result = await coinGeckoClient.coins.fetchMarketChart('avalanche-2', {
