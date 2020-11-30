@@ -322,6 +322,18 @@ const getPairTransactions = async (pairAddress) => {
     transactions.mints = result.data.mints
     transactions.burns = result.data.burns
     transactions.swaps = result.data.swaps
+
+    let avaxPrice = await getCurrentEthPrice()
+
+    for (let i = 0; i < transactions.mints.length; i++) {
+      transactions.mints[i].amountUSD = (parseFloat(transactions.mints[i].amountUSD) * avaxPrice).toString()
+    }
+    for (let i = 0; i < transactions.burns.length; i++) {
+      transactions.burns[i].amountUSD = (parseFloat(transactions.burns[i].amountUSD) * avaxPrice).toString()
+    }
+    for (let i = 0; i < transactions.swaps.length; i++) {
+      transactions.swaps[i].amountUSD = (parseFloat(transactions.swaps[i].amountUSD) * avaxPrice).toString()
+    }
   } catch (e) {
     console.log(e)
   }
