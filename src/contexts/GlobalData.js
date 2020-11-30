@@ -449,7 +449,7 @@ const getEthPrice = async () => {
   })
 
   let ethPrice = result['data']['avalanche-2']['usd']
-  let priceChangeETH = result['usd_24h_change']
+  let priceChangeETH = result['data']['avalanche-2']['usd_24h_change']
 
   result = await coinGeckoClient.coins.fetchMarketChart('avalanche-2', {
     days: 1,
@@ -469,6 +469,36 @@ const getEthPrice = async () => {
   }
 
   return [ethPrice, ethPriceOneDay, priceChangeETH]
+}
+
+export const getCurrentEthPrice = async () => {
+  let result = await coinGeckoClient.simple.price({
+    ids: ['avalanche-2'],
+    vs_currencies: ['usd']
+  })
+
+  let ethPrice = result['data']['avalanche-2']['usd']
+
+  return ethPrice
+}
+
+/**
+ * Gets the price of AVAX at a given point in time
+ */
+export const getEthPriceAtDate = async (timestamp) => {
+  let datetime = new Date(timestamp * 1000) // convert to milliseconds
+
+  let dateString = datetime.getDate() + '-' + (datetime.getMonth() + 1) + '-' + datetime.getFullYear()
+
+  let result = await coinGeckoClient.coins.fetchHistory('avalanche-2', {
+    date: dateString
+  })
+
+  let ethPrice = result['data']['market_data']['current_price']['usd']
+
+  console.log("AVAX Price on " + dateString + ": " + ethPrice)
+
+  return ethPrice
 }
 
 const PAIRS_TO_FETCH = 500

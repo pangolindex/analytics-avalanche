@@ -14,6 +14,7 @@ import DoubleTokenLogo from '../DoubleLogo'
 import FormattedName from '../FormattedName'
 import QuestionHelper from '../QuestionHelper'
 import { TYPE } from '../../Theme'
+import { useEthPrice } from '../../contexts/GlobalData'
 
 dayjs.extend(utc)
 
@@ -146,10 +147,11 @@ function PairList({ pairs, color, disbaleLinks, maxItems = 10 }) {
 
   const ListItem = ({ pairAddress, index }) => {
     const pairData = pairs[pairAddress]
+    const [ethPrice] = useEthPrice()
 
     if (pairData && pairData.token0 && pairData.token1) {
-      const liquidity = formattedNum(pairData.reserveUSD, true)
-      const volume = formattedNum(pairData.oneDayVolumeUSD, true)
+      const liquidity = formattedNum(pairData.reserveUSD * ethPrice, true)
+      const volume = formattedNum(pairData.oneDayVolumeUSD * ethPrice, true)
       const apy = formattedPercent((pairData.oneDayVolumeUSD * 0.003 * 365 * 100) / pairData.reserveUSD)
 
       return (
