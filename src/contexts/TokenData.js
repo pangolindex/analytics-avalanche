@@ -15,6 +15,7 @@ import { useEthPrice } from './GlobalData'
 
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import _ from 'lodash'
 
 import {
   get2DayPercentChange,
@@ -458,6 +459,7 @@ const getTokenTransactions = async (allPairsFormatted) => {
     transactions.mints = result.data.mints
     transactions.burns = result.data.burns
     transactions.swaps = result.data.swaps
+
   } catch (e) {
     console.log(e)
   }
@@ -672,6 +674,25 @@ export function useTokenTransactions(tokenAddress) {
     }
     checkForTxns()
   }, [tokenTxns, tokenAddress, updateTokenTxns, allPairsFormatted])
+
+
+
+  let [avaxPrice] = useEthPrice()
+
+  if (tokenTxns) {
+    let txCopy = _.cloneDeep(tokenTxns)
+    for (let i = 0; i < txCopy.mints.length; i++) {
+      txCopy.mints[i].amountUSD = (parseFloat(txCopy.mints[i].amountUSD) * avaxPrice).toString()
+    }
+    for (let i = 0; i < txCopy.burns.length; i++) {
+      txCopy.burns[i].amountUSD = (parseFloat(txCopy.burns[i].amountUSD) * avaxPrice).toString()
+    }
+    for (let i = 0; i < txCopy.swaps.length; i++) {
+      txCopy.swaps[i].amountUSD = (parseFloat(txCopy.swaps[i].amountUSD) * avaxPrice).toString()
+    }
+    //txCopy.converted = true
+    return txCopy
+  }
 
   return tokenTxns || []
 }
