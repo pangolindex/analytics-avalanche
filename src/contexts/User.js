@@ -11,9 +11,10 @@ import {
 import { useTimeframe, useStartTimestamp } from './Application'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import { useEthPrice } from './GlobalData'
+import { useEthPrice, getEthPriceAtDate, getCurrentEthPrice } from './GlobalData'
 import { getLPReturnsOnPair, getHistoricalPairReturns } from '../utils/returns'
 import { timeframeOptions } from '../constants'
+import _ from 'lodash'
 
 dayjs.extend(utc)
 
@@ -185,6 +186,23 @@ export function useUserTransactions(account) {
     }
   }, [account, transactions, updateTransactions])
 
+  let [avaxPrice] = useEthPrice()
+
+  if (transactions) {
+    let txCopy = _.cloneDeep(transactions)
+    for (let i = 0; i < txCopy.mints.length; i++) {
+      txCopy.mints[i].amountUSD = (parseFloat(txCopy.mints[i].amountUSD) * avaxPrice).toString()
+    }
+    for (let i = 0; i < txCopy.burns.length; i++) {
+      txCopy.burns[i].amountUSD = (parseFloat(txCopy.burns[i].amountUSD) * avaxPrice).toString()
+    }
+    for (let i = 0; i < txCopy.swaps.length; i++) {
+      txCopy.swaps[i].amountUSD = (parseFloat(txCopy.swaps[i].amountUSD) * avaxPrice).toString()
+    }
+    //txCopy.converted = true
+    return txCopy
+  }
+
   return transactions || {}
 }
 
@@ -296,6 +314,25 @@ export function useUserPositionChart(position, account) {
     updateUserPairReturns,
     position.pair.id,
   ])
+
+  const convertPrice = async function () {
+    if (formattedHistory) {
+      for (let j = 0; j < formattedHistory.length; j++) {
+        let latestAvaxPrice
+        if (j === formattedHistory.length - 1) {
+          latestAvaxPrice = await getCurrentEthPrice()
+        } else {
+          latestAvaxPrice = await getEthPriceAtDate(formattedHistory[j].date)
+        }
+        formattedHistory[j].usdValue = formattedHistory[j].usdValue * latestAvaxPrice
+      }
+    }
+    return formattedHistory
+  }
+
+  if (formattedHistory) {
+    convertPrice().then(result => { console.log("Finished waiting") })
+  }
 
   return formattedHistory
 }
@@ -419,7 +456,7 @@ export function useUserLiquidityChart(account) {
             totalUSD +
             (ownershipPerPair[dayData.pairAddress]
               ? (parseFloat(ownershipPerPair[dayData.pairAddress].lpTokenBalance) / parseFloat(dayData.totalSupply)) *
-                parseFloat(dayData.reserveUSD)
+              parseFloat(dayData.reserveUSD)
               : 0))
         }, 0)
 
@@ -429,12 +466,26 @@ export function useUserLiquidityChart(account) {
         })
       }
 
+      if (formattedHistory) {
+        for (let j = 0; j < formattedHistory.length; j++) {
+          let latestAvaxPrice
+          if (j === formattedHistory.length - 1) {
+            latestAvaxPrice = await getCurrentEthPrice()
+          } else {
+            latestAvaxPrice = await getEthPriceAtDate(formattedHistory[j].date)
+          }
+          formattedHistory[j].valueUSD = formattedHistory[j].valueUSD * latestAvaxPrice
+        }
+      }
+
       setFormattedHistory(formattedHistory)
     }
     if (history && startDateTimestamp && history.length > 0) {
       fetchData()
     }
   }, [history, startDateTimestamp])
+
+
 
   return formattedHistory
 }

@@ -471,6 +471,21 @@ const getEthPrice = async () => {
   return [ethPrice, ethPriceOneDay, priceChangeETH]
 }
 
+export const getEthPriceAtTimestamp = async (timestamp) => {
+  const utcCurrentTime = Date.now() / 1000
+  let diff = utcCurrentTime - timestamp
+  let days_back = Math.round(diff / (60 * 60 * 24))
+
+  let result = await coinGeckoClient.coins.fetchMarketChart('avalanche-2', {
+    days: days_back,
+    vs_currency: 'usd'
+  })
+
+  console.log("Timestamp " + timestamp + " is " + days_back + " days back")
+
+  return result['data']['prices']
+}
+
 export const getCurrentEthPrice = async () => {
   let result = await coinGeckoClient.simple.price({
     ids: ['avalanche-2'],
@@ -683,6 +698,8 @@ export function useTopLps() {
 
   const allPairs = useAllPairData()
 
+  let [avaxPrice] = useEthPrice()
+
   useEffect(() => {
     async function fetchData() {
       // get top 20 by reserves
@@ -724,7 +741,7 @@ export function useTopLps() {
               token1: pairData.token1.id,
               usd:
                 (parseFloat(entry.liquidityTokenBalance) / parseFloat(pairData.totalSupply)) *
-                parseFloat(pairData.reserveUSD),
+                parseFloat(pairData.reserveUSD) * avaxPrice,
             })
           })
         })

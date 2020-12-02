@@ -274,7 +274,7 @@ export async function getLPReturnsOnPair(user: string, pair, ethPrice: number, s
     liquidityTokenTotalSupply: pair.totalSupply,
     reserve0: pair.reserve0,
     reserve1: pair.reserve1,
-    reserveUSD: pair.reserveUSD,
+    reserveUSD: pair.reserveUSD * ethPrice,
     token0PriceUSD: pair.token0.derivedETH * ethPrice,
     token1PriceUSD: pair.token1.derivedETH * ethPrice,
   }

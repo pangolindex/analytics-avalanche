@@ -11,7 +11,7 @@ import {
   PAIR_DATA,
 } from '../apollo/queries'
 
-import { useEthPrice } from './GlobalData'
+import { useEthPrice, getEthPriceAtDate, getCurrentEthPrice, getEthPriceAtTimestamp } from './GlobalData'
 
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -527,13 +527,22 @@ const getIntervalTokenData = async (tokenAddress, startTime, interval = 3600, la
       }
     }
 
+    let timestampedPrices = await getEthPriceAtTimestamp(startTime)
+
     // go through eth usd prices and assign to original values array
     let index = 0
     for (var brow in result) {
       let timestamp = brow.split('b')[1]
       if (timestamp) {
-        values[index].priceUSD = result[brow].ethPrice * values[index].derivedETH
-        index += 1
+        // TODO This is n^2, optimize
+        for (let i = 0; i < timestampedPrices.length; i++) {
+          if (timestampedPrices[i][0] > timestamp) {
+            values[index].priceUSD = timestampedPrices[i][1] * values[index].derivedETH
+            index += 1
+            break
+          }
+        }
+
       }
     }
 
@@ -595,7 +604,6 @@ const getTokenChartData = async (tokenAddress) => {
     let timestamp = data[0] && data[0].date ? data[0].date : startTime
     let latestLiquidityUSD = data[0] && data[0].totalLiquidityUSD
     let latestPriceUSD = data[0] && data[0].priceUSD
-    let latestPairDatas = data[0] && data[0].mostLiquidPairs
     let index = 1
     while (timestamp < utcEndTime.startOf('minute').unix() - oneDay) {
       const nextDay = timestamp + oneDay
@@ -607,17 +615,28 @@ const getTokenChartData = async (tokenAddress) => {
           dailyVolumeUSD: 0,
           priceUSD: latestPriceUSD,
           totalLiquidityUSD: latestLiquidityUSD,
-          mostLiquidPairs: latestPairDatas,
         })
       } else {
         latestLiquidityUSD = dayIndexArray[index].totalLiquidityUSD
         latestPriceUSD = dayIndexArray[index].priceUSD
-        latestPairDatas = dayIndexArray[index].mostLiquidPairs
         index = index + 1
       }
       timestamp = nextDay
     }
     data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1))
+
+    for (let j = 0; j < data.length; j++) {
+      let latestAvaxPrice
+      if (j === data.length - 1) {
+        latestAvaxPrice = await getCurrentEthPrice()
+      } else {
+        latestAvaxPrice = await getEthPriceAtDate(data[j].date)
+      }
+      data[j].priceUSD = data[j].priceUSD * latestAvaxPrice
+      data[j].totalLiquidityUSD = data[j].totalLiquidityUSD * latestAvaxPrice
+      data[j].dailyVolumeUSD = data[j].dailyVolumeUSD * latestAvaxPrice
+    }
+
   } catch (e) {
     console.log(e)
   }
@@ -745,7 +764,7 @@ export function useTokenPriceData(tokenAddress, timeWindow, interval = 3600) {
     const currentTime = dayjs.utc()
     const windowSize = timeWindow === timeframeOptions.MONTH ? 'month' : 'week'
     const startTime =
-      timeWindow === timeframeOptions.ALL_TIME ? 1589760000 : currentTime.subtract(1, windowSize).startOf('hour').unix()
+      timeWindow === timeframeOptions.ALL_TIME ? 1605139200 : currentTime.subtract(1, windowSize).startOf('hour').unix()
 
     async function fetch() {
       let data = await getIntervalTokenData(tokenAddress, startTime, interval, latestBlock)
