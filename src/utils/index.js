@@ -40,13 +40,13 @@ export function getTimeframe(timeWindow) {
 export function getPoolLink(token0Address, token1Address = null, remove = false) {
   if (!token1Address) {
     return (
-      `https://avaxwap.com/#/` +
+      `https://app.pangolin.exchange/#/` +
       (remove ? `remove` : `add`) +
       `/${token0Address === WAVAX_ADDRESS ? 'AVAX' : token0Address}/${'AVAX'}`
     )
   } else {
     return (
-      `https://avaxwap.com/#/` +
+      `https://app.pangolin.exchange/#/` +
       (remove ? `remove` : `add`) +
       `/${token0Address === WAVAX_ADDRESS ? 'AVAX' : token0Address}/${token1Address === WAVAX_ADDRESS ? 'AVAX' : token1Address
       }`
@@ -56,9 +56,9 @@ export function getPoolLink(token0Address, token1Address = null, remove = false)
 
 export function getSwapLink(token0Address, token1Address = null) {
   if (!token1Address) {
-    return `https://avaxwap.com/#/swap?inputCurrency=${token0Address}`
+    return `https://app.pangolin.exchange/#/swap?inputCurrency=${token0Address}`
   } else {
-    return `https://avaxwap.com/#/swap?inputCurrency=${token0Address === WAVAX_ADDRESS ? 'AVAX' : token0Address
+    return `https://app.pangolin.exchange/#/swap?inputCurrency=${token0Address === WAVAX_ADDRESS ? 'AVAX' : token0Address
       }&outputCurrency=${token1Address === WAVAX_ADDRESS ? 'AVAX' : token1Address}`
   }
 }
