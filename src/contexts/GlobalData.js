@@ -217,7 +217,10 @@ async function getGlobalData(ethPrice, oldEthPrice) {
   let oneDayData = {}
   let twoDayData = {}
 
+  console.log("Entered global data")
+
   try {
+    console.log("Made it 1")
     // get timestamps for the days
     const utcCurrentTime = dayjs()
     const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix()
@@ -225,6 +228,7 @@ async function getGlobalData(ethPrice, oldEthPrice) {
     const utcOneWeekBack = utcCurrentTime.subtract(1, 'week').unix()
     const utcTwoWeeksBack = utcCurrentTime.subtract(2, 'week').unix()
 
+    console.log("Made it 2")
     // get the blocks needed for time travel queries
     let [oneDayBlock, twoDayBlock, oneWeekBlock, twoWeekBlock] = await getBlocksFromTimestamps([
       utcOneDayBack,
@@ -233,6 +237,11 @@ async function getGlobalData(ethPrice, oldEthPrice) {
       utcTwoWeeksBack,
     ])
 
+    console.log("One day ts:", utcOneDayBack)
+    console.log("Two day ts:", utcTwoDaysBack)
+
+    console.log("One day block:", oneDayBlock)
+    console.log("Two day block:", twoDayBlock)
     // fetch the global data
     let result = await client.query({
       query: GLOBAL_DATA(),
@@ -240,6 +249,7 @@ async function getGlobalData(ethPrice, oldEthPrice) {
     })
     data = result.data.uniswapFactories[0]
 
+    console.log("Made it 4")
     // fetch the historical data
     let oneDayResult = await client.query({
       query: GLOBAL_DATA(oneDayBlock?.number),
@@ -265,41 +275,53 @@ async function getGlobalData(ethPrice, oldEthPrice) {
     })
     const twoWeekData = twoWeekResult.data.uniswapFactories[0]
 
-    if (data && oneDayData && twoDayData && twoWeekData) {
-      let [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-        data.totalVolumeUSD,
-        oneDayData.totalVolumeUSD ? oneDayData.totalVolumeUSD : 0,
-        twoDayData.totalVolumeUSD ? twoDayData.totalVolumeUSD : 0
-      )
+    console.log("Made it 5")
 
-      const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
-        data.totalVolumeUSD,
-        oneWeekData.totalVolumeUSD,
-        twoWeekData.totalVolumeUSD
-      )
-
-      const [oneDayTxns, txnChange] = get2DayPercentChange(
-        data.txCount,
-        oneDayData.txCount ? oneDayData.txCount : 0,
-        twoDayData.txCount ? twoDayData.txCount : 0
-      )
+    if (data) {
+      //if (data && oneDayData && twoDayData && twoWeekData) {
 
       // format the total liquidity in USD
       data.totalLiquidityUSD = data.totalLiquidityETH * ethPrice
+      console.log("Setting total liquidity", data.totalLiquidityUSD)
+      console.log("Today liquid", data.totalLiquidityETH)
+      console.log("One day liquid", oneDayData.totalLiquidityETH)
 
-      const liquidityChangeUSD = getPercentChange(
-        data.totalLiquidityETH * ethPrice,
-        oneDayData.totalLiquidityETH * oldEthPrice
-      )
+      if (oneDayData && twoDayData) {
+        let [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
+          data.totalVolumeUSD,
+          oneDayData.totalVolumeUSD ? oneDayData.totalVolumeUSD : 0,
+          twoDayData.totalVolumeUSD ? twoDayData.totalVolumeUSD : 0
+        )
 
-      // add relevant fields with the calculated amounts
-      data.oneDayVolumeUSD = oneDayVolumeUSD
-      data.oneWeekVolume = oneWeekVolume
-      data.weeklyVolumeChange = weeklyVolumeChange
-      data.volumeChangeUSD = volumeChangeUSD
-      data.liquidityChangeUSD = liquidityChangeUSD
-      data.oneDayTxns = oneDayTxns
-      data.txnChange = txnChange
+        const [oneDayTxns, txnChange] = get2DayPercentChange(
+          data.txCount,
+          oneDayData.txCount ? oneDayData.txCount : 0,
+          twoDayData.txCount ? twoDayData.txCount : 0
+        )
+
+        if (twoWeekData) {
+          const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
+            data.totalVolumeUSD,
+            oneWeekData.totalVolumeUSD,
+            twoWeekData.totalVolumeUSD
+          )
+          data.oneWeekVolume = oneWeekVolume
+          data.weeklyVolumeChange = weeklyVolumeChange
+        }
+
+        const liquidityChangeUSD = getPercentChange(
+          data.totalLiquidityETH,
+          oneDayData.totalLiquidityETH
+        )
+        data.liquidityChangeUSD = liquidityChangeUSD
+
+        // add relevant fields with the calculated amounts
+        data.oneDayVolumeUSD = oneDayVolumeUSD * ethPrice
+        data.volumeChangeUSD = volumeChangeUSD
+        data.oneDayTxns = oneDayTxns
+        data.txnChange = txnChange
+      }
+
     }
   } catch (e) {
     console.log(e)
@@ -313,7 +335,7 @@ async function getGlobalData(ethPrice, oldEthPrice) {
  * on main page
  * @param {*} oldestDateToFetch // start of window to fetch from
  */
-const getChartData = async (oldestDateToFetch) => {
+const getChartData = async (oldestDateToFetch, ethPrice) => {
   let data = []
   let weeklyData = []
   const utcEndTime = dayjs.utc()
@@ -352,7 +374,7 @@ const getChartData = async (oldestDateToFetch) => {
 
       // fill in empty days ( there will be no day datas if no trades made that day )
       let timestamp = data[0].date ? data[0].date : oldestDateToFetch
-      let latestLiquidityUSD = data[0].totalLiquidityUSD
+      let latestLiquidityUSD = data[0].totalLiquidityETH * ethPrice
       let latestDayDats = data[0].mostLiquidTokens
       let index = 1
       while (timestamp < utcEndTime.unix() - oneDay) {
@@ -583,10 +605,13 @@ export function useGlobalData() {
   const [ethPrice, oldEthPrice] = useEthPrice()
 
   const data = state?.globalData
+  console.log("Eth price: ", ethPrice)
 
   useEffect(() => {
     async function fetchData() {
+      console.log("Effect activated")
       let globalData = await getGlobalData(ethPrice, oldEthPrice)
+      console.log("Global total liquidity", globalData.totalLiquidityUSD)
       globalData && update(globalData)
 
       let allPairs = await getAllPairsOnUniswap()
@@ -611,6 +636,8 @@ export function useGlobalChartData() {
   const chartDataDaily = state?.chartData?.daily
   const chartDataWeekly = state?.chartData?.weekly
 
+  const [ethPrice] = useEthPrice()
+
   /**
    * Keep track of oldest date fetched. Used to
    * limit data fetched until its actually needed.
@@ -631,7 +658,7 @@ export function useGlobalChartData() {
   useEffect(() => {
     async function fetchData() {
       // historical stuff for chart
-      let [newChartData, newWeeklyData] = await getChartData(oldestDateFetch)
+      let [newChartData, newWeeklyData] = await getChartData(oldestDateFetch, ethPrice)
       updateChart(newChartData, newWeeklyData)
     }
     if (oldestDateFetch && !(chartDataDaily && chartDataWeekly)) {
