@@ -25,7 +25,7 @@ const UPDATE_TXNS = 'UPDATE_TXNS'
 const UPDATE_CHART = 'UPDATE_CHART'
 const UPDATE_ETH_PRICE = 'UPDATE_ETH_PRICE'
 const ETH_PRICE_KEY = 'ETH_PRICE_KEY'
-const UPDATE_ALL_PAIRS_IN_UNISWAP = 'UPDAUPDATE_ALL_PAIRS_IN_UNISWAPTE_TOP_PAIRS'
+const UPDATE_ALL_PAIRS_IN_UNISWAP = 'UPDATE_ALL_PAIRS_IN_UNISWAP'
 const UPDATE_ALL_TOKENS_IN_UNISWAP = 'UPDATE_ALL_TOKENS_IN_UNISWAP'
 const UPDATE_TOP_LPS = 'UPDATE_TOP_LPS'
 
@@ -247,7 +247,7 @@ async function getGlobalData(ethPrice, oldEthPrice) {
       query: GLOBAL_DATA(),
       fetchPolicy: 'cache-first',
     })
-    data = result.data.uniswapFactories[0]
+    data = result.data.pangolinFactories[0]
 
     console.log("Made it 4")
     // fetch the historical data
@@ -255,25 +255,25 @@ async function getGlobalData(ethPrice, oldEthPrice) {
       query: GLOBAL_DATA(oneDayBlock?.number),
       fetchPolicy: 'cache-first',
     })
-    oneDayData = oneDayResult.data.uniswapFactories[0]
+    oneDayData = oneDayResult.data.pangolinFactories[0]
 
     let twoDayResult = await client.query({
       query: GLOBAL_DATA(twoDayBlock?.number),
       fetchPolicy: 'cache-first',
     })
-    twoDayData = twoDayResult.data.uniswapFactories[0]
+    twoDayData = twoDayResult.data.pangolinFactories[0]
 
     let oneWeekResult = await client.query({
       query: GLOBAL_DATA(oneWeekBlock?.number),
       fetchPolicy: 'cache-first',
     })
-    const oneWeekData = oneWeekResult.data.uniswapFactories[0]
+    const oneWeekData = oneWeekResult.data.pangolinFactories[0]
 
     let twoWeekResult = await client.query({
       query: GLOBAL_DATA(twoWeekBlock?.number),
       fetchPolicy: 'cache-first',
     })
-    const twoWeekData = twoWeekResult.data.uniswapFactories[0]
+    const twoWeekData = twoWeekResult.data.pangolinFactories[0]
 
     console.log("Made it 5")
 
@@ -353,8 +353,8 @@ const getChartData = async (oldestDateToFetch, ethPrice) => {
         fetchPolicy: 'cache-first',
       })
       skip += 1000
-      data = data.concat(result.data.uniswapDayDatas)
-      if (result.data.uniswapDayDatas.length < 1000) {
+      data = data.concat(result.data.pangolinDayDatas)
+      if (result.data.pangolinDayDatas.length < 1000) {
         allFound = true
       }
     }
@@ -611,7 +611,7 @@ export function useGlobalData() {
     async function fetchData() {
       console.log("Effect activated")
       let globalData = await getGlobalData(ethPrice, oldEthPrice)
-      console.log("Global total liquidity", globalData.totalLiquidityUSD)
+      //console.log("Global total liquidity", globalData.totalLiquidityUSD)
       globalData && update(globalData)
 
       let allPairs = await getAllPairsOnUniswap()
@@ -664,7 +664,7 @@ export function useGlobalChartData() {
     if (oldestDateFetch && !(chartDataDaily && chartDataWeekly)) {
       fetchData()
     }
-  }, [chartDataDaily, chartDataWeekly, oldestDateFetch, updateChart])
+  }, [chartDataDaily, chartDataWeekly, oldestDateFetch, updateChart, ethPrice])
 
   return [chartDataDaily, chartDataWeekly]
 }
