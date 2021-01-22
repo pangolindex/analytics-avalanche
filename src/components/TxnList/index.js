@@ -16,6 +16,7 @@ import DropdownSelect from '../DropdownSelect'
 import FormattedName from '../FormattedName'
 import { TYPE } from '../../Theme'
 import { updateNameData } from '../../utils/data'
+import { useEthPrice } from '../../contexts/GlobalData'
 
 dayjs.extend(utc)
 
@@ -180,6 +181,8 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
     setPage(1)
   }, [transactions])
 
+  const [ethPrice] = useEthPrice()
+
   // parse the txns and format for UI
   useEffect(() => {
     if (transactions && transactions.mints && transactions.burns && transactions.swaps) {
@@ -195,7 +198,7 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
           newTxn.account = mint.to
           newTxn.token0Symbol = updateNameData(mint.pair).token0.symbol
           newTxn.token1Symbol = updateNameData(mint.pair).token1.symbol
-          newTxn.amountUSD = mint.amountUSD
+          newTxn.amountUSD = mint.amountUSD * ethPrice
           return newTxns.push(newTxn)
         })
       }
@@ -210,7 +213,7 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
           newTxn.account = burn.sender
           newTxn.token0Symbol = updateNameData(burn.pair).token0.symbol
           newTxn.token1Symbol = updateNameData(burn.pair).token1.symbol
-          newTxn.amountUSD = burn.amountUSD
+          newTxn.amountUSD = burn.amountUSD * ethPrice
           return newTxns.push(newTxn)
         })
       }
@@ -237,7 +240,7 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
           newTxn.timestamp = swap.transaction.timestamp
           newTxn.type = TXN_TYPE.SWAP
 
-          newTxn.amountUSD = swap.amountUSD
+          newTxn.amountUSD = swap.amountUSD * ethPrice
           newTxn.account = swap.to
           return newTxns.push(newTxn)
         })
@@ -280,6 +283,7 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
   const below780 = useMedia('(max-width: 780px)')
 
   const ListItem = ({ item }) => {
+    console.log('item: ', item)
     return (
       <DashGrid style={{ height: '48px' }}>
         <DataText area="txn" fontWeight="500">
@@ -322,41 +326,41 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
             <DropdownSelect options={TXN_TYPE} active={txFilter} setActive={setTxFilter} color={color} />
           </RowBetween>
         ) : (
-            <RowFixed area="txn" gap="10px" pl={4}>
-              <SortText
-                onClick={() => {
-                  setTxFilter(TXN_TYPE.ALL)
-                }}
-                active={txFilter === TXN_TYPE.ALL}
-              >
-                All
+          <RowFixed area="txn" gap="10px" pl={4}>
+            <SortText
+              onClick={() => {
+                setTxFilter(TXN_TYPE.ALL)
+              }}
+              active={txFilter === TXN_TYPE.ALL}
+            >
+              All
             </SortText>
-              <SortText
-                onClick={() => {
-                  setTxFilter(TXN_TYPE.SWAP)
-                }}
-                active={txFilter === TXN_TYPE.SWAP}
-              >
-                Swaps
+            <SortText
+              onClick={() => {
+                setTxFilter(TXN_TYPE.SWAP)
+              }}
+              active={txFilter === TXN_TYPE.SWAP}
+            >
+              Swaps
             </SortText>
-              <SortText
-                onClick={() => {
-                  setTxFilter(TXN_TYPE.ADD)
-                }}
-                active={txFilter === TXN_TYPE.ADD}
-              >
-                Adds
+            <SortText
+              onClick={() => {
+                setTxFilter(TXN_TYPE.ADD)
+              }}
+              active={txFilter === TXN_TYPE.ADD}
+            >
+              Adds
             </SortText>
-              <SortText
-                onClick={() => {
-                  setTxFilter(TXN_TYPE.REMOVE)
-                }}
-                active={txFilter === TXN_TYPE.REMOVE}
-              >
-                Removes
+            <SortText
+              onClick={() => {
+                setTxFilter(TXN_TYPE.REMOVE)
+              }}
+              active={txFilter === TXN_TYPE.REMOVE}
+            >
+              Removes
             </SortText>
-            </RowFixed>
-          )}
+          </RowFixed>
+        )}
 
         <Flex alignItems="center" justifyContent="flexStart">
           <ClickableText
@@ -427,15 +431,15 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
         ) : filteredList.length === 0 ? (
           <EmptyCard>No recent transactions found.</EmptyCard>
         ) : (
-              filteredList.map((item, index) => {
-                return (
-                  <div key={index}>
-                    <ListItem key={index} index={index + 1} item={item} />
-                    <Divider />
-                  </div>
-                )
-              })
-            )}
+          filteredList.map((item, index) => {
+            return (
+              <div key={index}>
+                <ListItem key={index} index={index + 1} item={item} />
+                <Divider />
+              </div>
+            )
+          })
+        )}
       </List>
       <PageButtons>
         <div
