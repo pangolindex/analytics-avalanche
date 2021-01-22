@@ -175,7 +175,7 @@ function PairList({ pairs, color, disbaleLinks, maxItems = 10 }) {
           </DataText>
           <DataText area="liq">{liquidity}</DataText>
           <DataText area="vol">{volume}</DataText>
-          {!below1080 && <DataText area="volWeek">{formattedNum(pairData.oneWeekVolumeUSD, true)}</DataText>}
+          {!below1080 && <DataText area="volWeek">{formattedNum(pairData.oneWeekVolumeUSD * ethPrice, true)}</DataText>}
           {!below1080 && <DataText area="fees">{formattedNum(pairData.oneDayVolumeUSD * 0.003, true)}</DataText>}
           {!below1080 && <DataText area="apy">{apy}</DataText>}
         </DashGrid>
