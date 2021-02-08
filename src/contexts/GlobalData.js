@@ -217,10 +217,7 @@ async function getGlobalData(ethPrice, oldEthPrice) {
   let oneDayData = {}
   let twoDayData = {}
 
-  console.log("Entered global data")
-
   try {
-    console.log("Made it 1")
     // get timestamps for the days
     const utcCurrentTime = dayjs()
     const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix()
@@ -228,7 +225,6 @@ async function getGlobalData(ethPrice, oldEthPrice) {
     const utcOneWeekBack = utcCurrentTime.subtract(1, 'week').unix()
     const utcTwoWeeksBack = utcCurrentTime.subtract(2, 'week').unix()
 
-    console.log("Made it 2")
     // get the blocks needed for time travel queries
     let [oneDayBlock, twoDayBlock, oneWeekBlock, twoWeekBlock] = await getBlocksFromTimestamps([
       utcOneDayBack,
@@ -237,11 +233,6 @@ async function getGlobalData(ethPrice, oldEthPrice) {
       utcTwoWeeksBack,
     ])
 
-    console.log("One day ts:", utcOneDayBack)
-    console.log("Two day ts:", utcTwoDaysBack)
-
-    console.log("One day block:", oneDayBlock)
-    console.log("Two day block:", twoDayBlock)
     // fetch the global data
     let result = await client.query({
       query: GLOBAL_DATA(),
@@ -249,7 +240,6 @@ async function getGlobalData(ethPrice, oldEthPrice) {
     })
     data = result.data.pangolinFactories[0]
 
-    console.log("Made it 4")
     // fetch the historical data
     let oneDayResult = await client.query({
       query: GLOBAL_DATA(oneDayBlock?.number),
@@ -275,16 +265,11 @@ async function getGlobalData(ethPrice, oldEthPrice) {
     })
     const twoWeekData = twoWeekResult.data.pangolinFactories[0]
 
-    console.log("Made it 5")
-
     if (data) {
       //if (data && oneDayData && twoDayData && twoWeekData) {
 
       // format the total liquidity in USD
       data.totalLiquidityUSD = data.totalLiquidityETH * ethPrice
-      console.log("Setting total liquidity", data.totalLiquidityUSD)
-      console.log("Today liquid", data.totalLiquidityETH)
-      console.log("One day liquid", oneDayData.totalLiquidityETH)
 
       if (oneDayData && twoDayData) {
         let [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
@@ -503,8 +488,6 @@ export const getEthPriceAtTimestamp = async (timestamp) => {
     vs_currency: 'usd'
   })
 
-  console.log("Timestamp " + timestamp + " is " + days_back + " days back")
-
   return result['data']['prices']
 }
 
@@ -532,8 +515,6 @@ export const getEthPriceAtDate = async (timestamp) => {
   })
 
   let ethPrice = result['data']['market_data']['current_price']['usd']
-
-  console.log("AVAX Price on " + dateString + ": " + ethPrice)
 
   return ethPrice
 }
@@ -605,7 +586,6 @@ export function useGlobalData() {
   const [ethPrice, oldEthPrice] = useEthPrice()
 
   const data = state?.globalData
-  console.log("Eth price: ", ethPrice)
 
   useEffect(() => {
     async function fetchData() {

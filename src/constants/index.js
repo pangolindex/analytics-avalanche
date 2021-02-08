@@ -1,4 +1,5 @@
-export const FACTORY_ADDRESS = '0xefa94DE7a4656D787667C749f7E1223D71E9FD88'
+export const FACTORY_ADDRESS = '0xcdeEa31E087F0Cf463043D246a45B87f4e959737'
+// export const FACTORY_ADDRESS = '0xefa94DE7a4656D787667C749f7E1223D71E9FD88' // new factory
 
 export const WAVAX_ADDRESS = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'
 
@@ -14,6 +15,7 @@ export const timeframeOptions = {
 
 // token list urls to fetch tokens from - use for warnings on tokens and pairs
 export const SUPPORTED_LIST_URLS__NO_ENS = [
+  // 'https://raw.githubusercontent.com/dasconnor/tokenlist/main/ava.tokenlist.json'
   'https://raw.githubusercontent.com/pangolindex/tokenlists/main/all.json'
 ]
 
