@@ -1,5 +1,5 @@
 const express = require('express')
-const cors = require('cors')
+// const cors = require('cors')
 const bodyParser = require('body-parser')
 // var history = require('connect-history-api-fallback')
 const helmet = require('helmet')
@@ -8,7 +8,7 @@ const app = express()
 
 // app.use(helmet())
 
-app.use(cors())
+// app.use(cors())
 app.use(bodyParser.json())
 
 // For heroku proxy
