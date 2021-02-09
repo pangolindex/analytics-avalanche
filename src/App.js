@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { ApolloProvider } from 'react-apollo'
 import { client } from './apollo/client'
-import { Route, Switch, BrowserRouter, Redirect } from 'react-router-dom'
+import { Route, Switch, Redirect, HashRouter } from 'react-router-dom'
 import GlobalPage from './pages/GlobalPage'
 import TokenPage from './pages/TokenPage'
 import PairPage from './pages/PairPage'
@@ -115,97 +115,97 @@ function App() {
           </WarningWrapper>
         )}
         {latestBlock &&
-          globalData &&
-          Object.keys(globalData).length > 0 &&
-          globalChartData &&
-          Object.keys(globalChartData).length > 0 ? (
-            <BrowserRouter>
-              <Switch>
-                <Route
-                  exacts
-                  strict
-                  path="/token/:tokenAddress"
-                  render={({ match }) => {
-                    if (OVERVIEW_TOKEN_BLACKLIST.includes(match.params.tokenAddress.toLowerCase())) {
-                      return <Redirect to="/home" />
-                    }
-                    if (isAddress(match.params.tokenAddress.toLowerCase())) {
-                      return (
-                        <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
-                          <TokenPage address={match.params.tokenAddress.toLowerCase()} />
-                        </LayoutWrapper>
-                      )
-                    } else {
-                      return <Redirect to="/home" />
-                    }
-                  }}
-                />
-                <Route
-                  exacts
-                  strict
-                  path="/pair/:pairAddress"
-                  render={({ match }) => {
-                    if (PAIR_BLACKLIST.includes(match.params.pairAddress.toLowerCase())) {
-                      return <Redirect to="/home" />
-                    }
-                    if (isAddress(match.params.pairAddress.toLowerCase())) {
-                      return (
-                        <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
-                          <PairPage pairAddress={match.params.pairAddress.toLowerCase()} />
-                        </LayoutWrapper>
-                      )
-                    } else {
-                      return <Redirect to="/home" />
-                    }
-                  }}
-                />
-                <Route
-                  exacts
-                  strict
-                  path="/account/:accountAddress"
-                  render={({ match }) => {
-                    if (isAddress(match.params.accountAddress.toLowerCase())) {
-                      return (
-                        <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
-                          <AccountPage account={match.params.accountAddress.toLowerCase()} />
-                        </LayoutWrapper>
-                      )
-                    } else {
-                      return <Redirect to="/home" />
-                    }
-                  }}
-                />
+        globalData &&
+        Object.keys(globalData).length > 0 &&
+        globalChartData &&
+        Object.keys(globalChartData).length > 0 ? (
+          <HashRouter>
+            <Switch>
+              <Route
+                exacts
+                strict
+                path="/token/:tokenAddress"
+                render={({ match }) => {
+                  if (OVERVIEW_TOKEN_BLACKLIST.includes(match.params.tokenAddress.toLowerCase())) {
+                    return <Redirect to="/home" />
+                  }
+                  if (isAddress(match.params.tokenAddress.toLowerCase())) {
+                    return (
+                      <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
+                        <TokenPage address={match.params.tokenAddress.toLowerCase()} />
+                      </LayoutWrapper>
+                    )
+                  } else {
+                    return <Redirect to="/home" />
+                  }
+                }}
+              />
+              <Route
+                exacts
+                strict
+                path="/pair/:pairAddress"
+                render={({ match }) => {
+                  if (PAIR_BLACKLIST.includes(match.params.pairAddress.toLowerCase())) {
+                    return <Redirect to="/home" />
+                  }
+                  if (isAddress(match.params.pairAddress.toLowerCase())) {
+                    return (
+                      <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
+                        <PairPage pairAddress={match.params.pairAddress.toLowerCase()} />
+                      </LayoutWrapper>
+                    )
+                  } else {
+                    return <Redirect to="/home" />
+                  }
+                }}
+              />
+              <Route
+                exacts
+                strict
+                path="/account/:accountAddress"
+                render={({ match }) => {
+                  if (isAddress(match.params.accountAddress.toLowerCase())) {
+                    return (
+                      <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
+                        <AccountPage account={match.params.accountAddress.toLowerCase()} />
+                      </LayoutWrapper>
+                    )
+                  } else {
+                    return <Redirect to="/home" />
+                  }
+                }}
+              />
 
-                <Route path="/home">
-                  <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
-                    <GlobalPage />
-                  </LayoutWrapper>
-                </Route>
+              <Route path="/home">
+                <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
+                  <GlobalPage />
+                </LayoutWrapper>
+              </Route>
 
-                <Route path="/tokens">
-                  <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
-                    <AllTokensPage />
-                  </LayoutWrapper>
-                </Route>
+              <Route path="/tokens">
+                <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
+                  <AllTokensPage />
+                </LayoutWrapper>
+              </Route>
 
-                <Route path="/pairs">
-                  <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
-                    <AllPairsPage />
-                  </LayoutWrapper>
-                </Route>
+              <Route path="/pairs">
+                <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
+                  <AllPairsPage />
+                </LayoutWrapper>
+              </Route>
 
-                <Route path="/accounts">
-                  <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
-                    <AccountLookup />
-                  </LayoutWrapper>
-                </Route>
+              <Route path="/accounts">
+                <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
+                  <AccountLookup />
+                </LayoutWrapper>
+              </Route>
 
-                <Redirect to="/home" />
-              </Switch>
-            </BrowserRouter>
-          ) : (
-            <LocalLoader fill="true" />
-          )}
+              <Redirect to="/home" />
+            </Switch>
+          </HashRouter>
+        ) : (
+          <LocalLoader fill="true" />
+        )}
       </AppWrapper>
     </ApolloProvider>
   )
