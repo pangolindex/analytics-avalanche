@@ -1,10 +1,12 @@
-# Uniswap Info
+# Pangolin Analytics
 
-[![Lint](https://github.com/Uniswap/uniswap-info/workflows/Lint/badge.svg)](https://github.com/Uniswap/uniswap-info/actions?query=workflow%3ALint)
-[![Deploy](https://github.com/Uniswap/uniswap-info/workflows/Deploy/badge.svg)](https://github.com/Uniswap/uniswap-info/actions?query=workflow%3ADeploy)
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+An open source analytics platform for Pangolin -- a community-driven decentralized exchange for Avalanche and Ethereum assets with fast settlement, low transaction fees, and a democratic distribution -- powered by Avalanche.
 
-Analytics site for the [Uniswap Protocol](https://uniswap.org).
+- Website: [pangolin.exchange](https://pangolin.exchange/)
+- Interface: [app.pangolin.exchange](https://app.pangolin.exchange)
+- Telegram: [Pangolin](https://t.me/pangolindex)
+- Discord: [Pangolin](https://discord.com/invite/PARrDYYbfw)
+- Twitter: [@pangolindex](https://twitter.com/pangolindex)
 
 ### To Start Development
 
@@ -17,3 +19,6 @@ yarn
 ```bash
 yarn start
 ```
+
+## Attribution
+This code was adapted from this Uniswap repo: [uniswap-info](https://github.com/Uniswap/uniswap-info).
