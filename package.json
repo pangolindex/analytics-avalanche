@@ -1,7 +1,7 @@
 {
-  "name": "@uniswap/info",
+  "name": "@pangolindex/analytics",
   "private": true,
-  "homepage": "https://info.uniswap.org",
+  "homepage": "https://info.pangolin.exchange",
   "devDependencies": {
     "@babel/preset-env": "7.8.7",
     "@popperjs/core": "^2.4.2",
@@ -91,6 +91,8 @@
   },
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "coingecko-api": "^1.0.10"
+    "coingecko-api": "^1.0.10",
+    "cors": "^2.8.5",
+    "path": "^0.12.7"
   }
 }
