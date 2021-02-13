@@ -1,5 +1,4 @@
-export const FACTORY_ADDRESS = '0xcdeEa31E087F0Cf463043D246a45B87f4e959737'
-// export const FACTORY_ADDRESS = '0xefa94DE7a4656D787667C749f7E1223D71E9FD88' // new factory
+export const FACTORY_ADDRESS = '0xefa94DE7a4656D787667C749f7E1223D71E9FD88' // new factory
 
 export const WAVAX_ADDRESS = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'
 
@@ -26,7 +25,7 @@ export const OVERVIEW_TOKEN_BLACKLIST = [
 ]
 
 // pair blacklist
-export const PAIR_BLACKLIST = ['0xa37cd29a87975f44b83f06f9ba4d51879a99d378']
+export const PAIR_BLACKLIST = []
 
 /**
  * For tokens that cause erros on fee calculations
