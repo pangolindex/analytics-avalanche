@@ -198,7 +198,7 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
           newTxn.account = mint.to
           newTxn.token0Symbol = updateNameData(mint.pair).token0.symbol
           newTxn.token1Symbol = updateNameData(mint.pair).token1.symbol
-          newTxn.amountUSD = mint.amountUSD * ethPrice
+          newTxn.amountUSD = mint.amountUSD
           return newTxns.push(newTxn)
         })
       }
@@ -213,7 +213,7 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
           newTxn.account = burn.sender
           newTxn.token0Symbol = updateNameData(burn.pair).token0.symbol
           newTxn.token1Symbol = updateNameData(burn.pair).token1.symbol
-          newTxn.amountUSD = burn.amountUSD * ethPrice
+          newTxn.amountUSD = burn.amountUSD
           return newTxns.push(newTxn)
         })
       }
@@ -240,7 +240,7 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
           newTxn.timestamp = swap.transaction.timestamp
           newTxn.type = TXN_TYPE.SWAP
 
-          newTxn.amountUSD = swap.amountUSD * ethPrice
+          newTxn.amountUSD = swap.amountUSD
           newTxn.account = swap.to
           return newTxns.push(newTxn)
         })
@@ -283,7 +283,6 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
   const below780 = useMedia('(max-width: 780px)')
 
   const ListItem = ({ item }) => {
-    console.log('item: ', item)
     return (
       <DashGrid style={{ height: '48px' }}>
         <DataText area="txn" fontWeight="500">

@@ -409,6 +409,8 @@ const getGlobalTransactions = async () => {
   let transactions = {}
 
   try {
+    let avaxPrice = await getCurrentEthPrice()
+
     let result = await client.query({
       query: GLOBAL_TXNS,
       fetchPolicy: 'cache-first',
@@ -420,16 +422,19 @@ const getGlobalTransactions = async () => {
       result.data.transactions.map((transaction) => {
         if (transaction.mints.length > 0) {
           transaction.mints.map((mint) => {
+            mint.amountUSD = (parseFloat(mint.amountUSD) * avaxPrice).toString()
             return transactions.mints.push(mint)
           })
         }
         if (transaction.burns.length > 0) {
           transaction.burns.map((burn) => {
+            burn.amountUSD = (parseFloat(burn.amountUSD) * avaxPrice).toString()
             return transactions.burns.push(burn)
           })
         }
         if (transaction.swaps.length > 0) {
           transaction.swaps.map((swap) => {
+            swap.amountUSD = (parseFloat(swap.amountUSD) * avaxPrice).toString()
             return transactions.swaps.push(swap)
           })
         }
@@ -589,9 +594,7 @@ export function useGlobalData() {
 
   useEffect(() => {
     async function fetchData() {
-      console.log("Effect activated")
       let globalData = await getGlobalData(ethPrice, oldEthPrice)
-      //console.log("Global total liquidity", globalData.totalLiquidityUSD)
       globalData && update(globalData)
 
       let allPairs = await getAllPairsOnUniswap()
@@ -740,16 +743,19 @@ export function useTopLps() {
         .map((list) => {
           return list.map((entry) => {
             const pairData = allPairs[entry.pair.id]
-            return topLps.push({
-              user: entry.user,
-              pairName: pairData.token0.symbol + '-' + pairData.token1.symbol,
-              pairAddress: entry.pair.id,
-              token0: pairData.token0.id,
-              token1: pairData.token1.id,
-              usd:
-                (parseFloat(entry.liquidityTokenBalance) / parseFloat(pairData.totalSupply)) *
-                parseFloat(pairData.reserveUSD) * avaxPrice,
-            })
+            const usd = (parseFloat(entry.liquidityTokenBalance) / parseFloat(pairData.totalSupply)) *
+              parseFloat(pairData.reserveUSD) * avaxPrice
+            if (usd) {
+              return topLps.push({
+                user: entry.user,
+                pairName: pairData.token0.symbol + '-' + pairData.token1.symbol,
+                pairAddress: entry.pair.id,
+                token0: pairData.token0.id,
+                token1: pairData.token1.id,
+                usd: usd,
+              })
+            }
+            return null
           })
         })
 
