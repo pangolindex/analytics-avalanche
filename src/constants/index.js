@@ -27,12 +27,20 @@ export const TOKEN_BLACKLIST = [
   '0xe54eb2c3009fa411bf24fb017f9725b973ce36f0', // 1INCH
   '0xf6f3eea905ac1da6f6dd37d06810c6fcb0ef5183', // zEth
   '0x474bb79c3e8e65dcc6df30f9de68592ed48bbfdb', // zUSDC
+  '0x1f1fe1ef06ab30a791d6357fdf0a7361b39b1537'  // sled.finance
 ]
 
 // pair blacklist - never shown
 export const PAIR_BLACKLIST = [,
   '0x27eef94e479cb4774b050530cfc45e4a6ccc7e5f',
-  '0xcf341bfcb92f3c8bf4811ea7f2111efaf1d0e237']
+  '0xcf341bfcb92f3c8bf4811ea7f2111efaf1d0e237',
+  '0x359059bdbf2b9dcc534d20912d3e82df2111b620',
+  '0x333649e4f88b4a5dc0ea610bb7446f5174037544',
+  '0xddfcef1081b8eeabe3935817b9625c9b89848a56',
+  '0x862c96397fe2c80f4011e90029e1edebc8206605',
+  '0x18c8e1346d26824063706242adb391ddb16c293e',
+  '0x485e264903e584e1a41b80eb842470da9d47e764'
+]
 
 export const BLOCKED_WARNINGS = {
   '0xf4eda77f0b455a12f3eb44f8653835f377e36b76':
