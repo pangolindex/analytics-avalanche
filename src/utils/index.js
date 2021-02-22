@@ -63,6 +63,19 @@ export function getSwapLink(token0Address, token1Address = null) {
   }
 }
 
+export function getMiningPoolLink(token0Address) {
+  return `https://app.pangolin.exchange/#/PNG/AVAX/${token0Address}`
+}
+
+export function getPangolinAppLink(linkVariable) {
+  let baseUniswapUrl = 'https://app.pangolin.exchange/#/'
+  if (!linkVariable) {
+    return baseUniswapUrl
+  }
+
+  return `${baseUniswapUrl}/ETH/${linkVariable}`
+}
+
 export function localNumber(val) {
   return Numeral(val).format('0,0')
 }
@@ -71,7 +84,13 @@ export const toNiceDate = (date) => {
   let x = dayjs.utc(dayjs.unix(date)).format('MMM DD')
   return x
 }
-
+export function shortenAddress(address, chars = 4) {
+  const parsed = isAddress(address)
+  if (!parsed) {
+    throw Error(`Invalid 'address' parameter '${address}'.`)
+  }
+  return `${parsed.substring(0, chars + 2)}...${parsed.substring(42 - chars)}`
+}
 export const toWeeklyDate = (date) => {
   const formatted = dayjs.utc(dayjs.unix(date))
   date = new Date(formatted)
@@ -342,11 +361,15 @@ export const formatNumber = (num) => {
 }
 
 // using a currency library here in case we want to add more in future
-var priceFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  minimumFractionDigits: 2,
-})
+export const formatDollarAmount = (num, digits) => {
+  const formatter = new Intl.NumberFormat([], {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  })
+  return formatter.format(num)
+}
 
 export const toSignificant = (number, significantDigits) => {
   Decimal.set({ precision: significantDigits + 1, rounding: Decimal.ROUND_UP })
@@ -376,21 +399,18 @@ export const formattedNum = (number, usd = false, acceptNegatives = false) => {
   }
 
   if (num > 1000) {
-    return usd
-      ? '$' + Number(parseFloat(num).toFixed(0)).toLocaleString()
-      : '' + Number(parseFloat(num).toFixed(0)).toLocaleString()
+    return usd ? formatDollarAmount(num, 0) : Number(parseFloat(num).toFixed(0)).toLocaleString()
   }
 
   if (usd) {
     if (num < 0.1) {
-      return '$' + Number(parseFloat(num).toFixed(4))
+      return formatDollarAmount(num, 4)
     } else {
-      let usdString = priceFormatter.format(num)
-      return '$' + usdString.slice(1, usdString.length)
+      return formatDollarAmount(num, 2)
     }
   }
 
-  return Number(parseFloat(num).toFixed(5))
+  return Number(parseFloat(num).toFixed(5)).toLocaleString()
 }
 
 export function rawPercent(percentRaw) {

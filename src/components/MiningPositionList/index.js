@@ -9,7 +9,7 @@ import Link, { CustomLink } from '../Link'
 import { Divider } from '..'
 import DoubleTokenLogo from '../DoubleLogo'
 import { withRouter } from 'react-router-dom'
-import { formattedNum, getUniswapAppLink } from '../../utils'
+import { formattedNum, getPangolinAppLink } from '../../utils'
 import { AutoColumn } from '../Column'
 import { RowFixed } from '../Row'
 import { ButtonLight } from '../ButtonStyled'
@@ -159,11 +159,11 @@ function MiningPositionList({ miningPositions }) {
               </TYPE.main>
             </CustomLink>
             <RowFixed gap="8px" justify="flex-start">
-              <Link external href={getUniswapAppLink(firstPairAddress)} style={{ marginRight: '.5rem' }}>
+              <Link external href={getPangolinAppLink(firstPairAddress)} style={{ marginRight: '.5rem' }}>
                 <ButtonLight style={{ padding: '4px 6px', borderRadius: '4px' }}>Stake More</ButtonLight>
               </Link>
               {pairPercentage > 0 && (
-                <Link external href={getUniswapAppLink(firstPairAddress)}>
+                <Link external href={getPangolinAppLink(firstPairAddress)}>
                   <ButtonLight style={{ padding: '4px 6px', borderRadius: '4px' }}>Withdraw</ButtonLight>
                 </Link>
               )}
