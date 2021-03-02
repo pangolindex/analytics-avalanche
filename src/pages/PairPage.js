@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { withRouter } from 'react-router-dom'
+import { Text } from 'rebass'
 import 'feather-icons'
 import styled from 'styled-components'
 import Panel from '../components/Panel'
@@ -210,12 +211,26 @@ function PairPage({ pairAddress, history }) {
         address={pairAddress}
       />
       <ContentWrapperLarge>
-        <RowBetween>
-          <TYPE.body>
-            <BasicLink to="/pairs">{'Pairs '}</BasicLink>→ {token0?.symbol}-{token1?.symbol}
-          </TYPE.body>
+        <RowBetween style={{ flexWrap: 'wrap', alingItems: 'start' }}>
+          <AutoRow align="flex-end" style={{ width: 'fit-content' }}>
+            <TYPE.body>
+              <BasicLink to="/pairs">{'Pairs '}</BasicLink>→ {token0?.symbol}-{token1?.symbol}
+              {' '}
+            </TYPE.body>
+            <Link
+              style={{ width: 'fit-content' }}
+              color={backgroundColor}
+              external
+              href={'https://cchain.explorer.avax.network/address/' + pairAddress}
+            >
+              <Text style={{ marginLeft: '.15rem' }} fontSize={'14px'} fontWeight={400}>
+                ({pairAddress.slice(0, 8) + '...' + pairAddress.slice(36, 42)})
+              </Text>
+            </Link>
+          </AutoRow>
           {!below600 && <Search small={true} />}
         </RowBetween>
+
         <WarningGrouping
           disabled={
             !dismissed && listedTokens && !(listedTokens.includes(token0?.id) && listedTokens.includes(token1?.id))
