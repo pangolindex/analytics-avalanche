@@ -150,7 +150,7 @@ function PairList({ pairs, color, disbaleLinks, maxItems = 10 }) {
     const [ethPrice] = useEthPrice()
 
     if (pairData && pairData.token0 && pairData.token1) {
-      const liquidity = formattedNum(pairData.reserveUSD * ethPrice, true)
+      const liquidity = formattedNum(pairData.trackedReserveUSD, true)
       const volume = formattedNum(pairData.oneDayVolumeUSD, true)
       const apy = formattedPercent((pairData.oneDayVolumeUSD * 0.003 * 365 * 100) / pairData.trackedReserveUSD)
 
