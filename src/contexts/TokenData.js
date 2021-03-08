@@ -531,15 +531,23 @@ const getIntervalTokenData = async (tokenAddress, startTime, interval = 3600, la
     // go through eth usd prices and assign to original values array
     let index = 0
     for (var brow in result) {
+      let startIndex = 0, endIndex = timestampedPrices.length - 1, found = -1
       let timestamp = brow.split('b')[1]
       if (timestamp) {
-        // TODO This is n^2, optimize
-        for (let i = 0; i < timestampedPrices.length; i++) {
-          if (timestampedPrices[i][0] > timestamp) {
-            values[index].priceUSD = timestampedPrices[i][1] * values[index].derivedETH
-            index += 1
-            break
+        timestamp = parseInt(timestamp) * 1000
+        while (startIndex <= endIndex) {
+          let middleIndex = (startIndex + endIndex) >> 1
+          if (timestampedPrices[middleIndex][0] <= timestamp) {
+            startIndex = middleIndex + 1
           }
+          else {
+            found = middleIndex
+            endIndex = middleIndex - 1
+          }
+        }
+        if (found >= 0) {
+          values[index].priceUSD = timestampedPrices[found][1] * values[index].derivedETH
+          index += 1
         }
       }
     }
