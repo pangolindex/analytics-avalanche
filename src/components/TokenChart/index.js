@@ -94,7 +94,7 @@ const TokenChart = ({ address, color, base }) => {
     }
   }, [prevWindow, timeWindow])
 
-  // switch to daily data if switche to month or all time view
+  // switch to daily data if switched to month or all time view
   useEffect(() => {
     if (timeWindow === timeframeOptions.MONTH && prevWindow && prevWindow !== timeframeOptions.MONTH) {
       setFrequency(DATA_FREQUENCY.DAY)
