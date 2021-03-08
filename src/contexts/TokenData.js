@@ -535,6 +535,7 @@ const getIntervalTokenData = async (tokenAddress, startTime, interval = 3600, la
       if (timestamp) {
         // TODO This is n^2, optimize
         for (let i = 0; i < timestampedPrices.length; i++) {
+          timestamp = parseInt(timestamp) * 1000
           if (timestampedPrices[i][0] > timestamp) {
             values[index].priceUSD = timestampedPrices[i][1] * values[index].derivedETH
             index += 1
