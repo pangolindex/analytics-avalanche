@@ -115,12 +115,10 @@ function AccountSearch({ history, small }) {
               savedAccounts.map((account) => {
                 return (
                   <DashGrid key={account} center={true} style={{ height: 'fit-content', padding: '1rem 0 0 0' }}>
-                    <Flex
-                      area="account"
-                      justifyContent="space-between"
-                      onClick={() => history.push('/account/' + account)}
-                    >
-                      <AccountLink>{account?.slice(0, 42)}</AccountLink>
+                    <Flex area="account" justifyContent="space-between">
+                      <AccountLink onClick={() => history.push('/account/' + account)}>
+                        {account?.slice(0, 42)}
+                      </AccountLink>
                       <Hover onClick={() => removeAccount(account)}>
                         <StyledIcon>
                           <X size={16} />
