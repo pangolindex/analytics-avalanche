@@ -289,6 +289,17 @@ export function useUserPositionChart(position, account) {
         pairSnapshots,
         currentETHPrice
       )
+      if (fetchedData) {
+        for (let j = 0; j < fetchedData.length; j++) {
+          let latestAvaxPrice
+          if (j === fetchedData.length - 1) {
+            latestAvaxPrice = await getCurrentEthPrice()
+          } else {
+            latestAvaxPrice = await getEthPriceAtDate(fetchedData[j].date)
+          }
+          fetchedData[j].usdValue = fetchedData[j].usdValue * latestAvaxPrice
+        }
+      }
       updateUserPairReturns(account, pairAddress, fetchedData)
     }
     if (
@@ -314,25 +325,6 @@ export function useUserPositionChart(position, account) {
     updateUserPairReturns,
     position.pair.id,
   ])
-
-  const convertPrice = async function () {
-    if (formattedHistory) {
-      for (let j = 0; j < formattedHistory.length; j++) {
-        let latestAvaxPrice
-        if (j === formattedHistory.length - 1) {
-          latestAvaxPrice = await getCurrentEthPrice()
-        } else {
-          latestAvaxPrice = await getEthPriceAtDate(formattedHistory[j].date)
-        }
-        formattedHistory[j].usdValue = formattedHistory[j].usdValue * latestAvaxPrice
-      }
-    }
-    return formattedHistory
-  }
-
-  if (formattedHistory) {
-    convertPrice().then(result => { console.log("Finished waiting") })
-  }
 
   return formattedHistory
 }
