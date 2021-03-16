@@ -29,9 +29,10 @@ jobs:
         env:
           CI: false
       - name: Publish
-        uses: cloudflare/wrangler-action@1.3.0
+        uses: cloudflare/wrangler-action@1.2.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
+          wranglerVersion: '1.13.0'
         env:
           USER: root
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
