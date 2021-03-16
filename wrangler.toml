@@ -4,3 +4,4 @@ route = "info.pangolin.exchange/*"
 
 [site]
 bucket = "./build"
+entry-point = "workers-site"
