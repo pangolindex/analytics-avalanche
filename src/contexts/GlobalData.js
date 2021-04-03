@@ -5,6 +5,7 @@ import utc from 'dayjs/plugin/utc'
 import { useTimeframe } from './Application'
 import {
   getPercentChange,
+  getBlockFromTimestamp,
   getBlocksFromTimestamps,
   get2DayPercentChange,
   getTimeframe,
@@ -461,7 +462,7 @@ const getAvaxPrice = async () => {
     })
     avaxPrice = result?.data?.bundles[0]?.avaxPrice
     avaxPriceOneDay = resultOneDay?.data?.bundles[0]?.avaxPrice
-    priceChangeAVAX = getPercentChange(currentPrice, oneDayBackPrice)
+    priceChangeAVAX = getPercentChange(avaxPrice, avaxPriceOneDay)
   } catch (e) {
     console.log(e)
   }

@@ -40,7 +40,6 @@ export const V1_DATA_QUERY = gql`
       totalLiquidityUSD
       txCount
     }
-    // TODO: not touching this b/c this is a UniSwap specific query that is no longer used; may want to remove entirely
     exchanges(first: 200, orderBy: ethBalance, orderDirection: desc) {
       ethBalance
     }
