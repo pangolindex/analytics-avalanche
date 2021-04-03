@@ -11,7 +11,7 @@ import {
   PAIR_DATA,
 } from '../apollo/queries'
 
-import { useEthPrice, getEthPriceAtDate, getCurrentEthPrice, getEthPriceAtTimestamp } from './GlobalData'
+import { useAvaxPrice } from './GlobalData'
 
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -194,7 +194,7 @@ export default function Provider({ children }) {
   )
 }
 
-const getTopTokens = async (ethPrice, ethPriceOld) => {
+const getTopTokens = async (avaxPrice, avaxPriceOld) => {
   const utcCurrentTime = dayjs()
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix()
   const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix()
@@ -260,9 +260,9 @@ const getTopTokens = async (ethPrice, ethPriceOld) => {
 
         // calculate percentage changes and daily changes
         const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-          data.tradeVolumeUSD * ethPrice,
-          oneDayHistory?.tradeVolumeUSD * ethPrice ?? 0,
-          twoDayHistory?.tradeVolumeUSD * ethPrice ?? 0
+          data.tradeVolumeUSD,
+          oneDayHistory?.tradeVolumeUSD ?? 0,
+          twoDayHistory?.tradeVolumeUSD ?? 0
         )
         const [oneDayTxns, txnChange] = get2DayPercentChange(
           data.txCount,
@@ -270,17 +270,17 @@ const getTopTokens = async (ethPrice, ethPriceOld) => {
           twoDayHistory?.txCount ?? 0
         )
 
-        const currentLiquidityUSD = data?.totalLiquidity * ethPrice * data?.derivedETH
-        const oldLiquidityUSD = oneDayHistory?.totalLiquidity * ethPriceOld * oneDayHistory?.derivedETH
+        const currentLiquidityUSD = data?.totalLiquidity * avaxPrice * data?.derivedAVAX  // TODO: do we need to remove this * avaxPrice
+        const oldLiquidityUSD = oneDayHistory?.totalLiquidity * avaxPriceOld * oneDayHistory?.derivedAVAX  // TODO: do we need to remove this * avaxPriceOld
 
         // percent changes
         const priceChangeUSD = getPercentChange(
-          data?.derivedETH * ethPrice,
-          oneDayHistory?.derivedETH ? oneDayHistory?.derivedETH * ethPriceOld : 0
+          data?.derivedAVAX * avaxPrice,
+          oneDayHistory?.derivedAVAX ? oneDayHistory?.derivedAVAX * avaxPriceOld : 0
         )
 
         // set data
-        data.priceUSD = data?.derivedETH * ethPrice
+        data.priceUSD = data?.derivedAVAX * avaxPrice
         data.totalLiquidityUSD = currentLiquidityUSD
         data.oneDayVolumeUSD = parseFloat(oneDayVolumeUSD)
         data.volumeChangeUSD = volumeChangeUSD
@@ -292,7 +292,7 @@ const getTopTokens = async (ethPrice, ethPriceOld) => {
         // new tokens
         if (!oneDayHistory && data) {
           data.oneDayVolumeUSD = data.tradeVolumeUSD
-          data.oneDayVolumeETH = data.tradeVolume * data.derivedETH
+          data.oneDayVolumeAVAX = data.tradeVolume * data.derivedAVAX
           data.oneDayTxns = data.txCount
         }
 
@@ -325,7 +325,7 @@ const getTopTokens = async (ethPrice, ethPriceOld) => {
   }
 }
 
-const getTokenData = async (address, ethPrice, ethPriceOld) => {
+const getTokenData = async (address, avaxPrice, avaxPriceOld) => {
   const utcCurrentTime = dayjs()
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').startOf('minute').unix()
   const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').startOf('minute').unix()
@@ -377,9 +377,9 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
 
     // calculate percentage changes and daily changes
     const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-      data.tradeVolumeUSD * ethPrice,
-      oneDayData?.tradeVolumeUSD * ethPrice ?? 0,
-      twoDayData?.tradeVolumeUSD * ethPrice ?? 0
+      data.tradeVolumeUSD,
+      oneDayData?.tradeVolumeUSD ?? 0,
+      twoDayData?.tradeVolumeUSD ?? 0
     )
 
     // calculate percentage changes and daily changes
@@ -397,15 +397,15 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
     )
 
     const priceChangeUSD = getPercentChange(
-      data?.derivedETH * ethPrice,
-      parseFloat(oneDayData?.derivedETH ?? 0) * ethPriceOld
+      data?.derivedAVAX * avaxPrice,
+      parseFloat(oneDayData?.derivedAVAX ?? 0) * avaxPriceOld
     )
 
-    const currentLiquidityUSD = data?.totalLiquidity * ethPrice * data?.derivedETH
-    const oldLiquidityUSD = oneDayData?.totalLiquidity * ethPriceOld * oneDayData?.derivedETH
+    const currentLiquidityUSD = data?.totalLiquidity * avaxPrice * data?.derivedAVAX  // TODO: do we need to remove this * avaxPrice
+    const oldLiquidityUSD = oneDayData?.totalLiquidity * avaxPriceOld * oneDayData?.derivedAVAX  // TODO: do we need to remove this * avaxPriceOld
 
     // set data
-    data.priceUSD = data?.derivedETH * ethPrice
+    data.priceUSD = data?.derivedAVAX * avaxPrice
     data.totalLiquidityUSD = currentLiquidityUSD
     data.oneDayVolumeUSD = oneDayVolumeUSD
     data.volumeChangeUSD = volumeChangeUSD
@@ -420,7 +420,7 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
     // new tokens
     if (!oneDayData && data) {
       data.oneDayVolumeUSD = data.tradeVolumeUSD
-      data.oneDayVolumeETH = data.tradeVolume * data.derivedETH
+      data.oneDayVolumeAVAX = data.tradeVolume * data.derivedAVAX
       data.oneDayTxns = data.txCount
     }
 
@@ -513,42 +513,26 @@ const getIntervalTokenData = async (tokenAddress, startTime, interval = 3600, la
 
     let result = await splitQuery(PRICES_BY_BLOCK, client, [tokenAddress], blocks, 50)
 
-    // format token ETH price results
+    // format token AVAX price results
     let values = []
     for (var row in result) {
       let timestamp = row.split('t')[1]
-      let derivedETH = parseFloat(result[row]?.derivedETH)
+      let derivedAVAX = parseFloat(result[row]?.derivedAVAX)
       if (timestamp) {
         values.push({
           timestamp,
-          derivedETH,
+          derivedAVAX,
         })
       }
     }
 
-    let timestampedPrices = await getEthPriceAtTimestamp(startTime)
-
     // go through eth usd prices and assign to original values array
     let index = 0
     for (var brow in result) {
-      let startIndex = 0, endIndex = timestampedPrices.length - 1, found = -1
       let timestamp = brow.split('b')[1]
       if (timestamp) {
-        timestamp = parseInt(timestamp) * 1000
-        while (startIndex <= endIndex) {
-          let middleIndex = (startIndex + endIndex) >> 1
-          if (timestampedPrices[middleIndex][0] <= timestamp) {
-            startIndex = middleIndex + 1
-          }
-          else {
-            found = middleIndex
-            endIndex = middleIndex - 1
-          }
-        }
-        if (found >= 0) {
-          values[index].priceUSD = timestampedPrices[found][1] * values[index].derivedETH
-          index += 1
-        }
+        values[index].priceUSD = result[brow].avaxPrice * values[index].derivedAVAX
+        index += 1
       }
     }
 
@@ -630,18 +614,6 @@ const getTokenChartData = async (tokenAddress) => {
       timestamp = nextDay
     }
     data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1))
-
-    for (let j = 0; j < data.length; j++) {
-      let latestAvaxPrice
-      if (j === data.length - 1) {
-        latestAvaxPrice = await getCurrentEthPrice()
-      } else {
-        latestAvaxPrice = await getEthPriceAtDate(data[j].date)
-      }
-      data[j].priceUSD = data[j].priceUSD * latestAvaxPrice
-      data[j].totalLiquidityUSD = data[j].totalLiquidityUSD * latestAvaxPrice
-      data[j].dailyVolumeUSD = data[j].dailyVolumeUSD * latestAvaxPrice
-    }
   } catch (e) {
     console.log(e)
   }
@@ -650,30 +622,30 @@ const getTokenChartData = async (tokenAddress) => {
 
 export function Updater() {
   const [, { updateTopTokens }] = useTokenDataContext()
-  const [ethPrice, ethPriceOld] = useEthPrice()
+  const [avaxPrice, avaxPriceOld] = useAvaxPrice()
   useEffect(() => {
     async function getData() {
       // get top pairs for overview list
-      let topTokens = await getTopTokens(ethPrice, ethPriceOld)
+      let topTokens = await getTopTokens(avaxPrice, avaxPriceOld)
       topTokens && updateTopTokens(topTokens)
     }
-    ethPrice && ethPriceOld && getData()
-  }, [ethPrice, ethPriceOld, updateTopTokens])
+    avaxPrice && avaxPriceOld && getData()
+  }, [avaxPrice, avaxPriceOld, updateTopTokens])
   return null
 }
 
 export function useTokenData(tokenAddress) {
   const [state, { update }] = useTokenDataContext()
-  const [ethPrice, ethPriceOld] = useEthPrice()
+  const [avaxPrice, avaxPriceOld] = useAvaxPrice()
   const tokenData = state?.[tokenAddress]
 
   useEffect(() => {
-    if (!tokenData && ethPrice && ethPriceOld && isAddress(tokenAddress)) {
-      getTokenData(tokenAddress, ethPrice, ethPriceOld).then((data) => {
+    if (!tokenData && avaxPrice && avaxPriceOld && isAddress(tokenAddress)) {
+      getTokenData(tokenAddress, avaxPrice, avaxPriceOld).then((data) => {
         update(tokenAddress, data)
       })
     }
-  }, [ethPrice, ethPriceOld, tokenAddress, tokenData, update])
+  }, [avaxPrice, avaxPriceOld, tokenAddress, tokenData, update])
 
   return tokenData || {}
 }
@@ -698,22 +670,6 @@ export function useTokenTransactions(tokenAddress) {
     }
     checkForTxns()
   }, [tokenTxns, tokenAddress, updateTokenTxns, allPairsFormatted])
-
-  let [avaxPrice] = useEthPrice()
-
-  if (tokenTxns) {
-    let txCopy = _.cloneDeep(tokenTxns)
-    for (let i = 0; i < txCopy.mints.length; i++) {
-      txCopy.mints[i].amountUSD = (parseFloat(txCopy.mints[i].amountUSD) * avaxPrice).toString()
-    }
-    for (let i = 0; i < txCopy.burns.length; i++) {
-      txCopy.burns[i].amountUSD = (parseFloat(txCopy.burns[i].amountUSD) * avaxPrice).toString()
-    }
-    for (let i = 0; i < txCopy.swaps.length; i++) {
-      txCopy.swaps[i].amountUSD = (parseFloat(txCopy.swaps[i].amountUSD) * avaxPrice).toString()
-    }
-    return txCopy
-  }
 
   return tokenTxns || []
 }

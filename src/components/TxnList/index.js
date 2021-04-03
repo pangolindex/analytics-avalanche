@@ -16,7 +16,7 @@ import DropdownSelect from '../DropdownSelect'
 import FormattedName from '../FormattedName'
 import { TYPE } from '../../Theme'
 import { updateNameData } from '../../utils/data'
-import { useEthPrice } from '../../contexts/GlobalData'
+import { useAvaxPrice } from '../../contexts/GlobalData'
 
 dayjs.extend(utc)
 
@@ -181,7 +181,7 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
     setPage(1)
   }, [transactions])
 
-  const [ethPrice] = useEthPrice()
+  const [avaxPrice] = useAvaxPrice()
 
   // parse the txns and format for UI
   useEffect(() => {
@@ -263,7 +263,7 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
         setMaxPage(Math.floor(filtered.length / ITEMS_PER_PAGE) + extraPages)
       }
     }
-  }, [transactions, txFilter, ethPrice])
+  }, [transactions, txFilter, avaxPrice])  // TODO: I think we can remove this? I don't think it gets used
 
   useEffect(() => {
     setPage(1)
@@ -291,7 +291,7 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
           </Link>
         </DataText>
         <DataText area="value">
-          {currency === 'ETH' ? 'Ξ ' + formattedNum(item.valueETH) : formattedNum(item.amountUSD, true)}
+          {currency === 'AVAX' ? 'Ξ ' + formattedNum(item.valueAVAX) : formattedNum(item.amountUSD, true)}
         </DataText>
         {!below780 && (
           <>

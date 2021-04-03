@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { RowFixed, RowBetween } from '../Row'
 import { useMedia } from 'react-use'
-import { useGlobalData, useEthPrice } from '../../contexts/GlobalData'
+import { useGlobalData, useAvaxPrice } from '../../contexts/GlobalData'
 import { formattedNum, localNumber } from '../../utils'
 
 import { TYPE } from '../../Theme'
@@ -25,8 +25,8 @@ export default function GlobalStats() {
   const below816 = useMedia('(max-width: 816px)')
 
   const { oneDayVolumeUSD, oneDayTxns, pairCount } = useGlobalData()
-  const [ethPrice] = useEthPrice()
-  const formattedEthPrice = ethPrice ? formattedNum(ethPrice, true) : '-'
+  const [avaxPrice] = useAvaxPrice()
+  const formattedAvaxPrice = avaxPrice ? formattedNum(avaxPrice, true) : '-'
   const oneDayFees = oneDayVolumeUSD ? formattedNum(oneDayVolumeUSD * 0.003, true) : ''
 
   return (
@@ -35,7 +35,7 @@ export default function GlobalStats() {
         <RowFixed>
           {!below400 && (
             <TYPE.main mr={'1rem'} style={{ position: 'relative' }}>
-              AVAX Price: <Medium>{formattedEthPrice}</Medium>
+              AVAX Price: <Medium>{formattedAvaxPrice}</Medium>
             </TYPE.main>
           )}
 

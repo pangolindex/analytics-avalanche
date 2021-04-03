@@ -63,7 +63,7 @@ function customFilter(option, searchText) {
   return option.data.label.toString().toLowerCase().includes(searchText.toString().toLowerCase())
 }
 
-const Select = ({ options, onChange, setCapEth, capEth, tokenSelect = false, placeholder, ...rest }) => {
+const Select = ({ options, onChange, setCapAvax, capAvax, tokenSelect = false, placeholder, ...rest }) => {
   return tokenSelect ? (
     <ReactSelect
       placeholder={placeholder}
@@ -93,9 +93,9 @@ const Select = ({ options, onChange, setCapEth, capEth, tokenSelect = false, pla
                 <input
                   name="isGoing"
                   type="checkbox"
-                  checked={capEth}
+                  checked={capAvax}
                   onChange={() => {
-                    setCapEth(!capEth)
+                    setCapAvax(!capAvax)
                   }}
                 />
                 Hide Low Liquidity

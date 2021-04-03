@@ -13,23 +13,21 @@ import {
   GLOBAL_DATA,
   GLOBAL_TXNS,
   GLOBAL_CHART,
+  AVAX_PRICE,
   ALL_PAIRS,
   ALL_TOKENS,
   TOP_LPS_PER_PAIRS,
 } from '../apollo/queries'
 import weekOfYear from 'dayjs/plugin/weekOfYear'
 import { useAllPairData } from './PairData'
-import CoinGecko from 'coingecko-api'
 const UPDATE = 'UPDATE'
 const UPDATE_TXNS = 'UPDATE_TXNS'
 const UPDATE_CHART = 'UPDATE_CHART'
-const UPDATE_ETH_PRICE = 'UPDATE_ETH_PRICE'
-const ETH_PRICE_KEY = 'ETH_PRICE_KEY'
+const UPDATE_AVAX_PRICE = 'UPDATE_AVAX_PRICE'
+const AVAX_PRICE_KEY = 'AVAX_PRICE_KEY'
 const UPDATE_ALL_PAIRS_IN_UNISWAP = 'UPDATE_ALL_PAIRS_IN_UNISWAP'
 const UPDATE_ALL_TOKENS_IN_UNISWAP = 'UPDATE_ALL_TOKENS_IN_UNISWAP'
 const UPDATE_TOP_LPS = 'UPDATE_TOP_LPS'
-
-const coinGeckoClient = new CoinGecko()
 
 // format dayjs with the libraries that we need
 dayjs.extend(utc)
@@ -67,12 +65,12 @@ function reducer(state, { type, payload }) {
         },
       }
     }
-    case UPDATE_ETH_PRICE: {
-      const { ethPrice, oneDayPrice, ethPriceChange } = payload
+    case UPDATE_AVAX_PRICE: {
+      const { avaxPrice, oneDayPrice, avaxPriceChange } = payload
       return {
-        [ETH_PRICE_KEY]: ethPrice,
+        [AVAX_PRICE_KEY]: avaxPrice,
         oneDayPrice,
-        ethPriceChange,
+        avaxPriceChange,
       }
     }
 
@@ -135,13 +133,13 @@ export default function Provider({ children }) {
     })
   }, [])
 
-  const updateEthPrice = useCallback((ethPrice, oneDayPrice, ethPriceChange) => {
+  const updateAvaxPrice = useCallback((avaxPrice, oneDayPrice, avaxPriceChange) => {
     dispatch({
-      type: UPDATE_ETH_PRICE,
+      type: UPDATE_AVAX_PRICE,
       payload: {
-        ethPrice,
+        avaxPrice,
         oneDayPrice,
-        ethPriceChange,
+        avaxPriceChange,
       },
     })
   }, [])
@@ -181,7 +179,7 @@ export default function Provider({ children }) {
             update,
             updateTransactions,
             updateChart,
-            updateEthPrice,
+            updateAvaxPrice,
             updateTopLps,
             updateAllPairsInUniswap,
             updateAllTokensInUniswap,
@@ -193,7 +191,7 @@ export default function Provider({ children }) {
           updateTransactions,
           updateTopLps,
           updateChart,
-          updateEthPrice,
+          updateAvaxPrice,
           updateAllPairsInUniswap,
           updateAllTokensInUniswap,
         ]
@@ -206,12 +204,10 @@ export default function Provider({ children }) {
 
 /**
  * Gets all the global data for the overview page.
- * Needs current eth price and the old eth price to get
- * 24 hour USD changes.
- * @param {*} ethPrice
- * @param {*} oldEthPrice
+ * Needs current avax price to compute liquidity in USD.
+ * @param {*} avaxPrice
  */
-async function getGlobalData(ethPrice, oldEthPrice) {
+async function getGlobalData(avaxPrice) {
   // data for each day , historic data used for % changes
   let data = {}
   let oneDayData = {}
@@ -269,7 +265,7 @@ async function getGlobalData(ethPrice, oldEthPrice) {
       //if (data && oneDayData && twoDayData && twoWeekData) {
 
       // format the total liquidity in USD
-      data.totalLiquidityUSD = data.totalLiquidityETH * ethPrice
+      data.totalLiquidityUSD = data.totalLiquidityAVAX * avaxPrice
 
       if (oneDayData && twoDayData) {
         let [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
@@ -295,13 +291,13 @@ async function getGlobalData(ethPrice, oldEthPrice) {
         }
 
         const liquidityChangeUSD = getPercentChange(
-          data.totalLiquidityETH,
-          oneDayData.totalLiquidityETH
+          data.totalLiquidityAVAX,
+          oneDayData.totalLiquidityAVAX
         )
         data.liquidityChangeUSD = liquidityChangeUSD
 
         // add relevant fields with the calculated amounts
-        data.oneDayVolumeUSD = oneDayVolumeUSD * ethPrice
+        data.oneDayVolumeUSD = oneDayVolumeUSD
         data.volumeChangeUSD = volumeChangeUSD
         data.oneDayTxns = oneDayTxns
         data.txnChange = txnChange
@@ -320,7 +316,7 @@ async function getGlobalData(ethPrice, oldEthPrice) {
  * on main page
  * @param {*} oldestDateToFetch // start of window to fetch from
  */
-const getChartData = async (oldestDateToFetch, ethPrice) => {
+const getChartData = async (oldestDateToFetch, avaxPrice) => {
   let data = []
   let weeklyData = []
   const utcEndTime = dayjs.utc()
@@ -359,7 +355,7 @@ const getChartData = async (oldestDateToFetch, ethPrice) => {
 
       // fill in empty days ( there will be no day datas if no trades made that day )
       let timestamp = data[0].date ? data[0].date : oldestDateToFetch
-      let latestLiquidityUSD = data[0].totalLiquidityETH * ethPrice
+      let latestLiquidityUSD = data[0].totalLiquidityAVAX * avaxPrice
       let latestDayDats = data[0].mostLiquidTokens
       let index = 1
       while (timestamp < utcEndTime.unix() - oneDay) {
@@ -409,8 +405,6 @@ const getGlobalTransactions = async () => {
   let transactions = {}
 
   try {
-    let avaxPrice = await getCurrentEthPrice()
-
     let result = await client.query({
       query: GLOBAL_TXNS,
       fetchPolicy: 'cache-first',
@@ -422,19 +416,16 @@ const getGlobalTransactions = async () => {
       result.data.transactions.map((transaction) => {
         if (transaction.mints.length > 0) {
           transaction.mints.map((mint) => {
-            mint.amountUSD = (parseFloat(mint.amountUSD) * avaxPrice).toString()
             return transactions.mints.push(mint)
           })
         }
         if (transaction.burns.length > 0) {
           transaction.burns.map((burn) => {
-            burn.amountUSD = (parseFloat(burn.amountUSD) * avaxPrice).toString()
             return transactions.burns.push(burn)
           })
         }
         if (transaction.swaps.length > 0) {
           transaction.swaps.map((swap) => {
-            swap.amountUSD = (parseFloat(swap.amountUSD) * avaxPrice).toString()
             return transactions.swaps.push(swap)
           })
         }
@@ -448,80 +439,51 @@ const getGlobalTransactions = async () => {
 }
 
 /**
- * Gets the current price  of ETH, 24 hour price, and % change between them
+ * Gets the current price of AVAX, 24 hour price, and % change between them
  */
-const getEthPrice = async () => {
+const getAvaxPrice = async () => {
   const utcCurrentTime = dayjs()
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').startOf('minute').unix() * 1000
 
-  let result = await coinGeckoClient.simple.price({
-    ids: ['avalanche-2'],
-    vs_currencies: ['usd'],
-    include_24hr_change: ['true']
-  })
+  let avaxPrice = 0
+  let avaxPriceOneDay = 0
+  let priceChangeAVAX = 0
 
-  let ethPrice = result['data']['avalanche-2']['usd']
-  let priceChangeETH = result['data']['avalanche-2']['usd_24h_change']
-
-  result = await coinGeckoClient.coins.fetchMarketChart('avalanche-2', {
-    days: 1,
-    vs_currency: 'usd'
-  })
-
-  let ethPriceOneDay = 0
-
-  let i
-  let snapshot
-  for (i = 0; i < result['data']['prices'].length; i++) {
-    snapshot = result['data']['prices'][i]
-    if (snapshot[0] > utcOneDayBack) {
-      ethPriceOneDay = snapshot[1]
-      break
-    }
+  try {
+    let oneDayBlock = await getBlockFromTimestamp(utcOneDayBack)
+    let result = await client.query({
+      query: AVAX_PRICE(),
+      fetchPolicy: 'cache-first',
+    })
+    let resultOneDay = await client.query({
+      query: AVAX_PRICE(oneDayBlock),
+      fetchPolicy: 'cache-first',
+    })
+    avaxPrice = result?.data?.bundles[0]?.avaxPrice
+    avaxPriceOneDay = resultOneDay?.data?.bundles[0]?.avaxPrice
+    priceChangeAVAX = getPercentChange(currentPrice, oneDayBackPrice)
+  } catch (e) {
+    console.log(e)
   }
 
-  return [ethPrice, ethPriceOneDay, priceChangeETH]
+  return [avaxPrice, avaxPriceOneDay, priceChangeAVAX]
 }
 
-export const getEthPriceAtTimestamp = async (timestamp) => {
-  const utcCurrentTime = Date.now() / 1000
-  let diff = utcCurrentTime - timestamp
-  let days_back = Math.round(diff / (60 * 60 * 24))
+export const getAvaxPriceAtTimestamp = async (timestamp) => {
+  let avaxPriceAtTimestamp = 0
 
-  let result = await coinGeckoClient.coins.fetchMarketChart('avalanche-2', {
-    days: days_back,
-    vs_currency: 'usd'
-  })
+  try {
+    let block = await getBlockFromTimestamp(timestamp)
+    let result = await client.query({
+      query: AVAX_PRICE(block),
+      fetchPolicy: 'cache-first',
+    })
+    avaxPriceAtTimestamp = result?.data?.bundles[0]?.avaxPrice
+  } catch (e) {
+    console.log(e)
+  }
 
-  return result['data']['prices']
-}
-
-export const getCurrentEthPrice = async () => {
-  let result = await coinGeckoClient.simple.price({
-    ids: ['avalanche-2'],
-    vs_currencies: ['usd']
-  })
-
-  let ethPrice = result['data']['avalanche-2']['usd']
-
-  return ethPrice
-}
-
-/**
- * Gets the price of AVAX at a given point in time
- */
-export const getEthPriceAtDate = async (timestamp) => {
-  let datetime = new Date(timestamp * 1000) // convert to milliseconds
-
-  let dateString = datetime.getDate() + '-' + (datetime.getMonth() + 1) + '-' + datetime.getFullYear()
-
-  let result = await coinGeckoClient.coins.fetchHistory('avalanche-2', {
-    date: dateString
-  })
-
-  let ethPrice = result['data']['market_data']['current_price']['usd']
-
-  return ethPrice
+  return avaxPriceAtTimestamp
 }
 
 const PAIRS_TO_FETCH = 500
@@ -588,13 +550,13 @@ async function getAllTokensOnUniswap() {
  */
 export function useGlobalData() {
   const [state, { update, updateAllPairsInUniswap, updateAllTokensInUniswap }] = useGlobalDataContext()
-  const [ethPrice, oldEthPrice] = useEthPrice()
+  const [avaxPrice] = useAvaxPrice()
 
   const data = state?.globalData
 
   useEffect(() => {
     async function fetchData() {
-      let globalData = await getGlobalData(ethPrice, oldEthPrice)
+      let globalData = await getGlobalData(avaxPrice)
       globalData && update(globalData)
 
       let allPairs = await getAllPairsOnUniswap()
@@ -603,10 +565,10 @@ export function useGlobalData() {
       let allTokens = await getAllTokensOnUniswap()
       updateAllTokensInUniswap(allTokens)
     }
-    if (!data && ethPrice && oldEthPrice) {
+    if (!data && avaxPrice) {
       fetchData()
     }
-  }, [ethPrice, oldEthPrice, update, data, updateAllPairsInUniswap, updateAllTokensInUniswap])
+  }, [avaxPrice, update, data, updateAllPairsInUniswap, updateAllTokensInUniswap])
 
   return data || {}
 }
@@ -619,7 +581,7 @@ export function useGlobalChartData() {
   const chartDataDaily = state?.chartData?.daily
   const chartDataWeekly = state?.chartData?.weekly
 
-  const [ethPrice] = useEthPrice()
+  const [avaxPrice] = useAvaxPrice()
 
   /**
    * Keep track of oldest date fetched. Used to
@@ -641,13 +603,13 @@ export function useGlobalChartData() {
   useEffect(() => {
     async function fetchData() {
       // historical stuff for chart
-      let [newChartData, newWeeklyData] = await getChartData(oldestDateFetch, ethPrice)
+      let [newChartData, newWeeklyData] = await getChartData(oldestDateFetch, avaxPrice)
       updateChart(newChartData, newWeeklyData)
     }
     if (oldestDateFetch && !(chartDataDaily && chartDataWeekly)) {
       fetchData()
     }
-  }, [chartDataDaily, chartDataWeekly, oldestDateFetch, updateChart, ethPrice])
+  }, [chartDataDaily, chartDataWeekly, oldestDateFetch, updateChart, avaxPrice])
 
   return [chartDataDaily, chartDataWeekly]
 }
@@ -667,21 +629,21 @@ export function useGlobalTransactions() {
   return transactions
 }
 
-export function useEthPrice() {
-  const [state, { updateEthPrice }] = useGlobalDataContext()
-  const ethPrice = state?.[ETH_PRICE_KEY]
-  const ethPriceOld = state?.['oneDayPrice']
+export function useAvaxPrice() {
+  const [state, { updateAvaxPrice }] = useGlobalDataContext()
+  const avaxPrice = state?.[AVAX_PRICE_KEY]
+  const avaxPriceOld = state?.['oneDayPrice']
   useEffect(() => {
-    async function checkForEthPrice() {
-      if (!ethPrice) {
-        let [newPrice, oneDayPrice, priceChange] = await getEthPrice()
-        updateEthPrice(newPrice, oneDayPrice, priceChange)
+    async function checkForAvaxPrice() {
+      if (!avaxPrice) {
+        let [newPrice, oneDayPrice, priceChange] = await getAvaxPrice()
+        updateAvaxPrice(newPrice, oneDayPrice, priceChange)
       }
     }
-    checkForEthPrice()
-  }, [ethPrice, updateEthPrice])
+    checkForAvaxPrice()
+  }, [avaxPrice, updateAvaxPrice])
 
-  return [ethPrice, ethPriceOld]
+  return [avaxPrice, avaxPriceOld]
 }
 
 export function useAllPairsInUniswap() {
@@ -707,8 +669,6 @@ export function useTopLps() {
   let topLps = state?.topLps
 
   const allPairs = useAllPairData()
-
-  let [avaxPrice] = useEthPrice()
 
   useEffect(() => {
     async function fetchData() {
@@ -744,7 +704,7 @@ export function useTopLps() {
           return list.map((entry) => {
             const pairData = allPairs[entry.pair.id]
             const usd = (parseFloat(entry.liquidityTokenBalance) / parseFloat(pairData.totalSupply)) *
-              parseFloat(pairData.reserveUSD) * avaxPrice
+              parseFloat(pairData.reserveUSD)
             if (usd) {
               return topLps.push({
                 user: entry.user,

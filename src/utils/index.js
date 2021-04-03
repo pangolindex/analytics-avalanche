@@ -252,24 +252,24 @@ export async function getShareValueOverTime(pairAddress, timestamps) {
         reserve0: result.data[row].reserve0,
         reserve1: result.data[row].reserve1,
         reserveUSD: result.data[row].reserveUSD,
-        token0DerivedETH: result.data[row].token0.derivedETH,
-        token1DerivedETH: result.data[row].token1.derivedETH,
+        token0DerivedAVAX: result.data[row].token0.derivedAVAX,
+        token1DerivedAVAX: result.data[row].token1.derivedAVAX,
         roiUsd: values && values[0] ? sharePriceUsd / values[0]['sharePriceUsd'] : 1,
-        ethPrice: 0,
+        avaxPrice: 0,
         token0PriceUSD: 0,
         token1PriceUSD: 0,
       })
     }
   }
 
-  // add eth prices
+  // add avax prices
   let index = 0
   for (var brow in result?.data) {
     let timestamp = brow.split('b')[1]
     if (timestamp) {
-      values[index].ethPrice = result.data[brow].ethPrice
-      values[index].token0PriceUSD = result.data[brow].ethPrice * values[index].token0DerivedETH
-      values[index].token1PriceUSD = result.data[brow].ethPrice * values[index].token1DerivedETH
+      values[index].avaxPrice = result.data[brow].avaxPrice
+      values[index].token0PriceUSD = result.data[brow].avaxPrice * values[index].token0DerivedAVAX
+      values[index].token1PriceUSD = result.data[brow].avaxPrice * values[index].token1DerivedAVAX
       index += 1
     }
   }

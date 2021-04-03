@@ -11,7 +11,7 @@ import {
 import { useTimeframe, useStartTimestamp } from './Application'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import { useEthPrice, getEthPriceAtDate, getCurrentEthPrice } from './GlobalData'
+import { useAvaxPrice } from './GlobalData'
 import { getLPReturnsOnPair, getHistoricalPairReturns } from '../utils/returns'
 import { timeframeOptions } from '../constants'
 import _ from 'lodash'
@@ -186,23 +186,6 @@ export function useUserTransactions(account) {
     }
   }, [account, transactions, updateTransactions])
 
-  let [avaxPrice] = useEthPrice()
-
-  if (transactions) {
-    let txCopy = _.cloneDeep(transactions)
-    for (let i = 0; i < txCopy.mints.length; i++) {
-      txCopy.mints[i].amountUSD = (parseFloat(txCopy.mints[i].amountUSD) * avaxPrice).toString()
-    }
-    for (let i = 0; i < txCopy.burns.length; i++) {
-      txCopy.burns[i].amountUSD = (parseFloat(txCopy.burns[i].amountUSD) * avaxPrice).toString()
-    }
-    for (let i = 0; i < txCopy.swaps.length; i++) {
-      txCopy.swaps[i].amountUSD = (parseFloat(txCopy.swaps[i].amountUSD) * avaxPrice).toString()
-    }
-    //txCopy.converted = true
-    return txCopy
-  }
-
   return transactions || {}
 }
 
@@ -276,7 +259,7 @@ export function useUserPositionChart(position, account) {
 
   // get data needed for calculations
   const currentPairData = usePairData(pairAddress)
-  const [currentETHPrice] = useEthPrice()
+  const [currentAvaxPrice] = useAvaxPrice()
 
   // formatetd array to return for chart data
   const formattedHistory = state?.[account]?.[USER_PAIR_RETURNS_KEY]?.[pairAddress]
@@ -287,19 +270,9 @@ export function useUserPositionChart(position, account) {
         startDateTimestamp,
         currentPairData,
         pairSnapshots,
-        currentETHPrice
+        currentAvaxPrice
       )
-      if (fetchedData) {
-        for (let j = 0; j < fetchedData.length; j++) {
-          let latestAvaxPrice
-          if (j === fetchedData.length - 1) {
-            latestAvaxPrice = await getCurrentEthPrice()
-          } else {
-            latestAvaxPrice = await getEthPriceAtDate(fetchedData[j].date)
-          }
-          fetchedData[j].usdValue = fetchedData[j].usdValue * latestAvaxPrice
-        }
-      }
+
       updateUserPairReturns(account, pairAddress, fetchedData)
     }
     if (
@@ -310,7 +283,7 @@ export function useUserPositionChart(position, account) {
       currentPairData &&
       Object.keys(currentPairData).length > 0 &&
       pairAddress &&
-      currentETHPrice
+      currentAvaxPrice
     ) {
       fetchData()
     }
@@ -321,7 +294,7 @@ export function useUserPositionChart(position, account) {
     formattedHistory,
     pairAddress,
     currentPairData,
-    currentETHPrice,
+    currentAvaxPrice,
     updateUserPairReturns,
     position.pair.id,
   ])
@@ -458,18 +431,6 @@ export function useUserLiquidityChart(account) {
         })
       }
 
-      if (formattedHistory) {
-        for (let j = 0; j < formattedHistory.length; j++) {
-          let latestAvaxPrice
-          if (j === formattedHistory.length - 1) {
-            latestAvaxPrice = await getCurrentEthPrice()
-          } else {
-            latestAvaxPrice = await getEthPriceAtDate(formattedHistory[j].date)
-          }
-          formattedHistory[j].valueUSD = formattedHistory[j].valueUSD * latestAvaxPrice
-        }
-      }
-
       setFormattedHistory(formattedHistory)
     }
     if (history && startDateTimestamp && history.length > 0) {
@@ -487,7 +448,7 @@ export function useUserPositions(account) {
   const positions = state?.[account]?.[POSITIONS_KEY]
 
   const snapshots = useUserSnapshots(account)
-  const [ethPrice] = useEthPrice()
+  const [avaxPrice] = useAvaxPrice()
 
   useEffect(() => {
     async function fetchData(account) {
@@ -502,7 +463,7 @@ export function useUserPositions(account) {
         if (result?.data?.liquidityPositions) {
           let formattedPositions = await Promise.all(
             result?.data?.liquidityPositions.map(async (positionData) => {
-              const returnData = await getLPReturnsOnPair(account, positionData.pair, ethPrice, snapshots)
+              const returnData = await getLPReturnsOnPair(account, positionData.pair, avaxPrice, snapshots)
               return {
                 ...positionData,
                 ...returnData,
@@ -515,10 +476,10 @@ export function useUserPositions(account) {
         console.log(e)
       }
     }
-    if (!positions && account && ethPrice && snapshots) {
+    if (!positions && account && avaxPrice && snapshots) {
       fetchData(account)
     }
-  }, [account, positions, updatePositions, ethPrice, snapshots])
+  }, [account, positions, updatePositions, avaxPrice, snapshots])
 
   return positions
 }
