@@ -205,10 +205,12 @@ export default function Provider({ children }) {
 
 /**
  * Gets all the global data for the overview page.
- * Needs current avax price to compute liquidity in USD.
+ * Needs current avax price to compute liquidity in USD and
+ * oldAvaxPrice to get 24 hour USD changes.
  * @param {*} avaxPrice
+ * @param {*} oldAvaxPrice
  */
-async function getGlobalData(avaxPrice) {
+async function getGlobalData(avaxPrice, oldAvaxPrice) {
   // data for each day , historic data used for % changes
   let data = {}
   let oneDayData = {}
@@ -292,8 +294,8 @@ async function getGlobalData(avaxPrice) {
         }
 
         const liquidityChangeUSD = getPercentChange(
-          data.totalLiquidityAVAX,
-          oneDayData.totalLiquidityAVAX
+          data.totalLiquidityAVAX * avaxPrice,
+          oneDayData.totalLiquidityAVAX * oldAvaxPrice
         )
         data.liquidityChangeUSD = liquidityChangeUSD
 
@@ -551,13 +553,13 @@ async function getAllTokensOnUniswap() {
  */
 export function useGlobalData() {
   const [state, { update, updateAllPairsInUniswap, updateAllTokensInUniswap }] = useGlobalDataContext()
-  const [avaxPrice] = useAvaxPrice()
+  const [avaxPrice, oldAvaxPrice] = useAvaxPrice()
 
   const data = state?.globalData
 
   useEffect(() => {
     async function fetchData() {
-      let globalData = await getGlobalData(avaxPrice)
+      let globalData = await getGlobalData(avaxPrice, oldAvaxPrice)
       globalData && update(globalData)
 
       let allPairs = await getAllPairsOnUniswap()
@@ -569,7 +571,7 @@ export function useGlobalData() {
     if (!data && avaxPrice) {
       fetchData()
     }
-  }, [avaxPrice, update, data, updateAllPairsInUniswap, updateAllTokensInUniswap])
+  }, [avaxPrice, oldAvaxPrice, update, data, updateAllPairsInUniswap, updateAllTokensInUniswap])
 
   return data || {}
 }

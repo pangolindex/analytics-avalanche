@@ -58,7 +58,7 @@ const TradingViewChart = ({
   const formattedData = data?.map((entry) => {
     return {
       time: dayjs.unix(entry.date).utc().format('YYYY-MM-DD'),
-      value: parseFloat(entry[field]) * avaxPrice,  // TODO: is entry[field] already in USD?
+      value: parseFloat(entry[field]),
     }
   })
 
