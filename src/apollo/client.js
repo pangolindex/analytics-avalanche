@@ -4,7 +4,7 @@ import { HttpLink } from 'apollo-link-http'
 
 export const client = new ApolloClient({
   link: new HttpLink({
-    uri: 'https://graph-node.avax.network/subgraphs/name/dasconnor/pangolindex',
+    uri: 'https://api.thegraph.com/subgraphs/name/dasconnor/pangolin-dex',
   }),
   cache: new InMemoryCache(),
   shouldBatch: true,
@@ -28,7 +28,7 @@ export const stakingClient = new ApolloClient({
 
 export const blockClient = new ApolloClient({
   link: new HttpLink({
-    uri: 'https://graph-node.avax.network/subgraphs/name/dasconnor/avalancheblocks',
+    uri: 'https://api.thegraph.com/subgraphs/name/dasconnor/avalanche-blocks',
   }),
   cache: new InMemoryCache(),
 })
