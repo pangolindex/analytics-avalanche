@@ -450,38 +450,58 @@ const getGlobalTransactions = async () => {
 /**
  * Gets the current price  of ETH, 24 hour price, and % change between them
  */
+
+const collapsing = {
+    active: true,
+    result: null,
+    collapseFor: 1000,
+    timestamp: null
+};
+
 const getEthPrice = async () => {
-  const utcCurrentTime = dayjs()
-  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').startOf('minute').unix() * 1000
-
-  let result = await coinGeckoClient.simple.price({
-    ids: ['avalanche-2'],
-    vs_currencies: ['usd'],
-    include_24hr_change: ['true']
-  })
-
-  let ethPrice = result['data']['avalanche-2']['usd']
-  let priceChangeETH = result['data']['avalanche-2']['usd_24h_change']
-
-  result = await coinGeckoClient.coins.fetchMarketChart('avalanche-2', {
-    days: 1,
-    vs_currency: 'usd'
-  })
-
-  let ethPriceOneDay = 0
-
-  let i
-  let snapshot
-  for (i = 0; i < result['data']['prices'].length; i++) {
-    snapshot = result['data']['prices'][i]
-    if (snapshot[0] > utcOneDayBack) {
-      ethPriceOneDay = snapshot[1]
-      break
-    }
+  if (!collapsing.active || !collapsing.result || !collapsing.timestamp || new Date().getTime() - collapsing.collapseFor > collapsing.timestamp ) {  
+    collapsing.result = new Promise(resolve => {
+      console.log('lead way:', new Date().getTime() - collapsing.collapseFor, collapsing.timestamp )
+      collapsing.timestamp = new Date().getTime()
+      const utcCurrentTime = dayjs()
+      const utcOneDayBack = utcCurrentTime.subtract(1, 'day').startOf('minute').unix() * 1000
+    
+      return Promise.all([coinGeckoClient.simple.price({
+        ids: ['avalanche-2'],
+        vs_currencies: ['usd'],
+        include_24hr_change: ['true']
+      }),coinGeckoClient.coins.fetchMarketChart('avalanche-2', {
+        days: 1,
+        vs_currency: 'usd'
+      })]).then(results => {
+        let ethPrice = results[0]['data']['avalanche-2']['usd']
+        let priceChangeETH = results[0]['data']['avalanche-2']['usd_24h_change']
+        
+        let ethPriceOneDay = 0
+    
+        let i
+        let snapshot
+        for (i = 0; i < results[1]['data']['prices'].length; i++) {
+          snapshot = results[1]['data']['prices'][i]
+          if (snapshot[0] > utcOneDayBack) {
+            ethPriceOneDay = snapshot[1]
+            break
+          }
+        }
+        console.log('answering')
+        resolve([ethPrice, ethPriceOneDay, priceChangeETH])
+      })
+    })    
+  } else {
+    console.log('hmmm:', new Date().getTime() - collapsing.collapseFor - collapsing.timestamp )
   }
-
-  return [ethPrice, ethPriceOneDay, priceChangeETH]
+  return collapsing.result
 }
+
+setTimeout( () => {
+  console.log('get eth');
+  getEthPrice();
+}, 2000)
 
 export const getEthPriceAtTimestamp = async (timestamp) => {
   const utcCurrentTime = Date.now() / 1000
