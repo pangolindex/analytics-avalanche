@@ -461,7 +461,7 @@ const collapsing = {
 const getEthPrice = async () => {
   if (!collapsing.active || !collapsing.result || !collapsing.timestamp || new Date().getTime() - collapsing.collapseFor > collapsing.timestamp ) {  
     collapsing.result = new Promise(resolve => {
-      console.log('lead way:', new Date().getTime() - collapsing.collapseFor, collapsing.timestamp )
+      console.log('fresh coingecko request')
       collapsing.timestamp = new Date().getTime()
       const utcCurrentTime = dayjs()
       const utcOneDayBack = utcCurrentTime.subtract(1, 'day').startOf('minute').unix() * 1000
