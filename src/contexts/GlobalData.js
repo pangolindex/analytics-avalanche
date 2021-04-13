@@ -454,7 +454,7 @@ const getGlobalTransactions = async () => {
 const collapsing = {
     active: true,
     result: null,
-    collapseFor: 1000,
+    collapseFor: 5000, // collapse for 1 sec saves all lot of calls.
     timestamp: null
 };
 
@@ -488,20 +488,15 @@ const getEthPrice = async () => {
             break
           }
         }
-        console.log('answering')
+        console.log('answering collapsed requests')
         resolve([ethPrice, ethPriceOneDay, priceChangeETH])
       })
     })    
   } else {
-    console.log('hmmm:', new Date().getTime() - collapsing.collapseFor - collapsing.timestamp )
+    console.log('returning collapsed request')
   }
   return collapsing.result
 }
-
-setTimeout( () => {
-  console.log('get eth');
-  getEthPrice();
-}, 2000)
 
 export const getEthPriceAtTimestamp = async (timestamp) => {
   const utcCurrentTime = Date.now() / 1000
