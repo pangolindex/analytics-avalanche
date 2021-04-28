@@ -443,7 +443,7 @@ const getGlobalTransactions = async () => {
  */
 const getAvaxPrice = async () => {
   const utcCurrentTime = dayjs()
-  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').startOf('minute').unix() * 1000
+  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').startOf('minute').unix()
 
   let avaxPrice = 0
   let avaxPriceOneDay = 0
