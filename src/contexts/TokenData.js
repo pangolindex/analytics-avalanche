@@ -270,8 +270,8 @@ const getTopTokens = async (avaxPrice, avaxPriceOld) => {
           twoDayHistory?.txCount ?? 0
         )
 
-        const currentLiquidityUSD = data?.totalLiquidity * avaxPrice * data?.derivedAVAX
-        const oldLiquidityUSD = oneDayHistory?.totalLiquidity * avaxPriceOld * oneDayHistory?.derivedAVAX
+        const currentLiquidityUSD = data?.totalLiquidityUSD
+        const oldLiquidityUSD = oneDayHistory?.totalLiquidityUSD
 
         // percent changes
         const priceChangeUSD = getPercentChange(
@@ -401,8 +401,8 @@ const getTokenData = async (address, avaxPrice, avaxPriceOld) => {
       parseFloat(oneDayData?.derivedAVAX ?? 0) * avaxPriceOld
     )
 
-    const currentLiquidityUSD = data?.totalLiquidity * avaxPrice * data?.derivedAVAX
-    const oldLiquidityUSD = oneDayData?.totalLiquidity * avaxPriceOld * oneDayData?.derivedAVAX
+    const currentLiquidityUSD = data?.totalLiquidityUSD
+    const oldLiquidityUSD = oneDayData?.totalLiquidityUSD
 
     // set data
     data.priceUSD = data?.derivedAVAX * avaxPrice

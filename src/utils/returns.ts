@@ -111,12 +111,12 @@ export function getMetricsForPositionWindow(positionT0: Position, positionT1: Po
   // calculate ownership at ends of window, for end of window we need original LP token balance / new total supply
   // eslint-disable-next-line eqeqeq
   const t0Ownership =
-      positionT0.liquidityTokenTotalSupply != 0
+      positionT0.liquidityTokenTotalSupply !== 0
           ? positionT0.liquidityTokenBalance / positionT0.liquidityTokenTotalSupply
           : 0
   // eslint-disable-next-line eqeqeq
   const t1Ownership =
-      positionT1.liquidityTokenTotalSupply != 0
+      positionT1.liquidityTokenTotalSupply !== 0
           ? positionT0.liquidityTokenBalance / positionT1.liquidityTokenTotalSupply
           : 0
 

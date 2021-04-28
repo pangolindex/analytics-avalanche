@@ -267,9 +267,6 @@ async function getGlobalData(avaxPrice, oldAvaxPrice) {
     if (data) {
       //if (data && oneDayData && twoDayData && twoWeekData) {
 
-      // format the total liquidity in USD
-      data.totalLiquidityUSD = data.totalLiquidityAVAX * avaxPrice
-
       if (oneDayData && twoDayData) {
         let [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
           data.totalVolumeUSD,
@@ -294,8 +291,8 @@ async function getGlobalData(avaxPrice, oldAvaxPrice) {
         }
 
         const liquidityChangeUSD = getPercentChange(
-          data.totalLiquidityAVAX * avaxPrice,
-          oneDayData.totalLiquidityAVAX * oldAvaxPrice
+          data.totalLiquidityUSD,
+          oneDayData.totalLiquidityUSD
         )
         data.liquidityChangeUSD = liquidityChangeUSD
 
@@ -358,7 +355,7 @@ const getChartData = async (oldestDateToFetch, avaxPrice) => {
 
       // fill in empty days ( there will be no day datas if no trades made that day )
       let timestamp = data[0].date ? data[0].date : oldestDateToFetch
-      let latestLiquidityUSD = data[0].totalLiquidityAVAX * avaxPrice
+      let latestLiquidityUSD = data[0].totalLiquidityUSD
       let latestDayDats = data[0].mostLiquidTokens
       let index = 1
       while (timestamp < utcEndTime.unix() - oneDay) {
