@@ -310,6 +310,8 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
             <Link color={color} external href={'https://cchain.explorer.avax.network/address/' + item.account}>
               {item.account && item.account.slice(0, 6) + '...' + item.account.slice(38, 42)}
             </Link>
+            <Link color={color} to={'#/account/' + item.account}>
+            </Link>       
           </DataText>
         )}
         <DataText area="time">{formatTime(item.timestamp)}</DataText>

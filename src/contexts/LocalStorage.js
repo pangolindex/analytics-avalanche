@@ -6,13 +6,14 @@ const VERSION = 'VERSION'
 const CURRENT_VERSION = 0
 const LAST_SAVED = 'LAST_SAVED'
 const DISMISSED_PATHS = 'DISMISSED_PATHS'
+const PREFERENCES = 'PREFERENCES'
 const SAVED_ACCOUNTS = 'SAVED_ACCOUNTS'
 const SAVED_TOKENS = 'SAVED_TOKENS'
 const SAVED_PAIRS = 'SAVED_PAIRS'
 
 const DARK_MODE = 'DARK_MODE'
 
-const UPDATABLE_KEYS = [DARK_MODE, DISMISSED_PATHS, SAVED_ACCOUNTS, SAVED_PAIRS, SAVED_TOKENS]
+const UPDATABLE_KEYS = [DARK_MODE, DISMISSED_PATHS, PREFERENCES, SAVED_ACCOUNTS, SAVED_PAIRS, SAVED_TOKENS]
 
 const UPDATE_KEY = 'UPDATE_KEY'
 
@@ -46,6 +47,7 @@ function init() {
     [VERSION]: CURRENT_VERSION,
     [DARK_MODE]: true,
     [DISMISSED_PATHS]: {},
+    [PREFERENCES]: {},
     [SAVED_ACCOUNTS]: [],
     [SAVED_TOKENS]: {},
     [SAVED_PAIRS]: {},
@@ -86,6 +88,29 @@ export function Updater() {
   })
 
   return null
+}
+
+export function usePreferences() {
+  const [state, { updateKey }] = useLocalStorageContext()
+  const preferences = state?.[PREFERENCES]
+
+  function togglePreference(key) {
+    let newList = state?.[PREFERENCES]
+    if ( !newList[key] ) {
+      newList[key] = false
+    } else {
+      newList[key] = !newList[key]
+    }
+    updateKey(PREFERENCES, newList)
+  }
+  function clearPreferences() {
+    let newList = state?.[PREFERENCES]
+    Object.keys(newList).forEach(key => {
+      newList[key] = true
+    })
+    updateKey(PREFERENCES, newList)
+  }  
+  return [preferences, togglePreference, clearPreferences]
 }
 
 export function useDarkModeManager() {

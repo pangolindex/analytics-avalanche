@@ -11,6 +11,7 @@ import { isAddress } from './utils'
 import AccountPage from './pages/AccountPage'
 import AllTokensPage from './pages/AllTokensPage'
 import AllPairsPage from './pages/AllPairsPage'
+import AllTransactions from './pages/AllTransactions'
 import PinnedData from './components/PinnedData'
 
 import SideNav from './components/SideNav'
@@ -162,6 +163,23 @@ function App() {
               <Route
                 exacts
                 strict
+                path="/transaction/:transactionHash"
+                render={({ match }) => {
+                  if (isAddress(match.params.accountAddress.toLowerCase())) {
+                    return (
+                      <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
+                        <AccountPage account={match.params.accountAddress.toLowerCase()} />
+                      </LayoutWrapper>
+                    )
+                  } else {
+                    return <Redirect to="/home" />
+                  }
+                }}
+              />
+
+              <Route
+                exacts
+                strict
                 path="/account/:accountAddress"
                 render={({ match }) => {
                   if (isAddress(match.params.accountAddress.toLowerCase())) {
@@ -191,6 +209,12 @@ function App() {
               <Route path="/pairs">
                 <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
                   <AllPairsPage />
+                </LayoutWrapper>
+              </Route>
+
+              <Route path="/transactions">
+                <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
+                  <AllTransactions />
                 </LayoutWrapper>
               </Route>
 

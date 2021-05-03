@@ -92,6 +92,7 @@ const GlobalChart = ({ display }) => {
             field="totalLiquidityUSD"
             width={width}
             type={CHART_TYPES.AREA}
+            
           />
         </ResponsiveContainer>
       )}
@@ -105,7 +106,7 @@ const GlobalChart = ({ display }) => {
             field={volumeWindow === VOLUME_WINDOW.WEEKLY ? 'weeklyVolumeUSD' : 'dailyVolumeUSD'}
             width={width}
             type={CHART_TYPES.BAR}
-            useWeekly={volumeWindow === VOLUME_WINDOW.WEEKLY}
+            useWeekly={volumeWindow === VOLUME_WINDOW.WEEKLY}            
           />
         </ResponsiveContainer>
       )}

@@ -4,13 +4,17 @@ import styled from 'styled-components'
 import { RowBetween, RowFixed } from '../Row'
 import { AutoColumn } from '../Column'
 import { TYPE } from '../../Theme'
-import { useSavedTokens, useSavedPairs } from '../../contexts/LocalStorage'
+import { useSavedTokens, useSavedPairs, usePreferences } from '../../contexts/LocalStorage'
 import { Hover } from '..'
 import TokenLogo from '../TokenLogo'
 import AccountSearch from '../AccountSearch'
 import { Bookmark, ChevronRight, X } from 'react-feather'
 import { ButtonFaded } from '../ButtonStyled'
 import FormattedName from '../FormattedName'
+
+const globalPreferences = {
+  'chartScroll': 'Disable to prevent the charting library from listening to scroll events.'
+}
 
 const RightColumn = styled.div`
   position: fixed;
@@ -48,9 +52,10 @@ const StyledIcon = styled.div`
 `
 
 function PinnedData({ history, open, setSavedOpen }) {
+  
   const [savedPairs, , removePair] = useSavedPairs()
+  const [preferences, togglePreference] = usePreferences()
   const [savedTokens, , removeToken] = useSavedTokens()
-
   return !open ? (
     <RightColumn open={open} onClick={() => setSavedOpen(true)}>
       <SavedButton open={open}>
@@ -72,8 +77,18 @@ function PinnedData({ history, open, setSavedOpen }) {
           <ChevronRight />
         </StyledIcon>
       </SavedButton>
-      <AccountSearch small={true} />
+      <AccountSearch small={true} />      
       <AutoColumn gap="40px" style={{ marginTop: '2rem' }}>
+        <AutoColumn gap={'12px'}>
+            <TYPE.main>Preferences</TYPE.main>
+            {
+              
+              Object.keys(globalPreferences).map((key) => {
+                const enabled = !Object.keys(preferences).includes(key) || preferences[key] === true;
+                return (<TYPE.light key={key}><span className="tooltip" tooltip={globalPreferences[key]}>{key}</span>: <input type="checkbox" checked={enabled} onChange={() => togglePreference(key)}/></TYPE.light>)
+              })
+            }
+        </AutoColumn>        
         <AutoColumn gap={'12px'}>
           <TYPE.main>Pinned Pairs</TYPE.main>
           {Object.keys(savedPairs).filter((key) => {
@@ -142,8 +157,8 @@ function PinnedData({ history, open, setSavedOpen }) {
           ) : (
             <TYPE.light>Pinned tokens will appear here.</TYPE.light>
           )}
-        </ScrollableDiv>
-      </AutoColumn>
+        </ScrollableDiv>        
+      </AutoColumn>            
     </RightColumn>
   )
 }

@@ -178,6 +178,7 @@ export function useLatestBlocks() {
         const res = await healthClient.query({
           query: SUBGRAPH_HEALTH,
         })
+        console.log('res:', res)
         const syncedBlock = res.data.indexingStatusForCurrentVersion.chains[0].latestBlock.number
         const headBlock = res.data.indexingStatusForCurrentVersion.chains[0].chainHeadBlock.number
         if (syncedBlock && headBlock) {

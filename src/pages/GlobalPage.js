@@ -142,12 +142,12 @@ function GlobalPage() {
           <Panel style={{ marginTop: '6px', padding: '1.125rem 0 ' }}>
             <PairList pairs={allPairs} />
           </Panel>
-
-          <span>
-            <TYPE.main fontSize={'1.125rem'} style={{ marginTop: '2rem' }}>
-              Transactions
-            </TYPE.main>
-          </span>
+          <ListOptions gap="10px" style={{ marginTop: '2rem', marginBottom: '.5rem' }}>
+            <RowBetween>
+              <TYPE.main fontSize={'1rem'}>Transactions</TYPE.main>
+              <CustomLink to={'/transactions'}>See All</CustomLink>
+            </RowBetween>
+          </ListOptions>          
           <Panel style={{ margin: '1rem 0' }}>
             <TxnList transactions={transactions} />
           </Panel>

@@ -9,6 +9,7 @@ import { Play } from 'react-feather'
 import { useDarkModeManager } from '../../contexts/LocalStorage'
 import { IconWrapper } from '..'
 import { useEthPrice } from '../../contexts/GlobalData'
+import { usePreferences } from '../../contexts/LocalStorage'
 
 dayjs.extend(utc)
 
@@ -43,6 +44,8 @@ const TradingViewChart = ({
 
   let ethPrice = useEthPrice()[0]
 
+  const [preferences] = usePreferences()
+
   useEffect(() => {
     if (data !== dataPrev && chartCreated && type === CHART_TYPES.BAR) {
       // remove the tooltip element
@@ -52,7 +55,7 @@ const TradingViewChart = ({
       chartCreated.resize(0, 0)
       setChartCreated()
     }
-  }, [chartCreated, data, dataPrev, type])
+  }, [chartCreated, data, dataPrev, type, preferences])
 
   // parese the data and format for tardingview consumption
   const formattedData = data?.map((entry) => {
@@ -79,7 +82,7 @@ const TradingViewChart = ({
       chartCreated.resize(0, 0)
       setChartCreated()
     }
-  }, [chartCreated, darkMode, previousTheme, type])
+  }, [chartCreated, darkMode, previousTheme, type, preferences])
 
   // if no chart created yet, create one with options and add to DOM manually
   useEffect(() => {
@@ -127,6 +130,8 @@ const TradingViewChart = ({
         localization: {
           priceFormatter: (val) => formattedNum(val, true),
         },
+        handleScroll: preferences['chartScroll'] === null ? true : preferences['chartScroll'],
+        handleScale: preferences['chartScroll'] === null ? true : preferences['chartScroll']
       })
 
       var series =

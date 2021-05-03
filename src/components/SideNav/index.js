@@ -7,7 +7,7 @@ import { useMedia } from 'react-use'
 import { transparentize } from 'polished'
 import { TYPE } from '../../Theme'
 import { withRouter } from 'react-router-dom'
-import { TrendingUp, List, PieChart, Disc } from 'react-feather'
+import { TrendingUp, List, PieChart, Disc, Activity } from 'react-feather'
 import Link from '../Link'
 import { useSessionStart } from '../../contexts/Application'
 import { useDarkModeManager } from '../../contexts/LocalStorage'
@@ -146,8 +146,19 @@ function SideNav({ history }) {
                     Pairs
                   </Option>
                 </BasicLink>
-
-                <BasicLink to="/accounts">
+                <BasicLink to="/transactions">
+                  <Option
+                    activeText={
+                      (history.location.pathname.split('/')[1] === 'transactions' ||
+                        history.location.pathname.split('/')[1] === 'transaction') ??
+                      undefined
+                    }
+                  >
+                    <Activity size={20} style={{ marginRight: '.75rem' }} />
+                    Transactions
+                  </Option>
+                </BasicLink>
+                <BasicLink to="/transactions">
                   <Option
                     activeText={
                       (history.location.pathname.split('/')[1] === 'accounts' ||
