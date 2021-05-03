@@ -320,13 +320,14 @@ async function getGlobalData(ethPrice, oldEthPrice) {
  * on main page
  * @param {*} oldestDateToFetch // start of window to fetch from
  */
-const getChartData = async (oldestDateToFetch, ethPrice) => {
+//const getChartData = async (oldestDateToFetch, ethPrice) => {
+const getChartData = async (oldestDateToFetch) => {
   let data = []
   let weeklyData = []
   const utcEndTime = dayjs.utc()
   let skip = 0
   let allFound = false
-
+  console.log('oldestDateToFetch:', oldestDateToFetch)
   try {
     while (!allFound) {
       let result = await client.query({
@@ -359,7 +360,8 @@ const getChartData = async (oldestDateToFetch, ethPrice) => {
 
       // fill in empty days ( there will be no day datas if no trades made that day )
       let timestamp = data[0].date ? data[0].date : oldestDateToFetch
-      let latestLiquidityUSD = data[0].totalLiquidityETH * ethPrice
+      //let latestLiquidityUSD = data[0].totalLiquidityETH * ethPrice
+      let latestLiquidityUSD = data[0].totalLiquidityETH
       let latestDayDats = data[0].mostLiquidTokens
       let index = 1
       while (timestamp < utcEndTime.unix() - oneDay) {
@@ -619,7 +621,7 @@ export function useGlobalChartData() {
   const chartDataDaily = state?.chartData?.daily
   const chartDataWeekly = state?.chartData?.weekly
 
-  const [ethPrice] = useEthPrice()
+  //const [ethPrice] = useEthPrice()
 
   /**
    * Keep track of oldest date fetched. Used to
@@ -641,13 +643,14 @@ export function useGlobalChartData() {
   useEffect(() => {
     async function fetchData() {
       // historical stuff for chart
-      let [newChartData, newWeeklyData] = await getChartData(oldestDateFetch, ethPrice)
+      //let [newChartData, newWeeklyData] = await getChartData(oldestDateFetch, ethPrice)
+      let [newChartData, newWeeklyData] = await getChartData(oldestDateFetch)
       updateChart(newChartData, newWeeklyData)
     }
     if (oldestDateFetch && !(chartDataDaily && chartDataWeekly)) {
       fetchData()
     }
-  }, [chartDataDaily, chartDataWeekly, oldestDateFetch, updateChart, ethPrice])
+  }, [chartDataDaily, chartDataWeekly, oldestDateFetch, updateChart])
 
   return [chartDataDaily, chartDataWeekly]
 }

@@ -29,6 +29,7 @@ const GlobalChart = ({ display }) => {
 
   // global historical data
   const [dailyData, weeklyData] = useGlobalChartData()
+
   const {
     totalLiquidityUSD,
     oneDayVolumeUSD,

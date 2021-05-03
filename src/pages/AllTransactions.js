@@ -3,7 +3,7 @@ import 'feather-icons'
 
 import { TYPE } from '../Theme'
 import Panel from '../components/Panel'
-import { useGlobalData, useGlobalTransactions } from '../contexts/GlobalData'
+import { useGlobalTransactions } from '../contexts/GlobalData'
 import TxnList from '../components/TxnList'
 import { PageWrapper, FullWrapper } from '../components'
 import { RowBetween } from '../components/Row'

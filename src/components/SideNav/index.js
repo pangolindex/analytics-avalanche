@@ -158,7 +158,7 @@ function SideNav({ history }) {
                     Transactions
                   </Option>
                 </BasicLink>
-                <BasicLink to="/transactions">
+                <BasicLink to="/accounts">
                   <Option
                     activeText={
                       (history.location.pathname.split('/')[1] === 'accounts' ||

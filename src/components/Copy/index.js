@@ -7,8 +7,7 @@ import { StyledIcon } from '..'
 const CopyIcon = styled.div`
   color: #aeaeae;
   flex-shrink: 0;
-  margin-right: 1rem;
-  margin-left: 0.5rem;
+  margin: 0 0.5rem 1rem 0.5rem;
   text-decoration: none;
   :hover,
   :active,

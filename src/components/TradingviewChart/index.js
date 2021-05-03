@@ -25,6 +25,9 @@ const Wrapper = styled.div`
 // constant height for charts
 const HEIGHT = 300
 
+    
+
+
 const TradingViewChart = ({
   type = CHART_TYPES.BAR,
   data,
@@ -38,13 +41,13 @@ const TradingViewChart = ({
   // reference for DOM element to create with chart
   const ref = useRef()
 
+  const [preferences] = usePreferences()
+
   // pointer to the chart object
   const [chartCreated, setChartCreated] = useState(false)
   const dataPrev = usePrevious(data)
 
-  let ethPrice = useEthPrice()[0]
-
-  const [preferences] = usePreferences()
+  //let ethPrice = useEthPrice()[0]
 
   useEffect(() => {
     if (data !== dataPrev && chartCreated && type === CHART_TYPES.BAR) {
@@ -55,13 +58,14 @@ const TradingViewChart = ({
       chartCreated.resize(0, 0)
       setChartCreated()
     }
-  }, [chartCreated, data, dataPrev, type, preferences])
+  }, [chartCreated, data, dataPrev, type])
 
   // parese the data and format for tardingview consumption
   const formattedData = data?.map((entry) => {
     return {
       time: dayjs.unix(entry.date).utc().format('YYYY-MM-DD'),
-      value: parseFloat(entry[field]) * ethPrice,
+      //value: parseFloat(entry[field]) * ethPrice,
+      value: parseFloat(entry[field]),
     }
   })
 
@@ -82,10 +86,13 @@ const TradingViewChart = ({
       chartCreated.resize(0, 0)
       setChartCreated()
     }
-  }, [chartCreated, darkMode, previousTheme, type, preferences])
+  }, [chartCreated, darkMode, previousTheme, type])
 
   // if no chart created yet, create one with options and add to DOM manually
   useEffect(() => {
+
+    
+    
     if (!chartCreated && formattedData) {
       var chart = createChart(ref.current, {
         width: width,

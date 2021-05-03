@@ -17,6 +17,7 @@ import FormattedName from '../FormattedName'
 import { TYPE } from '../../Theme'
 import { updateNameData } from '../../utils/data'
 import { useEthPrice } from '../../contexts/GlobalData'
+import CopyHelper from '../../components/Copy'
 
 dayjs.extend(utc)
 
@@ -110,6 +111,10 @@ const DataText = styled(Flex)`
     font-size: 1em;
   }
 
+  & > a {
+    padding: 0 2px 0 2px;
+  }
+
   @media screen and (max-width: 40em) {
     font-size: 0.85rem;
   }
@@ -163,7 +168,7 @@ function getTransactionType(event, symbol0, symbol1) {
 }
 
 // @TODO rework into virtualized list
-function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
+function TxnList({transactions, symbol0Override, symbol1Override, color }) {
   // page state
   const [page, setPage] = useState(1)
   const [maxPage, setMaxPage] = useState(1)
@@ -185,6 +190,7 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
 
   // parse the txns and format for UI
   useEffect(() => {
+
     if (transactions && transactions.mints && transactions.burns && transactions.swaps) {
       let newTxns = []
       if (transactions.mints.length > 0) {
@@ -282,6 +288,8 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
   const below1080 = useMedia('(max-width: 1080px)')
   const below780 = useMedia('(max-width: 780px)')
 
+  const isAccountView = window.location.hash.split('/')[1] === 'account'
+
   const ListItem = ({ item }) => {
     return (
       <DashGrid style={{ height: '48px' }}>
@@ -307,11 +315,16 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
         )}
         {!below1080 && (
           <DataText area="account">
+            {item.account && item.account.slice(0, 6) + '…' + item.account.slice(38, 42)}
             <Link color={color} external href={'https://cchain.explorer.avax.network/address/' + item.account}>
-              {item.account && item.account.slice(0, 6) + '...' + item.account.slice(38, 42)}
-            </Link>
-            <Link color={color} to={'#/account/' + item.account}>
+              <img alt='Avalanche Explorer' src="https://cchain.explorer.avax.network/images/favicon-32x32.png" height="24" width="24"/>
+            </Link>            
+            {!isAccountView && (<Link 
+            color={color} href={'#/account/' + item.account}>
+              <img alt='Pangolin Exchange' src="/favicon.png" height="24" width="24"/>
             </Link>       
+            )}
+            <CopyHelper style={{margin: 0}} toCopy={item.account} />
           </DataText>
         )}
         <DataText area="time">{formatTime(item.timestamp)}</DataText>
