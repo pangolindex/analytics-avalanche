@@ -444,6 +444,22 @@ export const PAIR_DAY_DATA_BULK = (pairs, startTimestamp) => {
   return gql(queryString)
 }
 
+export const HISTORICAL_PRICE = gql`
+  query pangolineDayDatas {
+    pairDayDatas(where: { pairAddress: "0x9ee0a4e21bd333a6bb2ab298194320b8daa26516"}) {
+      id,
+      reserve0
+      token0 {
+        symbol      
+      },
+      reserve1
+      token1 {
+        symbol
+      }
+    }
+  }
+`
+
 export const GLOBAL_CHART = gql`
   query pangolinDayDatas($startTime: Int!, $skip: Int!) {
     pangolinDayDatas(first: 1000, skip: $skip, where: { date_gt: $startTime }, orderBy: date, orderDirection: asc) {
