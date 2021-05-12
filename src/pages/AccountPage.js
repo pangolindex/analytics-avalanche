@@ -10,7 +10,7 @@ import UserChart from '../components/UserChart'
 import PairReturnsChart from '../components/PairReturnsChart'
 import PositionList from '../components/PositionList'
 import { TYPE } from '../Theme'
-import { ButtonDropdown } from '../components/ButtonStyled'
+import { ButtonDropdown, ButtonLight } from '../components/ButtonStyled'
 import { PageWrapper, ContentWrapper, StyledIcon } from '../components'
 import DoubleTokenLogo from '../components/DoubleLogo'
 import { Bookmark, Activity } from 'react-feather'
@@ -20,6 +20,7 @@ import { BasicLink } from '../components/Link'
 import { useMedia } from 'react-use'
 import Search from '../components/Search'
 import { useEthPrice } from '../contexts/GlobalData'
+import Markr from '../assets/markr.png'
 
 const AccountWrapper = styled.div`
   background-color: rgba(255, 255, 255, 0.2);
@@ -169,7 +170,15 @@ function AccountPage({ account }) {
         <Header>
           <RowBetween>
             <span>
-              <TYPE.header fontSize={24}>{account?.slice(0, 6) + '...' + account?.slice(38, 42)}</TYPE.header>
+              <RowFixed gap="8px" justify="flex-start">
+                <TYPE.header fontSize={24}>{account?.slice(0, 6) + '...' + account?.slice(38, 42)}</TYPE.header>
+                <Link external href={'https://markr.io/#/wallet?address=' + account} style={{ marginLeft: '.5rem' }}>
+                  <ButtonLight style={{ padding: '4px 6px', borderRadius: '4px', display: 'flex', alignItems: 'center' }}>
+                    Track your portfolio on
+                    <img style={{ width: '16px', marginLeft: '.5rem' }} src={Markr} alt="Markr.io" />
+                  </ButtonLight >
+                </Link>
+              </RowFixed>
               <Link lineHeight={'145.23%'} href={'https://cchain.explorer.avax.network/address/' + account} target="_blank">
                 <TYPE.main fontSize={14}>View on the C-Chain Explorer</TYPE.main>
               </Link>
