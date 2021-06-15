@@ -220,7 +220,7 @@ function TopTokenList({ tokens, itemMax = 10 }) {
             fontWeight="500"
             onClick={(e) => {
               setSortedColumn(SORT_FIELD.NAME)
-              setSortDirection(sortedColumn !== SORT_FIELD.NAMe ? true : !sortDirection)
+              setSortDirection(sortedColumn !== SORT_FIELD.NAME ? true : !sortDirection)
             }}
           >
             {below680 ? 'Symbol' : 'Name'} {sortedColumn === SORT_FIELD.NAME ? (!sortDirection ? '↑' : '↓') : ''}
