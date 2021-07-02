@@ -32,6 +32,7 @@ interface Position {
 
 const PRICE_DISCOVERY_START_TIMESTAMP = 1589747086
 
+// TODO: Address avalanche specific assets and timeframes
 function formatPricesForEarlyTimestamps(position): Position {
   if (position.timestamp < PRICE_DISCOVERY_START_TIMESTAMP) {
     if (priceOverrides.includes(position?.pair?.token0.id)) {
@@ -288,7 +289,7 @@ export async function getLPReturnsOnPair(user: string, pair, ethPrice: number, s
     liquidityTokenTotalSupply: pair.totalSupply,
     reserve0: pair.reserve0,
     reserve1: pair.reserve1,
-    reserveUSD: pair.reserveUSD * ethPrice,
+    reserveUSD: pair.reserveUSD,
     token0PriceUSD: pair.token0.derivedETH * ethPrice,
     token1PriceUSD: pair.token1.derivedETH * ethPrice,
   }

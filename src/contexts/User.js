@@ -11,7 +11,7 @@ import {
 import { useTimeframe, useStartTimestamp } from './Application'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import { useEthPrice, getEthPriceAtDate, getCurrentEthPrice } from './GlobalData'
+import { useEthPrice } from './GlobalData'
 import { getLPReturnsOnPair, getHistoricalPairReturns } from '../utils/returns'
 import { timeframeOptions } from '../constants'
 import _ from 'lodash'
@@ -186,19 +186,8 @@ export function useUserTransactions(account) {
     }
   }, [account, transactions, updateTransactions])
 
-  let [avaxPrice] = useEthPrice()
-
   if (transactions) {
     let txCopy = _.cloneDeep(transactions)
-    for (let i = 0; i < txCopy.mints.length; i++) {
-      txCopy.mints[i].amountUSD = (parseFloat(txCopy.mints[i].amountUSD) * avaxPrice).toString()
-    }
-    for (let i = 0; i < txCopy.burns.length; i++) {
-      txCopy.burns[i].amountUSD = (parseFloat(txCopy.burns[i].amountUSD) * avaxPrice).toString()
-    }
-    for (let i = 0; i < txCopy.swaps.length; i++) {
-      txCopy.swaps[i].amountUSD = (parseFloat(txCopy.swaps[i].amountUSD) * avaxPrice).toString()
-    }
     //txCopy.converted = true
     return txCopy
   }
@@ -289,17 +278,6 @@ export function useUserPositionChart(position, account) {
         pairSnapshots,
         currentETHPrice
       )
-      if (fetchedData) {
-        for (let j = 0; j < fetchedData.length; j++) {
-          let latestAvaxPrice
-          if (j === fetchedData.length - 1) {
-            latestAvaxPrice = await getCurrentEthPrice()
-          } else {
-            latestAvaxPrice = await getEthPriceAtDate(fetchedData[j].date)
-          }
-          fetchedData[j].usdValue = fetchedData[j].usdValue * latestAvaxPrice
-        }
-      }
       updateUserPairReturns(account, pairAddress, fetchedData)
     }
     if (
@@ -456,18 +434,6 @@ export function useUserLiquidityChart(account) {
           date: dayTimestamp,
           valueUSD: dailyUSD,
         })
-      }
-
-      if (formattedHistory) {
-        for (let j = 0; j < formattedHistory.length; j++) {
-          let latestAvaxPrice
-          if (j === formattedHistory.length - 1) {
-            latestAvaxPrice = await getCurrentEthPrice()
-          } else {
-            latestAvaxPrice = await getEthPriceAtDate(formattedHistory[j].date)
-          }
-          formattedHistory[j].valueUSD = formattedHistory[j].valueUSD * latestAvaxPrice
-        }
       }
 
       setFormattedHistory(formattedHistory)

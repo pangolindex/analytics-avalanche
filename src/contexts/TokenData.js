@@ -11,7 +11,7 @@ import {
   PAIR_DATA,
 } from '../apollo/queries'
 
-import { useEthPrice, getEthPriceAtDate, getCurrentEthPrice, getEthPriceAtTimestamp } from './GlobalData'
+import { useEthPrice } from './GlobalData'
 
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -260,9 +260,9 @@ const getTopTokens = async (ethPrice, ethPriceOld) => {
 
         // calculate percentage changes and daily changes
         const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-          data.tradeVolumeUSD * ethPrice,
-          oneDayHistory?.tradeVolumeUSD * ethPrice ?? 0,
-          twoDayHistory?.tradeVolumeUSD * ethPrice ?? 0
+          data.tradeVolumeUSD,
+          oneDayHistory?.tradeVolumeUSD ?? 0,
+          twoDayHistory?.tradeVolumeUSD ?? 0
         )
         const [oneDayTxns, txnChange] = get2DayPercentChange(
           data.txCount,
@@ -377,9 +377,9 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
 
     // calculate percentage changes and daily changes
     const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-      data.tradeVolumeUSD * ethPrice,
-      oneDayData?.tradeVolumeUSD * ethPrice ?? 0,
-      twoDayData?.tradeVolumeUSD * ethPrice ?? 0
+      data.tradeVolumeUSD,
+      oneDayData?.tradeVolumeUSD ?? 0,
+      twoDayData?.tradeVolumeUSD ?? 0
     )
 
     // calculate percentage changes and daily changes
@@ -609,18 +609,6 @@ const getTokenChartData = async (tokenAddress) => {
       timestamp = nextDay
     }
     data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1))
-
-    for (let j = 0; j < data.length; j++) {
-      let latestAvaxPrice
-      if (j === data.length - 1) {
-        latestAvaxPrice = await getCurrentEthPrice()
-      } else {
-        latestAvaxPrice = await getEthPriceAtDate(data[j].date)
-      }
-      data[j].priceUSD = data[j].priceUSD * latestAvaxPrice
-      data[j].totalLiquidityUSD = data[j].totalLiquidityUSD * latestAvaxPrice
-      data[j].dailyVolumeUSD = data[j].dailyVolumeUSD * latestAvaxPrice
-    }
   } catch (e) {
     console.log(e)
   }
@@ -678,19 +666,8 @@ export function useTokenTransactions(tokenAddress) {
     checkForTxns()
   }, [tokenTxns, tokenAddress, updateTokenTxns, allPairsFormatted])
 
-  let [avaxPrice] = useEthPrice()
-
   if (tokenTxns) {
     let txCopy = _.cloneDeep(tokenTxns)
-    for (let i = 0; i < txCopy.mints.length; i++) {
-      txCopy.mints[i].amountUSD = (parseFloat(txCopy.mints[i].amountUSD) * avaxPrice).toString()
-    }
-    for (let i = 0; i < txCopy.burns.length; i++) {
-      txCopy.burns[i].amountUSD = (parseFloat(txCopy.burns[i].amountUSD) * avaxPrice).toString()
-    }
-    for (let i = 0; i < txCopy.swaps.length; i++) {
-      txCopy.swaps[i].amountUSD = (parseFloat(txCopy.swaps[i].amountUSD) * avaxPrice).toString()
-    }
     return txCopy
   }
 
