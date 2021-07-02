@@ -212,13 +212,7 @@ function PositionList({ positions }) {
               <AutoColumn gap="4px" justify="flex-end">
                 <RowFixed>
                   <TYPE.small fontWeight={400}>
-                    {parseFloat(position.pair.token0.derivedETH)
-                      ? formattedNum(
-                        position?.fees.sum / (parseFloat(position.pair.token0.derivedETH) * ethPrice) / 2,
-                        false,
-                        true
-                      )
-                      : 0}{' '}
+                    {formattedNum(position?.fees.token0, false, true)}{' '}
                   </TYPE.small>
                   <FormattedName
                     text={position.pair.token0.symbol}
@@ -229,13 +223,7 @@ function PositionList({ positions }) {
                 </RowFixed>
                 <RowFixed>
                   <TYPE.small fontWeight={400}>
-                    {parseFloat(position.pair.token1.derivedETH)
-                      ? formattedNum(
-                        position?.fees.sum / (parseFloat(position.pair.token1.derivedETH) * ethPrice) / 2,
-                        false,
-                        true
-                      )
-                      : 0}{' '}
+                    {formattedNum(position?.fees.token1, false, true)}{' '}
                   </TYPE.small>
                   <FormattedName
                     text={position.pair.token1.symbol}

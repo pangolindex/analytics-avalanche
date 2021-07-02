@@ -14,6 +14,8 @@ interface ReturnMetrics {
   uniswapReturn: number // netReturn - hodlReturn
   impLoss: number
   fees: number
+  fees0: number // fees of token0
+  fees1: number // fees of token1
 }
 
 // used to calculate returns within a given window bounded by two positions
@@ -161,6 +163,8 @@ export function getMetricsForPositionWindow(positionT0: Position, positionT1: Po
     uniswapReturn: uniswap_return,
     impLoss: imp_loss_usd,
     fees: difference_fees_usd,
+    fees0: difference_fees_token0,
+    fees1: difference_fees_token1,
   }
 }
 
@@ -270,6 +274,8 @@ export async function getLPReturnsOnPair(user: string, pair, ethPrice: number, s
   let netReturn = 0
   let uniswapReturn = 0
   let fees = 0
+  let feesToken0 = 0
+  let feesToken1 = 0
 
   snapshots = snapshots.filter((entry) => {
     return entry.pair.id === pair.id
@@ -297,6 +303,8 @@ export async function getLPReturnsOnPair(user: string, pair, ethPrice: number, s
     netReturn = netReturn + results.netReturn
     uniswapReturn = uniswapReturn + results.uniswapReturn
     fees = fees + results.fees
+    feesToken0 = feesToken0 + results.fees0
+    feesToken1 = feesToken1 + results.fees1
   }
 
   return {
@@ -309,6 +317,8 @@ export async function getLPReturnsOnPair(user: string, pair, ethPrice: number, s
     },
     fees: {
       sum: fees,
+      token0: feesToken0,
+      token1: feesToken1,
     },
   }
 }
