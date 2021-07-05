@@ -285,7 +285,7 @@ function PairList({ pairs, color, disbaleLinks, maxItems = 10 }) {
         )}
       </DashGrid>
       <Divider />
-      <List p={0}>{!pairList ? <LocalLoader /> : pairList}</List>
+      <List p={0}>{pairList && pairList.length > 0 ? pairList : <LocalLoader />}</List>
       <PageButtons>
         <div
           onClick={(e) => {

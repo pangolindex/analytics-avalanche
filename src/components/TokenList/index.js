@@ -15,6 +15,7 @@ import { withRouter } from 'react-router-dom'
 import { OVERVIEW_TOKEN_BLACKLIST } from '../../constants'
 import FormattedName from '../FormattedName'
 import { TYPE } from '../../Theme'
+import LocalLoader from '../LocalLoader'
 
 dayjs.extend(utc)
 
@@ -293,7 +294,7 @@ function TopTokenList({ tokens, itemMax = 10 }) {
       </DashGrid>
       <Divider />
       <List p={0}>
-        {filteredList &&
+        {filteredList && filteredList.length > 0 ?
           filteredList.map((item, index) => {
             return (
               <div key={index}>
@@ -301,7 +302,8 @@ function TopTokenList({ tokens, itemMax = 10 }) {
                 <Divider />
               </div>
             )
-          })}
+          })
+        : <LocalLoader />}
       </List>
       <PageButtons>
         <div onClick={() => setPage(page === 1 ? page : page - 1)}>
