@@ -198,30 +198,40 @@ const getTopTokens = async (ethPrice, ethPriceOld) => {
   const utcCurrentTime = dayjs()
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix()
   const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix()
-  let oneDayBlock = await getBlockFromTimestamp(utcOneDayBack)
+
+  let [oneDayBlock, twoDayBlock] = await Promise.all([
+    getBlockFromTimestamp(utcOneDayBack),
+    getBlockFromTimestamp(utcTwoDaysBack),
+  ])
+
   if (oneDayBlock === undefined) {
     oneDayBlock = await getMostRecentBlockSinceTimestamp(utcOneDayBack)
   }
-  let twoDayBlock = await getBlockFromTimestamp(utcTwoDaysBack)
   if (twoDayBlock === undefined) {
     twoDayBlock = await getMostRecentBlockSinceTimestamp(utcTwoDaysBack)
   }
 
   try {
-    let current = await client.query({
+    const currentQuery = client.query({
       query: TOKENS_CURRENT,
       fetchPolicy: 'cache-first',
     })
 
-    let oneDayResult = await client.query({
+    const oneDayResultQuery = client.query({
       query: TOKENS_DYNAMIC(oneDayBlock),
       fetchPolicy: 'cache-first',
     })
 
-    let twoDayResult = await client.query({
+    const twoDayResultQuery = client.query({
       query: TOKENS_DYNAMIC(twoDayBlock),
       fetchPolicy: 'cache-first',
     })
+
+    const [current, oneDayResult, twoDayResult] = await Promise.all([
+      currentQuery,
+      oneDayResultQuery,
+      twoDayResultQuery,
+    ])
 
     let oneDayData = oneDayResult?.data?.tokens.reduce((obj, cur, i) => {
       return { ...obj, [cur.id]: cur }
@@ -326,25 +336,25 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
   let twoDayData = {}
 
   try {
-    // fetch all current and historical data
-    let result = await client.query({
+    const resultQuery = client.query({
       query: TOKEN_DATA(address),
       fetchPolicy: 'cache-first',
     })
-    data = result?.data?.tokens?.[0]
 
-    // get results from 24 hours in past
-    let oneDayResult = await client.query({
+    const oneDayResultQuery = client.query({
       query: TOKEN_DATA(address, oneDayBlock),
       fetchPolicy: 'cache-first',
     })
-    oneDayData = oneDayResult.data.tokens[0]
 
-    // get results from 48 hours in past
-    let twoDayResult = await client.query({
+    const twoDayResultQuery = client.query({
       query: TOKEN_DATA(address, twoDayBlock),
       fetchPolicy: 'cache-first',
     })
+
+    const [result, oneDayResult, twoDayResult] = await Promise.all([resultQuery, oneDayResultQuery, twoDayResultQuery])
+
+    data = result?.data?.tokens?.[0]
+    oneDayData = oneDayResult.data.tokens[0]
     twoDayData = twoDayResult.data.tokens[0]
 
     // catch the case where token wasnt in top list in previous days
