@@ -8,7 +8,7 @@ import {
   TOKENS_CURRENT,
   TOKENS_DYNAMIC,
   PRICES_BY_BLOCK,
-  PAIR_DATA,
+  TOKEN_PAIRS_DATA,
 } from '../apollo/queries'
 
 import { useEthPrice } from './GlobalData'
@@ -469,7 +469,7 @@ const getTokenPairs = async (tokenAddress) => {
   try {
     // fetch all current and historical data
     let result = await client.query({
-      query: TOKEN_DATA(tokenAddress),
+      query: TOKEN_PAIRS_DATA(tokenAddress),
       fetchPolicy: 'cache-first',
     })
     return result.data?.['pairs0'].concat(result.data?.['pairs1'])

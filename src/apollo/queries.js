@@ -805,6 +805,15 @@ export const TOKEN_DATA = (tokenAddress, block) => {
       tokens(${block ? `block : {number: ${block}}` : ``} where: {id:"${tokenAddress}"}) {
         ...TokenFields
       }
+    }
+  `
+  return gql(queryString)
+}
+
+export const TOKEN_PAIRS_DATA = (tokenAddress) => {
+  const queryString = `
+    ${TokenFields}
+    query tokens {
       pairs0: pairs(where: {token0: "${tokenAddress}"}, first: 50, orderBy: reserveUSD, orderDirection: desc){
         id
       }
