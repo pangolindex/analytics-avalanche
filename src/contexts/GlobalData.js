@@ -8,6 +8,7 @@ import {
   getBlocksFromTimestamps,
   get2DayPercentChange,
   getTimeframe,
+  getBlockFromTimestamp,
 } from '../utils'
 import {
   GLOBAL_DATA,
@@ -16,10 +17,10 @@ import {
   ALL_PAIRS,
   ALL_TOKENS,
   TOP_LPS_PER_PAIRS,
+  ETH_PRICE,
 } from '../apollo/queries'
 import weekOfYear from 'dayjs/plugin/weekOfYear'
 import { useAllPairData } from './PairData'
-import CoinGecko from 'coingecko-api'
 const UPDATE = 'UPDATE'
 const UPDATE_TXNS = 'UPDATE_TXNS'
 const UPDATE_CHART = 'UPDATE_CHART'
@@ -28,8 +29,6 @@ const ETH_PRICE_KEY = 'ETH_PRICE_KEY'
 const UPDATE_ALL_PAIRS_IN_UNISWAP = 'UPDATE_ALL_PAIRS_IN_UNISWAP'
 const UPDATE_ALL_TOKENS_IN_UNISWAP = 'UPDATE_ALL_TOKENS_IN_UNISWAP'
 const UPDATE_TOP_LPS = 'UPDATE_TOP_LPS'
-
-const coinGeckoClient = new CoinGecko()
 
 // format dayjs with the libraries that we need
 dayjs.extend(utc)
@@ -445,33 +444,24 @@ const getGlobalTransactions = async () => {
  */
 const getEthPrice = async () => {
   const utcCurrentTime = dayjs()
-  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').startOf('minute').unix() * 1000
+  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix()
+  const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack)
 
-  let result = await coinGeckoClient.simple.price({
-    ids: ['avalanche-2'],
-    vs_currencies: ['usd'],
-    include_24hr_change: ['true']
+  const currentPriceQuery = client.query({
+    query: ETH_PRICE(),
+    fetchPolicy: 'cache-first',
   })
 
-  let ethPrice = result['data']['avalanche-2']['usd']
-  let priceChangeETH = result['data']['avalanche-2']['usd_24h_change']
-
-  result = await coinGeckoClient.coins.fetchMarketChart('avalanche-2', {
-    days: 1,
-    vs_currency: 'usd'
+  const lastDayPriceQuery = client.query({
+    query: ETH_PRICE(oneDayBlock),
+    fetchPolicy: 'cache-first',
   })
 
-  let ethPriceOneDay = 0
+  const [currentPriceResult, lastDayPriceResult] = await Promise.all([currentPriceQuery, lastDayPriceQuery])
 
-  let i
-  let snapshot
-  for (i = 0; i < result['data']['prices'].length; i++) {
-    snapshot = result['data']['prices'][i]
-    if (snapshot[0] > utcOneDayBack) {
-      ethPriceOneDay = snapshot[1]
-      break
-    }
-  }
+  const ethPrice = parseFloat(currentPriceResult.data.bundles[0].ethPrice)
+  const ethPriceOneDay = parseFloat(lastDayPriceResult.data.bundles[0].ethPrice)
+  const priceChangeETH = (ethPrice - ethPriceOneDay) / ethPriceOneDay
 
   return [ethPrice, ethPriceOneDay, priceChangeETH]
 }
