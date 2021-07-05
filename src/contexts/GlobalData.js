@@ -535,14 +535,11 @@ export function useGlobalData() {
 
   useEffect(() => {
     async function fetchData() {
-      let globalData = await getGlobalData()
-      globalData && update(globalData)
+      const globalDataPromise = getGlobalData().then((globalData) => globalData && update(globalData))
+      const allPairsPromise = getAllPairsOnUniswap().then((allPairs) => updateAllPairsInUniswap(allPairs))
+      const allTokensPromise = getAllTokensOnUniswap().then((allTokens) => updateAllTokensInUniswap(allTokens))
 
-      let allPairs = await getAllPairsOnUniswap()
-      updateAllPairsInUniswap(allPairs)
-
-      let allTokens = await getAllTokensOnUniswap()
-      updateAllTokensInUniswap(allTokens)
+      await Promise.all([globalDataPromise, allPairsPromise, allTokensPromise])
     }
     if (!data) {
       fetchData()
