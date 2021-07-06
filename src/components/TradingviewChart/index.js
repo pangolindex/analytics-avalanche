@@ -39,6 +39,7 @@ const TradingViewChart = ({
   // pointer to the chart object
   const [chartCreated, setChartCreated] = useState(false)
   const dataPrev = usePrevious(data)
+  const basePrev = usePrevious(base)
 
   useEffect(() => {
     if (data !== dataPrev && chartCreated && type === CHART_TYPES.BAR) {
@@ -68,7 +69,7 @@ const TradingViewChart = ({
 
   // reset the chart if them switches
   useEffect(() => {
-    if (chartCreated && previousTheme !== darkMode) {
+    if (chartCreated && (previousTheme !== darkMode || basePrev !== base)) {
       // remove the tooltip element
       let tooltip = document.getElementById('tooltip-id' + type)
       let node = document.getElementById('test-id' + type)
