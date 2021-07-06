@@ -707,8 +707,9 @@ export function useTokenPriceData(tokenAddress, timeWindow, interval = 3600) {
   useEffect(() => {
     const currentTime = dayjs.utc()
     const windowSize = timeWindow === timeframeOptions.MONTH ? 'month' : 'week'
+    // February 8th 2021
     const startTime =
-      timeWindow === timeframeOptions.ALL_TIME ? 1605139200 : currentTime.subtract(1, windowSize).startOf('hour').unix()
+      timeWindow === timeframeOptions.ALL_TIME ? 1612760400 : currentTime.subtract(1, windowSize).startOf('hour').unix()
 
     async function fetch() {
       let data = await getIntervalTokenData(tokenAddress, startTime, interval, latestBlock)
