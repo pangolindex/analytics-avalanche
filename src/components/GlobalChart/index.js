@@ -30,7 +30,7 @@ const GlobalChart = ({ display }) => {
   // time window and window size for chart
   const timeWindow = timeframeOptions.ALL_TIME
   const [volumeWindow, setVolumeWindow] = useState(VOLUME_WINDOW.DAYS)
-  const [liquidityBase, setLiquidityBase] = useState(LIQUIDITY_BASE.AVAX)
+  const [liquidityBase, setLiquidityBase] = useState(LIQUIDITY_BASE.USD)
 
   // global historical data
   const [dailyData, weeklyData] = useGlobalChartData()
@@ -92,6 +92,7 @@ const GlobalChart = ({ display }) => {
         <ResponsiveContainer aspect={60 / 28} ref={ref}>
           <TradingViewChart
             data={chartDataFiltered}
+            isUSD={liquidityBase === LIQUIDITY_BASE.USD}
             base={liquidityBase === LIQUIDITY_BASE.USD ? totalLiquidityUSD : totalLiquidityETH}
             baseChange={liquidityChangeUSD}
             title={liquidityBase === LIQUIDITY_BASE.USD ? 'Liquidity' : 'Liquidity (AVAX)'}
@@ -115,7 +116,7 @@ const GlobalChart = ({ display }) => {
           />
         </ResponsiveContainer>
       )}
-      {display === 'volume' && (
+      {chartView === CHART_VIEW.VOLUME && (
         <RowFixed
           style={{
             bottom: '70px',
@@ -139,7 +140,7 @@ const GlobalChart = ({ display }) => {
           </OptionButton>
         </RowFixed>
       )}
-      {display === 'liquidity' && (
+      {chartView === CHART_VIEW.LIQUIDITY && (
         <RowFixed
           style={{
             bottom: '70px',
