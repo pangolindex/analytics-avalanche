@@ -4,8 +4,8 @@ import dayjs from 'dayjs'
 import { getShareValueOverTime } from '.'
 
 export const priceOverrides = [
-  '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
-  '0x6b175474e89094c44da98b954eedeac495271d0f', // DAI
+  '0xde3a24028580884448a5397872046a019649b084', // USDT
+  '0xba7deebbfc5fa1100fb055a87773e1e99cd3507a', // DAI
 ]
 
 interface ReturnMetrics {
@@ -30,7 +30,8 @@ interface Position {
   token1PriceUSD: number
 }
 
-const PRICE_DISCOVERY_START_TIMESTAMP = 1589747086
+// February 9th 2021 - WAVAX/USDT pair is created
+const PRICE_DISCOVERY_START_TIMESTAMP = 1612876523
 
 // TODO: Address avalanche specific assets and timeframes
 function formatPricesForEarlyTimestamps(position): Position {
@@ -41,12 +42,12 @@ function formatPricesForEarlyTimestamps(position): Position {
     if (priceOverrides.includes(position?.pair?.token1.id)) {
       position.token1PriceUSD = 1
     }
-    // WETH price
-    if (position.pair?.token0.id === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2') {
-      position.token0PriceUSD = 203
+    // WAVAX price
+    if (position.pair?.token0.id === '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7') {
+      position.token0PriceUSD = 18
     }
-    if (position.pair?.token1.id === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2') {
-      position.token1PriceUSD = 203
+    if (position.pair?.token1.id === '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7') {
+      position.token1PriceUSD = 18
     }
   }
   return position

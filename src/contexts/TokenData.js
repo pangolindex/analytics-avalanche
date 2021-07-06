@@ -707,7 +707,7 @@ export function useTokenPriceData(tokenAddress, timeWindow, interval = 3600) {
   useEffect(() => {
     const currentTime = dayjs.utc()
     const windowSize = timeWindow === timeframeOptions.MONTH ? 'month' : 'week'
-    // February 8th 2021
+    // February 8th 2021 - Pangolin Factory is created
     const startTime =
       timeWindow === timeframeOptions.ALL_TIME ? 1612760400 : currentTime.subtract(1, windowSize).startOf('hour').unix()
 
