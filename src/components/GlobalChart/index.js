@@ -19,6 +19,10 @@ const VOLUME_WINDOW = {
   WEEKLY: 'WEEKLY',
   DAYS: 'DAYS',
 }
+const LIQUIDITY_BASE = {
+  USD: 'USD',
+  AVAX: 'AVAX',
+}
 const GlobalChart = ({ display }) => {
   // chart options
   const [chartView, setChartView] = useState(display === 'volume' ? CHART_VIEW.VOLUME : CHART_VIEW.LIQUIDITY)
@@ -26,11 +30,13 @@ const GlobalChart = ({ display }) => {
   // time window and window size for chart
   const timeWindow = timeframeOptions.ALL_TIME
   const [volumeWindow, setVolumeWindow] = useState(VOLUME_WINDOW.DAYS)
+  const [liquidityBase, setLiquidityBase] = useState(LIQUIDITY_BASE.AVAX)
 
   // global historical data
   const [dailyData, weeklyData] = useGlobalChartData()
   const {
     totalLiquidityUSD,
+    totalLiquidityETH,
     oneDayVolumeUSD,
     volumeChangeUSD,
     liquidityChangeUSD,
@@ -38,7 +44,7 @@ const GlobalChart = ({ display }) => {
     weeklyVolumeChange,
   } = useGlobalData()
 
-  // based on window, get starttim
+  // based on window, get starttime
   let utcStartTime = getTimeframe(timeWindow)
 
   const chartDataFiltered = useMemo(() => {
@@ -85,11 +91,11 @@ const GlobalChart = ({ display }) => {
       {chartDataFiltered && chartView === CHART_VIEW.LIQUIDITY && (
         <ResponsiveContainer aspect={60 / 28} ref={ref}>
           <TradingViewChart
-            data={dailyData}
-            base={totalLiquidityUSD}
+            data={chartDataFiltered}
+            base={liquidityBase === LIQUIDITY_BASE.USD ? totalLiquidityUSD : totalLiquidityETH}
             baseChange={liquidityChangeUSD}
-            title="Liquidity"
-            field="totalLiquidityUSD"
+            title={liquidityBase === LIQUIDITY_BASE.USD ? 'Liquidity' : 'Liquidity (AVAX)'}
+            field={liquidityBase === LIQUIDITY_BASE.USD ? 'totalLiquidityUSD' : 'totalLiquidityETH'}
             width={width}
             type={CHART_TYPES.AREA}
           />
@@ -130,6 +136,30 @@ const GlobalChart = ({ display }) => {
             onClick={() => setVolumeWindow(VOLUME_WINDOW.WEEKLY)}
           >
             <TYPE.body>W</TYPE.body>
+          </OptionButton>
+        </RowFixed>
+      )}
+      {display === 'liquidity' && (
+        <RowFixed
+          style={{
+            bottom: '70px',
+            position: 'absolute',
+            left: '20px',
+            zIndex: 10,
+          }}
+        >
+          <OptionButton
+            active={liquidityBase === LIQUIDITY_BASE.USD}
+            onClick={() => setLiquidityBase(LIQUIDITY_BASE.USD)}
+          >
+            <TYPE.body>USD</TYPE.body>
+          </OptionButton>
+          <OptionButton
+            style={{ marginLeft: '4px' }}
+            active={liquidityBase === LIQUIDITY_BASE.AVAX}
+            onClick={() => setLiquidityBase(LIQUIDITY_BASE.AVAX)}
+          >
+            <TYPE.body>AVAX</TYPE.body>
           </OptionButton>
         </RowFixed>
       )}
