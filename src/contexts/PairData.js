@@ -24,6 +24,7 @@ import {
   getTimestampsForChanges,
   splitQuery,
   getMostRecentBlockSinceTimestamp,
+  crawlSingleQuery,
 } from '../utils'
 import { timeframeOptions } from '../constants'
 import { useLatestBlocks } from './Application'
@@ -336,23 +337,16 @@ const getPairChartData = async (pairAddress) => {
   let startTime = utcStartTime.unix() - 1
 
   try {
-    let allFound = false
-    let skip = 0
-    while (!allFound) {
-      let result = await client.query({
-        query: PAIR_CHART,
-        variables: {
-          pairAddress: pairAddress,
-          skip,
-        },
-        fetchPolicy: 'cache-first',
-      })
-      skip += 1000
-      data = data.concat(result.data.pairDayDatas)
-      if (result.data.pairDayDatas.length < 1000) {
-        allFound = true
-      }
-    }
+    data = await crawlSingleQuery(
+      PAIR_CHART,
+      'pairDayDatas',
+      client,
+      { fetchPolicy: 'cache-first' },
+      { pairAddress: pairAddress },
+      0,
+      'date',
+      true
+    )
 
     let dayIndexSet = new Set()
     let dayIndexArray = []

@@ -25,6 +25,7 @@ import {
   getBlocksFromTimestamps,
   splitQuery,
   getMostRecentBlockSinceTimestamp,
+  crawlSingleQuery,
 } from '../utils'
 import { timeframeOptions } from '../constants'
 import { useLatestBlocks } from './Application'
@@ -543,23 +544,16 @@ const getTokenChartData = async (tokenAddress) => {
   let startTime = utcStartTime.startOf('minute').unix() - 1
 
   try {
-    let allFound = false
-    let skip = 0
-    while (!allFound) {
-      let result = await client.query({
-        query: TOKEN_CHART,
-        variables: {
-          tokenAddr: tokenAddress,
-          skip,
-        },
-        fetchPolicy: 'cache-first',
-      })
-      if (result.data.tokenDayDatas.length < 1000) {
-        allFound = true
-      }
-      skip += 1000
-      data = data.concat(result.data.tokenDayDatas)
-    }
+    data = await crawlSingleQuery(
+      TOKEN_CHART,
+      'tokenDayDatas',
+      client,
+      { fetchPolicy: 'cache-first' },
+      { tokenAddr: tokenAddress },
+      startTime,
+      'date',
+      true
+    )
 
     let dayIndexSet = new Set()
     let dayIndexArray = []

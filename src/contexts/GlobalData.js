@@ -9,6 +9,7 @@ import {
   get2DayPercentChange,
   getTimeframe,
   getBlockFromTimestamp,
+  crawlSingleQuery,
 } from '../utils'
 import {
   GLOBAL_DATA,
@@ -321,25 +322,18 @@ const getChartData = async (oldestDateToFetch) => {
   let data = []
   let weeklyData = []
   const utcEndTime = dayjs.utc()
-  let skip = 0
-  let allFound = false
 
   try {
-    while (!allFound) {
-      let result = await client.query({
-        query: GLOBAL_CHART,
-        variables: {
-          startTime: oldestDateToFetch,
-          skip,
-        },
-        fetchPolicy: 'cache-first',
-      })
-      skip += 1000
-      data = data.concat(result.data.pangolinDayDatas)
-      if (result.data.pangolinDayDatas.length < 1000) {
-        allFound = true
-      }
-    }
+    data = await crawlSingleQuery(
+      GLOBAL_CHART,
+      'pangolinDayDatas',
+      client,
+      { fetchPolicy: 'cache-first' },
+      {},
+      oldestDateToFetch,
+      'date',
+      true
+    )
 
     if (data) {
       let dayIndexSet = new Set()

@@ -119,6 +119,45 @@ export async function splitQuery(query, localClient, vars, list, skipCount = 100
   return fetchedData
 }
 
+export async function crawlSingleQuery(
+  query,
+  queryField,
+  localClient,
+  localClientOptions,
+  vars,
+  pointer,
+  pointerField = 'timestamp',
+  crawlingForward = true,
+  limit = 1000
+) {
+  let allResults = []
+  let allFound = false
+
+  while (!allFound) {
+    let result = await localClient.query({
+      query: query,
+      variables: {
+        ...vars,
+        pointer,
+      },
+      ...localClientOptions,
+    })
+
+    allResults = crawlingForward
+      ? allResults.concat(result.data[queryField])
+      : result.data[queryField].concat(allResults)
+
+    if (result.data[queryField].length < limit) {
+      allFound = true
+    } else {
+      const newIndex = crawlingForward ? result.data[queryField].length - 1 : 0
+      pointer = result.data[queryField][newIndex][pointerField]
+    }
+  }
+
+  return allResults
+}
+
 /**
  * @notice Fetches first block after a given timestamp
  * @dev Query speed is optimized by limiting to a 600-second period

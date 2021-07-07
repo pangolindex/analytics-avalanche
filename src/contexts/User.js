@@ -15,6 +15,7 @@ import { useEthPrice } from './GlobalData'
 import { getLPReturnsOnPair, getHistoricalPairReturns } from '../utils/returns'
 import { timeframeOptions } from '../constants'
 import _ from 'lodash'
+import { crawlSingleQuery } from "../utils";
 
 dayjs.extend(utc)
 
@@ -207,25 +208,16 @@ export function useUserSnapshots(account) {
   useEffect(() => {
     async function fetchData() {
       try {
-        let skip = 0
-        let allResults = []
-        let found = false
-        while (!found) {
-          let result = await client.query({
-            query: USER_HISTORY,
-            variables: {
-              skip: skip,
-              user: account,
-            },
-            fetchPolicy: 'cache-first',
-          })
-          allResults = allResults.concat(result.data.liquidityPositionSnapshots)
-          if (result.data.liquidityPositionSnapshots.length < 1000) {
-            found = true
-          } else {
-            skip += 1000
-          }
-        }
+        const allResults = await crawlSingleQuery(
+          USER_HISTORY,
+          'liquidityPositionSnapshots',
+          client,
+          { fetchPolicy: 'cache-first' },
+          { user: account },
+          dayjs.utc().unix(),
+          'timestamp',
+          false
+        )
         if (allResults) {
           updateUserSnapshots(account, allResults)
         }

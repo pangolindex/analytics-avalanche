@@ -272,8 +272,13 @@ export const FIRST_SNAPSHOT = gql`
 `
 
 export const USER_HISTORY = gql`
-  query snapshots($user: Bytes!, $skip: Int!) {
-    liquidityPositionSnapshots(first: 1000, skip: $skip, where: { user: $user }) {
+  query snapshots($user: Bytes!, $pointer: Int!) {
+    liquidityPositionSnapshots(
+      first: 1000
+      where: { user: $user, timestamp_lt: $pointer }
+      orderBy: timestamp
+      orderDirection: asc
+    ) {
       timestamp
       reserveUSD
       liquidityTokenBalance
@@ -395,8 +400,13 @@ export const USER_TRANSACTIONS = gql`
 `
 
 export const PAIR_CHART = gql`
-  query pairDayDatas($pairAddress: Bytes!, $skip: Int!) {
-    pairDayDatas(first: 1000, skip: $skip, orderBy: date, orderDirection: asc, where: { pairAddress: $pairAddress }) {
+  query pairDayDatas($pairAddress: Bytes!, $pointer: Int!) {
+    pairDayDatas(
+      first: 1000
+      orderBy: date
+      orderDirection: asc
+      where: { pairAddress: $pairAddress, date_gt: $pointer }
+    ) {
       id
       date
       dailyVolumeToken0
@@ -445,8 +455,8 @@ export const PAIR_DAY_DATA_BULK = (pairs, startTimestamp) => {
 }
 
 export const GLOBAL_CHART = gql`
-  query pangolinDayDatas($startTime: Int!, $skip: Int!) {
-    pangolinDayDatas(first: 1000, skip: $skip, where: { date_gt: $startTime }, orderBy: date, orderDirection: asc) {
+  query pangolinDayDatas($pointer: Int!) {
+    pangolinDayDatas(first: 1000, where: { date_gt: $pointer }, orderBy: date, orderDirection: asc) {
       id
       date
       totalVolumeUSD
@@ -549,7 +559,7 @@ export const GLOBAL_TXNS = gql`
 
 export const ALL_TOKENS = gql`
   query tokens($skip: Int!) {
-    tokens(first: 500, skip: $skip) {
+    tokens(first: 500, skip: $skip, orderBy: totalLiquidity) {
       id
       name
       symbol
@@ -748,8 +758,8 @@ export const PAIRS_HISTORICAL_BULK = (block, pairs) => {
 }
 
 export const TOKEN_CHART = gql`
-  query tokenDayDatas($tokenAddr: String!, $skip: Int!) {
-    tokenDayDatas(first: 1000, skip: $skip, orderBy: date, orderDirection: asc, where: { token: $tokenAddr }) {
+  query tokenDayDatas($tokenAddr: String!, $pointer: Int!) {
+    tokenDayDatas(first: 1000, orderBy: date, orderDirection: asc, where: { token: $tokenAddr, date_gt: $pointer }) {
       id
       date
       priceUSD
