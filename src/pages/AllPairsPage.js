@@ -27,7 +27,7 @@ function AllPairsPage() {
           {!below800 && <Search small={true} />}
         </RowBetween>
         <Panel style={{ padding: below800 && '1rem 0 0 0 ' }}>
-          <PairList pairs={allPairs} disbaleLinks={true} maxItems={50} />
+          <PairList pairs={allPairs} disableLinks={true} maxItems={50} />
         </Panel>
       </FullWrapper>
     </PageWrapper>
