@@ -465,13 +465,13 @@ const getTokenPairs = async (tokenAddress) => {
 }
 
 const getIntervalTokenData = async (tokenAddress, startTime, interval = 3600, latestBlock) => {
-  const utcEndTime = dayjs.utc()
+  const utcEndTime = dayjs.utc().unix()
   let time = startTime
 
   // create an array of hour start times until we reach current hour
   // buffer by half hour to catch case where graph isnt synced to latest block
   const timestamps = []
-  while (time < utcEndTime.unix()) {
+  while (time < utcEndTime) {
     timestamps.push(time)
     time += interval
   }
@@ -707,9 +707,12 @@ export function useTokenPriceData(tokenAddress, timeWindow, interval = 3600) {
   useEffect(() => {
     const currentTime = dayjs.utc()
     const windowSize = timeWindow === timeframeOptions.MONTH ? 'month' : 'week'
+
     // February 8th 2021 - Pangolin Factory is created
     const startTime =
-      timeWindow === timeframeOptions.ALL_TIME ? 1612760400 : currentTime.subtract(1, windowSize).startOf('hour').unix()
+      timeWindow === timeframeOptions.ALL_TIME
+        ? dayjs('2021-02-07').unix() // TODO: Investigate why this works, but 2021-02-08 will throw "Syntax Error: Expected Name, found }"
+        : currentTime.subtract(1, windowSize).startOf('hour').unix()
 
     async function fetch() {
       let data = await getIntervalTokenData(tokenAddress, startTime, interval, latestBlock)
