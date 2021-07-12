@@ -705,7 +705,7 @@ export function useTokenPriceData(tokenAddress, timeWindow, interval = 3600) {
     // February 8th 2021 - Pangolin Factory is created
     const startTime =
       timeWindow === timeframeOptions.ALL_TIME
-        ? dayjs('2021-02-07').unix() // TODO: Investigate why this works, but 2021-02-08 will throw "Syntax Error: Expected Name, found }"
+        ? dayjs('2021-02-08').startOf('day').unix()
         : currentTime.subtract(1, windowSize).startOf('hour').unix()
 
     async function fetch() {
