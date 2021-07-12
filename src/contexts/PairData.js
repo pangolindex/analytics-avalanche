@@ -11,7 +11,7 @@ import {
   HOURLY_PAIR_RATES,
 } from '../apollo/queries'
 
-import { useEthPrice, getEthPriceAtDate, getCurrentEthPrice } from './GlobalData'
+import { useEthPrice } from './GlobalData'
 
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -24,6 +24,7 @@ import {
   getTimestampsForChanges,
   splitQuery,
   getMostRecentBlockSinceTimestamp,
+  crawlSingleQuery,
 } from '../utils'
 import { timeframeOptions } from '../constants'
 import { useLatestBlocks } from './Application'
@@ -269,16 +270,16 @@ async function getBulkPairData(pairList, ethPrice) {
 function parseData(data, oneDayData, twoDayData, oneWeekData, ethPrice, oneDayBlock) {
   // get volume changes
   const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-    data?.volumeUSD * ethPrice,
-    oneDayData?.volumeUSD ? oneDayData.volumeUSD * ethPrice : 0,
-    twoDayData?.volumeUSD ? twoDayData.volumeUSD * ethPrice : 0
+    data?.volumeUSD,
+    oneDayData?.volumeUSD ? oneDayData.volumeUSD : 0,
+    twoDayData?.volumeUSD ? twoDayData.volumeUSD : 0
   )
   const [oneDayVolumeUntracked, volumeChangeUntracked] = get2DayPercentChange(
-    data?.untrackedVolumeUSD * ethPrice,
-    oneDayData?.untrackedVolumeUSD ? parseFloat(oneDayData?.untrackedVolumeUSD) * ethPrice : 0,
-    twoDayData?.untrackedVolumeUSD ? twoDayData?.untrackedVolumeUSD * ethPrice : 0
+    data?.untrackedVolumeUSD,
+    oneDayData?.untrackedVolumeUSD ? parseFloat(oneDayData?.untrackedVolumeUSD) : 0,
+    twoDayData?.untrackedVolumeUSD ? twoDayData?.untrackedVolumeUSD : 0
   )
-  const oneWeekVolumeUSD = parseFloat(oneWeekData ? (data?.volumeUSD - oneWeekData?.volumeUSD) * ethPrice : data.volumeUSD * ethPrice)
+  const oneWeekVolumeUSD = parseFloat(oneWeekData ? data?.volumeUSD - oneWeekData?.volumeUSD : data.volumeUSD)
 
   // set volume properties
   data.oneDayVolumeUSD = parseFloat(oneDayVolumeUSD)
@@ -289,7 +290,7 @@ function parseData(data, oneDayData, twoDayData, oneWeekData, ethPrice, oneDayBl
 
   // set liquiditry properties
   data.trackedReserveUSD = data.trackedReserveETH * ethPrice
-  data.liquidityChangeUSD = getPercentChange(data.reserveUSD * ethPrice, oneDayData?.reserveUSD * ethPrice)
+  data.liquidityChangeUSD = getPercentChange(data.reserveUSD, oneDayData?.reserveUSD)
 
   // format if pair hasnt existed for a day or a week
   if (!oneDayData && data && data.createdAtBlockNumber > oneDayBlock) {
@@ -322,18 +323,6 @@ const getPairTransactions = async (pairAddress) => {
     transactions.mints = result.data.mints
     transactions.burns = result.data.burns
     transactions.swaps = result.data.swaps
-
-    let avaxPrice = await getCurrentEthPrice()
-
-    for (let i = 0; i < transactions.mints.length; i++) {
-      transactions.mints[i].amountUSD = (parseFloat(transactions.mints[i].amountUSD) * avaxPrice).toString()
-    }
-    for (let i = 0; i < transactions.burns.length; i++) {
-      transactions.burns[i].amountUSD = (parseFloat(transactions.burns[i].amountUSD) * avaxPrice).toString()
-    }
-    for (let i = 0; i < transactions.swaps.length; i++) {
-      transactions.swaps[i].amountUSD = (parseFloat(transactions.swaps[i].amountUSD) * avaxPrice).toString()
-    }
   } catch (e) {
     console.log(e)
   }
@@ -348,23 +337,16 @@ const getPairChartData = async (pairAddress) => {
   let startTime = utcStartTime.unix() - 1
 
   try {
-    let allFound = false
-    let skip = 0
-    while (!allFound) {
-      let result = await client.query({
-        query: PAIR_CHART,
-        variables: {
-          pairAddress: pairAddress,
-          skip,
-        },
-        fetchPolicy: 'cache-first',
-      })
-      skip += 1000
-      data = data.concat(result.data.pairDayDatas)
-      if (result.data.pairDayDatas.length < 1000) {
-        allFound = true
-      }
-    }
+    data = await crawlSingleQuery(
+      PAIR_CHART,
+      'pairDayDatas',
+      client,
+      { fetchPolicy: 'cache-first' },
+      { pairAddress: pairAddress },
+      0,
+      'date',
+      true
+    )
 
     let dayIndexSet = new Set()
     let dayIndexArray = []
@@ -401,17 +383,6 @@ const getPairChartData = async (pairAddress) => {
     }
 
     data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1))
-
-    for (let j = 0; j < data.length; j++) {
-      let latestAvaxPrice
-      if (j === data.length - 1) {
-        latestAvaxPrice = await getCurrentEthPrice()
-      } else {
-        latestAvaxPrice = await getEthPriceAtDate(data[j].date)
-      }
-      data[j].dailyVolumeUSD = data[j].dailyVolumeUSD * latestAvaxPrice
-      data[j].reserveUSD = data[j].reserveUSD * latestAvaxPrice
-    }
   } catch (e) {
     console.log(e)
   }

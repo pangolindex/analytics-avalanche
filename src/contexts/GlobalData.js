@@ -8,6 +8,8 @@ import {
   getBlocksFromTimestamps,
   get2DayPercentChange,
   getTimeframe,
+  getBlockFromTimestamp,
+  crawlSingleQuery,
 } from '../utils'
 import {
   GLOBAL_DATA,
@@ -16,10 +18,10 @@ import {
   ALL_PAIRS,
   ALL_TOKENS,
   TOP_LPS_PER_PAIRS,
+  ETH_PRICE,
 } from '../apollo/queries'
 import weekOfYear from 'dayjs/plugin/weekOfYear'
 import { useAllPairData } from './PairData'
-import CoinGecko from 'coingecko-api'
 const UPDATE = 'UPDATE'
 const UPDATE_TXNS = 'UPDATE_TXNS'
 const UPDATE_CHART = 'UPDATE_CHART'
@@ -28,8 +30,6 @@ const ETH_PRICE_KEY = 'ETH_PRICE_KEY'
 const UPDATE_ALL_PAIRS_IN_UNISWAP = 'UPDATE_ALL_PAIRS_IN_UNISWAP'
 const UPDATE_ALL_TOKENS_IN_UNISWAP = 'UPDATE_ALL_TOKENS_IN_UNISWAP'
 const UPDATE_TOP_LPS = 'UPDATE_TOP_LPS'
-
-const coinGeckoClient = new CoinGecko()
 
 // format dayjs with the libraries that we need
 dayjs.extend(utc)
@@ -208,10 +208,8 @@ export default function Provider({ children }) {
  * Gets all the global data for the overview page.
  * Needs current eth price and the old eth price to get
  * 24 hour USD changes.
- * @param {*} ethPrice
- * @param {*} oldEthPrice
  */
-async function getGlobalData(ethPrice, oldEthPrice) {
+async function getGlobalData() {
   // data for each day , historic data used for % changes
   let data = {}
   let oneDayData = {}
@@ -269,7 +267,7 @@ async function getGlobalData(ethPrice, oldEthPrice) {
       //if (data && oneDayData && twoDayData && twoWeekData) {
 
       // format the total liquidity in USD
-      data.totalLiquidityUSD = data.totalLiquidityETH * ethPrice
+      data.totalLiquidityUSD = parseFloat(data.totalLiquidityUSD)
 
       if (oneDayData && twoDayData) {
         let [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
@@ -301,7 +299,7 @@ async function getGlobalData(ethPrice, oldEthPrice) {
         data.liquidityChangeUSD = liquidityChangeUSD
 
         // add relevant fields with the calculated amounts
-        data.oneDayVolumeUSD = oneDayVolumeUSD * ethPrice
+        data.oneDayVolumeUSD = oneDayVolumeUSD
         data.volumeChangeUSD = volumeChangeUSD
         data.oneDayTxns = oneDayTxns
         data.txnChange = txnChange
@@ -320,29 +318,22 @@ async function getGlobalData(ethPrice, oldEthPrice) {
  * on main page
  * @param {*} oldestDateToFetch // start of window to fetch from
  */
-const getChartData = async (oldestDateToFetch, ethPrice) => {
+const getChartData = async (oldestDateToFetch) => {
   let data = []
   let weeklyData = []
   const utcEndTime = dayjs.utc()
-  let skip = 0
-  let allFound = false
 
   try {
-    while (!allFound) {
-      let result = await client.query({
-        query: GLOBAL_CHART,
-        variables: {
-          startTime: oldestDateToFetch,
-          skip,
-        },
-        fetchPolicy: 'cache-first',
-      })
-      skip += 1000
-      data = data.concat(result.data.pangolinDayDatas)
-      if (result.data.pangolinDayDatas.length < 1000) {
-        allFound = true
-      }
-    }
+    data = await crawlSingleQuery(
+      GLOBAL_CHART,
+      'pangolinDayDatas',
+      client,
+      { fetchPolicy: 'cache-first' },
+      {},
+      oldestDateToFetch,
+      'date',
+      true
+    )
 
     if (data) {
       let dayIndexSet = new Set()
@@ -359,7 +350,7 @@ const getChartData = async (oldestDateToFetch, ethPrice) => {
 
       // fill in empty days ( there will be no day datas if no trades made that day )
       let timestamp = data[0].date ? data[0].date : oldestDateToFetch
-      let latestLiquidityUSD = data[0].totalLiquidityETH * ethPrice
+      let latestLiquidityUSD = data[0].totalLiquidityUSD
       let latestDayDats = data[0].mostLiquidTokens
       let index = 1
       while (timestamp < utcEndTime.unix() - oneDay) {
@@ -409,8 +400,6 @@ const getGlobalTransactions = async () => {
   let transactions = {}
 
   try {
-    let avaxPrice = await getCurrentEthPrice()
-
     let result = await client.query({
       query: GLOBAL_TXNS,
       fetchPolicy: 'cache-first',
@@ -422,19 +411,16 @@ const getGlobalTransactions = async () => {
       result.data.transactions.map((transaction) => {
         if (transaction.mints.length > 0) {
           transaction.mints.map((mint) => {
-            mint.amountUSD = (parseFloat(mint.amountUSD) * avaxPrice).toString()
             return transactions.mints.push(mint)
           })
         }
         if (transaction.burns.length > 0) {
           transaction.burns.map((burn) => {
-            burn.amountUSD = (parseFloat(burn.amountUSD) * avaxPrice).toString()
             return transactions.burns.push(burn)
           })
         }
         if (transaction.swaps.length > 0) {
           transaction.swaps.map((swap) => {
-            swap.amountUSD = (parseFloat(swap.amountUSD) * avaxPrice).toString()
             return transactions.swaps.push(swap)
           })
         }
@@ -452,76 +438,26 @@ const getGlobalTransactions = async () => {
  */
 const getEthPrice = async () => {
   const utcCurrentTime = dayjs()
-  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').startOf('minute').unix() * 1000
+  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix()
+  const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack)
 
-  let result = await coinGeckoClient.simple.price({
-    ids: ['avalanche-2'],
-    vs_currencies: ['usd'],
-    include_24hr_change: ['true']
+  const currentPriceQuery = client.query({
+    query: ETH_PRICE(),
+    fetchPolicy: 'cache-first',
   })
 
-  let ethPrice = result['data']['avalanche-2']['usd']
-  let priceChangeETH = result['data']['avalanche-2']['usd_24h_change']
-
-  result = await coinGeckoClient.coins.fetchMarketChart('avalanche-2', {
-    days: 1,
-    vs_currency: 'usd'
+  const lastDayPriceQuery = client.query({
+    query: ETH_PRICE(oneDayBlock),
+    fetchPolicy: 'cache-first',
   })
 
-  let ethPriceOneDay = 0
+  const [currentPriceResult, lastDayPriceResult] = await Promise.all([currentPriceQuery, lastDayPriceQuery])
 
-  let i
-  let snapshot
-  for (i = 0; i < result['data']['prices'].length; i++) {
-    snapshot = result['data']['prices'][i]
-    if (snapshot[0] > utcOneDayBack) {
-      ethPriceOneDay = snapshot[1]
-      break
-    }
-  }
+  const ethPrice = parseFloat(currentPriceResult.data.bundles[0].ethPrice)
+  const ethPriceOneDay = parseFloat(lastDayPriceResult.data.bundles[0].ethPrice)
+  const priceChangeETH = (ethPrice - ethPriceOneDay) / ethPriceOneDay
 
   return [ethPrice, ethPriceOneDay, priceChangeETH]
-}
-
-export const getEthPriceAtTimestamp = async (timestamp) => {
-  const utcCurrentTime = Date.now() / 1000
-  let diff = utcCurrentTime - timestamp
-  let days_back = Math.round(diff / (60 * 60 * 24))
-
-  let result = await coinGeckoClient.coins.fetchMarketChart('avalanche-2', {
-    days: days_back,
-    vs_currency: 'usd'
-  })
-
-  return result['data']['prices']
-}
-
-export const getCurrentEthPrice = async () => {
-  let result = await coinGeckoClient.simple.price({
-    ids: ['avalanche-2'],
-    vs_currencies: ['usd']
-  })
-
-  let ethPrice = result['data']['avalanche-2']['usd']
-
-  return ethPrice
-}
-
-/**
- * Gets the price of AVAX at a given point in time
- */
-export const getEthPriceAtDate = async (timestamp) => {
-  let datetime = new Date(timestamp * 1000) // convert to milliseconds
-
-  let dateString = datetime.getDate() + '-' + (datetime.getMonth() + 1) + '-' + datetime.getFullYear()
-
-  let result = await coinGeckoClient.coins.fetchHistory('avalanche-2', {
-    date: dateString
-  })
-
-  let ethPrice = result['data']['market_data']['current_price']['usd']
-
-  return ethPrice
 }
 
 const PAIRS_TO_FETCH = 500
@@ -545,7 +481,7 @@ async function getAllPairsOnUniswap() {
       })
       skipCount = skipCount + PAIRS_TO_FETCH
       pairs = pairs.concat(result?.data?.pairs)
-      if (result?.data?.pairs.length < PAIRS_TO_FETCH || pairs.length > PAIRS_TO_FETCH) {
+      if (result?.data?.pairs.length <= PAIRS_TO_FETCH || pairs.length >= PAIRS_TO_FETCH) {
         allFound = true
       }
     }
@@ -572,7 +508,7 @@ async function getAllTokensOnUniswap() {
         fetchPolicy: 'cache-first',
       })
       tokens = tokens.concat(result?.data?.tokens)
-      if (result?.data?.tokens?.length < TOKENS_TO_FETCH || tokens.length > TOKENS_TO_FETCH) {
+      if (result?.data?.tokens?.length <= TOKENS_TO_FETCH || tokens.length >= TOKENS_TO_FETCH) {
         allFound = true
       }
       skipCount = skipCount += TOKENS_TO_FETCH
@@ -588,25 +524,21 @@ async function getAllTokensOnUniswap() {
  */
 export function useGlobalData() {
   const [state, { update, updateAllPairsInUniswap, updateAllTokensInUniswap }] = useGlobalDataContext()
-  const [ethPrice, oldEthPrice] = useEthPrice()
 
   const data = state?.globalData
 
   useEffect(() => {
     async function fetchData() {
-      let globalData = await getGlobalData(ethPrice, oldEthPrice)
-      globalData && update(globalData)
+      const globalDataPromise = getGlobalData().then((globalData) => globalData && update(globalData))
+      const allPairsPromise = getAllPairsOnUniswap().then((allPairs) => updateAllPairsInUniswap(allPairs))
+      const allTokensPromise = getAllTokensOnUniswap().then((allTokens) => updateAllTokensInUniswap(allTokens))
 
-      let allPairs = await getAllPairsOnUniswap()
-      updateAllPairsInUniswap(allPairs)
-
-      let allTokens = await getAllTokensOnUniswap()
-      updateAllTokensInUniswap(allTokens)
+      await Promise.all([globalDataPromise, allPairsPromise, allTokensPromise])
     }
-    if (!data && ethPrice && oldEthPrice) {
+    if (!data) {
       fetchData()
     }
-  }, [ethPrice, oldEthPrice, update, data, updateAllPairsInUniswap, updateAllTokensInUniswap])
+  }, [update, data, updateAllPairsInUniswap, updateAllTokensInUniswap])
 
   return data || {}
 }
@@ -618,8 +550,6 @@ export function useGlobalChartData() {
 
   const chartDataDaily = state?.chartData?.daily
   const chartDataWeekly = state?.chartData?.weekly
-
-  const [ethPrice] = useEthPrice()
 
   /**
    * Keep track of oldest date fetched. Used to
@@ -641,13 +571,13 @@ export function useGlobalChartData() {
   useEffect(() => {
     async function fetchData() {
       // historical stuff for chart
-      let [newChartData, newWeeklyData] = await getChartData(oldestDateFetch, ethPrice)
+      let [newChartData, newWeeklyData] = await getChartData(oldestDateFetch)
       updateChart(newChartData, newWeeklyData)
     }
     if (oldestDateFetch && !(chartDataDaily && chartDataWeekly)) {
       fetchData()
     }
-  }, [chartDataDaily, chartDataWeekly, oldestDateFetch, updateChart, ethPrice])
+  }, [chartDataDaily, chartDataWeekly, oldestDateFetch, updateChart])
 
   return [chartDataDaily, chartDataWeekly]
 }
@@ -708,8 +638,6 @@ export function useTopLps() {
 
   const allPairs = useAllPairData()
 
-  let [avaxPrice] = useEthPrice()
-
   useEffect(() => {
     async function fetchData() {
       // get top 20 by reserves
@@ -744,7 +672,7 @@ export function useTopLps() {
           return list.map((entry) => {
             const pairData = allPairs[entry.pair.id]
             const usd = (parseFloat(entry.liquidityTokenBalance) / parseFloat(pairData.totalSupply)) *
-              parseFloat(pairData.reserveUSD) * avaxPrice
+              parseFloat(pairData.reserveUSD)
             if (usd) {
               return topLps.push({
                 user: entry.user,

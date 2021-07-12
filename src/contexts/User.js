@@ -11,10 +11,11 @@ import {
 import { useTimeframe, useStartTimestamp } from './Application'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import { useEthPrice, getEthPriceAtDate, getCurrentEthPrice } from './GlobalData'
+import { useEthPrice } from './GlobalData'
 import { getLPReturnsOnPair, getHistoricalPairReturns } from '../utils/returns'
 import { timeframeOptions } from '../constants'
 import _ from 'lodash'
+import { crawlSingleQuery } from "../utils";
 
 dayjs.extend(utc)
 
@@ -186,19 +187,8 @@ export function useUserTransactions(account) {
     }
   }, [account, transactions, updateTransactions])
 
-  let [avaxPrice] = useEthPrice()
-
   if (transactions) {
     let txCopy = _.cloneDeep(transactions)
-    for (let i = 0; i < txCopy.mints.length; i++) {
-      txCopy.mints[i].amountUSD = (parseFloat(txCopy.mints[i].amountUSD) * avaxPrice).toString()
-    }
-    for (let i = 0; i < txCopy.burns.length; i++) {
-      txCopy.burns[i].amountUSD = (parseFloat(txCopy.burns[i].amountUSD) * avaxPrice).toString()
-    }
-    for (let i = 0; i < txCopy.swaps.length; i++) {
-      txCopy.swaps[i].amountUSD = (parseFloat(txCopy.swaps[i].amountUSD) * avaxPrice).toString()
-    }
     //txCopy.converted = true
     return txCopy
   }
@@ -218,25 +208,16 @@ export function useUserSnapshots(account) {
   useEffect(() => {
     async function fetchData() {
       try {
-        let skip = 0
-        let allResults = []
-        let found = false
-        while (!found) {
-          let result = await client.query({
-            query: USER_HISTORY,
-            variables: {
-              skip: skip,
-              user: account,
-            },
-            fetchPolicy: 'cache-first',
-          })
-          allResults = allResults.concat(result.data.liquidityPositionSnapshots)
-          if (result.data.liquidityPositionSnapshots.length < 1000) {
-            found = true
-          } else {
-            skip += 1000
-          }
-        }
+        const allResults = await crawlSingleQuery(
+          USER_HISTORY,
+          'liquidityPositionSnapshots',
+          client,
+          { fetchPolicy: 'cache-first' },
+          { user: account },
+          dayjs.utc().unix(),
+          'timestamp',
+          false
+        )
         if (allResults) {
           updateUserSnapshots(account, allResults)
         }
@@ -289,17 +270,6 @@ export function useUserPositionChart(position, account) {
         pairSnapshots,
         currentETHPrice
       )
-      if (fetchedData) {
-        for (let j = 0; j < fetchedData.length; j++) {
-          let latestAvaxPrice
-          if (j === fetchedData.length - 1) {
-            latestAvaxPrice = await getCurrentEthPrice()
-          } else {
-            latestAvaxPrice = await getEthPriceAtDate(fetchedData[j].date)
-          }
-          fetchedData[j].usdValue = fetchedData[j].usdValue * latestAvaxPrice
-        }
-      }
       updateUserPairReturns(account, pairAddress, fetchedData)
     }
     if (
@@ -456,18 +426,6 @@ export function useUserLiquidityChart(account) {
           date: dayTimestamp,
           valueUSD: dailyUSD,
         })
-      }
-
-      if (formattedHistory) {
-        for (let j = 0; j < formattedHistory.length; j++) {
-          let latestAvaxPrice
-          if (j === formattedHistory.length - 1) {
-            latestAvaxPrice = await getCurrentEthPrice()
-          } else {
-            latestAvaxPrice = await getEthPriceAtDate(formattedHistory[j].date)
-          }
-          formattedHistory[j].valueUSD = formattedHistory[j].valueUSD * latestAvaxPrice
-        }
       }
 
       setFormattedHistory(formattedHistory)

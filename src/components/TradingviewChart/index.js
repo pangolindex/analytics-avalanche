@@ -8,7 +8,6 @@ import { usePrevious } from 'react-use'
 import { Play } from 'react-feather'
 import { useDarkModeManager } from '../../contexts/LocalStorage'
 import { IconWrapper } from '..'
-import { useEthPrice } from '../../contexts/GlobalData'
 
 dayjs.extend(utc)
 
@@ -27,6 +26,7 @@ const HEIGHT = 300
 const TradingViewChart = ({
   type = CHART_TYPES.BAR,
   data,
+  isUSD = true,
   base,
   baseChange,
   field,
@@ -39,26 +39,12 @@ const TradingViewChart = ({
 
   // pointer to the chart object
   const [chartCreated, setChartCreated] = useState(false)
-  const dataPrev = usePrevious(data)
 
-  let ethPrice = useEthPrice()[0]
-
-  useEffect(() => {
-    if (data !== dataPrev && chartCreated && type === CHART_TYPES.BAR) {
-      // remove the tooltip element
-      let tooltip = document.getElementById('tooltip-id' + type)
-      let node = document.getElementById('test-id' + type)
-      node.removeChild(tooltip)
-      chartCreated.resize(0, 0)
-      setChartCreated()
-    }
-  }, [chartCreated, data, dataPrev, type])
-
-  // parese the data and format for tardingview consumption
+  // parse the data and format for tradingview consumption
   const formattedData = data?.map((entry) => {
     return {
       time: dayjs.unix(entry.date).utc().format('YYYY-MM-DD'),
-      value: parseFloat(entry[field]) * ethPrice,
+      value: parseFloat(entry[field]),
     }
   })
 
@@ -68,10 +54,12 @@ const TradingViewChart = ({
   const [darkMode] = useDarkModeManager()
   const textColor = darkMode ? 'white' : 'black'
   const previousTheme = usePrevious(darkMode)
+  const previousData = usePrevious(data)
+  const previousBase = usePrevious(base)
 
-  // reset the chart if them switches
+  // reset the chart when required
   useEffect(() => {
-    if (chartCreated && previousTheme !== darkMode) {
+    if (chartCreated && (data !== previousData || base !== previousBase || darkMode !== previousTheme)) {
       // remove the tooltip element
       let tooltip = document.getElementById('tooltip-id' + type)
       let node = document.getElementById('test-id' + type)
@@ -79,7 +67,7 @@ const TradingViewChart = ({
       chartCreated.resize(0, 0)
       setChartCreated()
     }
-  }, [chartCreated, darkMode, previousTheme, type])
+  }, [chartCreated, data, previousData, base, previousBase, darkMode, previousTheme, type])
 
   // if no chart created yet, create one with options and add to DOM manually
   useEffect(() => {
@@ -125,7 +113,7 @@ const TradingViewChart = ({
           },
         },
         localization: {
-          priceFormatter: (val) => formattedNum(val, true),
+          priceFormatter: (val) => formattedNum(val, isUSD),
         },
       })
 
@@ -172,7 +160,7 @@ const TradingViewChart = ({
           `<div style="font-size: 16px; margin: 4px 0px; color: ${textColor};">${title} ${type === CHART_TYPES.BAR && !useWeekly ? '(24hr)' : ''
           }</div>` +
           `<div style="font-size: 22px; margin: 4px 0px; color:${textColor}" >` +
-          formattedNum(base ?? 0, true) +
+          formattedNum(base ?? 0, isUSD) +
           `<span style="margin-left: 10px; font-size: 16px; color: ${color};">${formattedPercentChange}</span>` +
           '</div>'
       }
@@ -204,7 +192,7 @@ const TradingViewChart = ({
           toolTip.innerHTML =
             `<div style="font-size: 16px; margin: 4px 0px; color: ${textColor};">${title}</div>` +
             `<div style="font-size: 22px; margin: 4px 0px; color: ${textColor}">` +
-            formattedNum(price, true) +
+            formattedNum(price, isUSD) +
             '</div>' +
             '<div>' +
             dateStr +
@@ -219,6 +207,7 @@ const TradingViewChart = ({
   }, [
     base,
     baseChange,
+    isUSD,
     chartCreated,
     darkMode,
     data,

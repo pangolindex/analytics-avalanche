@@ -4,8 +4,8 @@ import dayjs from 'dayjs'
 import { getShareValueOverTime } from '.'
 
 export const priceOverrides = [
-  '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
-  '0x6b175474e89094c44da98b954eedeac495271d0f', // DAI
+  '0xde3a24028580884448a5397872046a019649b084', // USDT
+  '0xba7deebbfc5fa1100fb055a87773e1e99cd3507a', // DAI
 ]
 
 interface ReturnMetrics {
@@ -14,6 +14,8 @@ interface ReturnMetrics {
   uniswapReturn: number // netReturn - hodlReturn
   impLoss: number
   fees: number
+  fees0: number // fees of token0
+  fees1: number // fees of token1
 }
 
 // used to calculate returns within a given window bounded by two positions
@@ -28,8 +30,10 @@ interface Position {
   token1PriceUSD: number
 }
 
-const PRICE_DISCOVERY_START_TIMESTAMP = 1589747086
+// February 9th 2021 - WAVAX/USDT pair is created
+const PRICE_DISCOVERY_START_TIMESTAMP = 1612876523
 
+// TODO: Address avalanche specific assets and timeframes
 function formatPricesForEarlyTimestamps(position): Position {
   if (position.timestamp < PRICE_DISCOVERY_START_TIMESTAMP) {
     if (priceOverrides.includes(position?.pair?.token0.id)) {
@@ -38,12 +42,12 @@ function formatPricesForEarlyTimestamps(position): Position {
     if (priceOverrides.includes(position?.pair?.token1.id)) {
       position.token1PriceUSD = 1
     }
-    // WETH price
-    if (position.pair?.token0.id === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2') {
-      position.token0PriceUSD = 203
+    // WAVAX price
+    if (position.pair?.token0.id === '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7') {
+      position.token0PriceUSD = 18
     }
-    if (position.pair?.token1.id === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2') {
-      position.token1PriceUSD = 203
+    if (position.pair?.token1.id === '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7') {
+      position.token1PriceUSD = 18
     }
   }
   return position
@@ -111,14 +115,14 @@ export function getMetricsForPositionWindow(positionT0: Position, positionT1: Po
   // calculate ownership at ends of window, for end of window we need original LP token balance / new total supply
   // eslint-disable-next-line eqeqeq
   const t0Ownership =
-      positionT0.liquidityTokenTotalSupply != 0
-          ? positionT0.liquidityTokenBalance / positionT0.liquidityTokenTotalSupply
-          : 0
+    positionT0.liquidityTokenTotalSupply !== 0
+      ? positionT0.liquidityTokenBalance / positionT0.liquidityTokenTotalSupply
+      : 0
   // eslint-disable-next-line eqeqeq
   const t1Ownership =
-      positionT1.liquidityTokenTotalSupply != 0
-          ? positionT0.liquidityTokenBalance / positionT1.liquidityTokenTotalSupply
-          : 0
+    positionT1.liquidityTokenTotalSupply !== 0
+      ? positionT0.liquidityTokenBalance / positionT1.liquidityTokenTotalSupply
+      : 0
 
   // get starting amounts of token0 and token1 deposited by LP
   const token0_amount_t0 = t0Ownership * positionT0.reserve0
@@ -161,6 +165,8 @@ export function getMetricsForPositionWindow(positionT0: Position, positionT1: Po
     uniswapReturn: uniswap_return,
     impLoss: imp_loss_usd,
     fees: difference_fees_usd,
+    fees0: difference_fees_token0,
+    fees1: difference_fees_token1,
   }
 }
 
@@ -270,6 +276,8 @@ export async function getLPReturnsOnPair(user: string, pair, ethPrice: number, s
   let netReturn = 0
   let uniswapReturn = 0
   let fees = 0
+  let feesToken0 = 0
+  let feesToken1 = 0
 
   snapshots = snapshots.filter((entry) => {
     return entry.pair.id === pair.id
@@ -282,7 +290,7 @@ export async function getLPReturnsOnPair(user: string, pair, ethPrice: number, s
     liquidityTokenTotalSupply: pair.totalSupply,
     reserve0: pair.reserve0,
     reserve1: pair.reserve1,
-    reserveUSD: pair.reserveUSD * ethPrice,
+    reserveUSD: pair.reserveUSD,
     token0PriceUSD: pair.token0.derivedETH * ethPrice,
     token1PriceUSD: pair.token1.derivedETH * ethPrice,
   }
@@ -297,6 +305,8 @@ export async function getLPReturnsOnPair(user: string, pair, ethPrice: number, s
     netReturn = netReturn + results.netReturn
     uniswapReturn = uniswapReturn + results.uniswapReturn
     fees = fees + results.fees
+    feesToken0 = feesToken0 + results.fees0
+    feesToken1 = feesToken1 + results.fees1
   }
 
   return {
@@ -309,6 +319,8 @@ export async function getLPReturnsOnPair(user: string, pair, ethPrice: number, s
     },
     fees: {
       sum: fees,
+      token0: feesToken0,
+      token1: feesToken1,
     },
   }
 }

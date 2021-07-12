@@ -19,7 +19,6 @@ import { FEE_WARNING_TOKENS } from '../constants'
 import { BasicLink } from '../components/Link'
 import { useMedia } from 'react-use'
 import Search from '../components/Search'
-import { useEthPrice } from '../contexts/GlobalData'
 import Markr from '../assets/markr.png'
 
 const AccountWrapper = styled.div`
@@ -131,19 +130,17 @@ function AccountPage({ account }) {
     return total + position.fees.sum
   }, 0)
 
-  const [ethPrice] = useEthPrice()
-
   const positionValue = useMemo(() => {
     return dynamicPositions
       ? dynamicPositions.reduce((total, position) => {
         return (
           total +
           (parseFloat(position?.liquidityTokenBalance) / parseFloat(position?.pair?.totalSupply)) *
-          position?.pair?.reserveUSD * ethPrice
+          position?.pair?.reserveUSD
         )
       }, 0)
       : null
-  }, [dynamicPositions, ethPrice])
+  }, [dynamicPositions])
 
   useEffect(() => {
     window.scrollTo({
@@ -297,7 +294,7 @@ function AccountPage({ account }) {
                 {activePosition ? (
                   <PairReturnsChart account={account} position={activePosition} />
                 ) : (
-                    <UserChart account={account} position={activePosition} />
+                    <UserChart account={account} />
                   )}
               </Panel>
             </PanelWrapper>

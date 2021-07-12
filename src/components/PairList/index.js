@@ -115,7 +115,7 @@ const FIELD_TO_VALUE = {
   [SORT_FIELD.FEES]: 'oneDayVolumeUSD',
 }
 
-function PairList({ pairs, color, disbaleLinks, maxItems = 10 }) {
+function PairList({ pairs, color, disableLinks, maxItems = 10 }) {
   const below600 = useMedia('(max-width: 600px)')
   const below740 = useMedia('(max-width: 740px)')
   const below1080 = useMedia('(max-width: 1080px)')
@@ -153,7 +153,7 @@ function PairList({ pairs, color, disbaleLinks, maxItems = 10 }) {
       const apy = formattedPercent((pairData.oneDayVolumeUSD * 0.003 * 365 * 100) / pairData.trackedReserveUSD)
 
       return (
-        <DashGrid style={{ height: '48px' }} disbaleLinks={disbaleLinks} focus={true}>
+        <DashGrid style={{ height: '48px' }} disableLinks={disableLinks} focus={true}>
           <DataText area="name" fontWeight="500">
             {!below600 && <div style={{ marginRight: '20px', width: '10px' }}>{index}</div>}
             <DoubleTokenLogo
@@ -192,11 +192,11 @@ function PairList({ pairs, color, disbaleLinks, maxItems = 10 }) {
         if (sortedColumn === SORT_FIELD.APY) {
           const apy0 = parseFloat(pairA.oneDayVolumeUSD * 0.003 * 356 * 100) / parseFloat(pairA.trackedReserveUSD)
           const apy1 = parseFloat(pairB.oneDayVolumeUSD * 0.003 * 356 * 100) / parseFloat(pairB.trackedReserveUSD)
-          return apy0 > apy1 ? (sortDirection ? -1 : 1) * 1 : (sortDirection ? -1 : 1) * -1
+          return apy0 > apy1 ? (sortDirection ? -1 : 1) : (sortDirection ? 1 : -1)
         }
         return parseFloat(pairA[FIELD_TO_VALUE[sortedColumn]]) > parseFloat(pairB[FIELD_TO_VALUE[sortedColumn]])
-          ? (sortDirection ? -1 : 1) * 1
-          : (sortDirection ? -1 : 1) * -1
+          ? (sortDirection ? -1 : 1)
+          : (sortDirection ? 1 : -1)
       })
       .slice(ITEMS_PER_PAGE * (page - 1), page * ITEMS_PER_PAGE)
       .map((pairAddress, index) => {
@@ -214,7 +214,7 @@ function PairList({ pairs, color, disbaleLinks, maxItems = 10 }) {
     <ListWrapper>
       <DashGrid
         center={true}
-        disbaleLinks={disbaleLinks}
+        disableLinks={disableLinks}
         style={{ height: 'fit-content', padding: '0 1.125rem 1rem 1.125rem' }}
       >
         <Flex alignItems="center" justifyContent="flexStart">
@@ -285,7 +285,7 @@ function PairList({ pairs, color, disbaleLinks, maxItems = 10 }) {
         )}
       </DashGrid>
       <Divider />
-      <List p={0}>{!pairList ? <LocalLoader /> : pairList}</List>
+      <List p={0}>{pairList && pairList.length > 0 ? pairList : <LocalLoader />}</List>
       <PageButtons>
         <div
           onClick={(e) => {
