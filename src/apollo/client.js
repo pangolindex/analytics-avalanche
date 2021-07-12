@@ -4,7 +4,7 @@ import { HttpLink } from 'apollo-link-http'
 
 export const client = new ApolloClient({
   link: new HttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/name/bmino/pangolin-beta',
+    uri: 'https://api.thegraph.com/subgraphs/name/dasconnor/pangolin-dex',
   }),
   cache: new InMemoryCache(),
   shouldBatch: true,
