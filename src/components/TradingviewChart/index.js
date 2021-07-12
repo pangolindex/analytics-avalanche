@@ -54,12 +54,12 @@ const TradingViewChart = ({
   const [darkMode] = useDarkModeManager()
   const textColor = darkMode ? 'white' : 'black'
   const previousTheme = usePrevious(darkMode)
-  const previousData = usePrevious(data)
-  const previousBase = usePrevious(base)
+  const previousIsUSD = usePrevious(isUSD)
+  const previousUseWeekly = usePrevious(useWeekly)
 
   // reset the chart when required
   useEffect(() => {
-    if (chartCreated && (data !== previousData || base !== previousBase || darkMode !== previousTheme)) {
+    if (chartCreated && (isUSD !== previousIsUSD || useWeekly !== previousUseWeekly || darkMode !== previousTheme)) {
       // remove the tooltip element
       let tooltip = document.getElementById('tooltip-id' + type)
       let node = document.getElementById('test-id' + type)
@@ -67,7 +67,7 @@ const TradingViewChart = ({
       chartCreated.resize(0, 0)
       setChartCreated()
     }
-  }, [chartCreated, data, previousData, base, previousBase, darkMode, previousTheme, type])
+  }, [chartCreated, isUSD, previousIsUSD, useWeekly, previousUseWeekly, darkMode, previousTheme, type])
 
   // if no chart created yet, create one with options and add to DOM manually
   useEffect(() => {
