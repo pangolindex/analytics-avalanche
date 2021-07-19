@@ -67,7 +67,8 @@ const CandleStickChart = ({
 
   // reset the chart if theme switches
   useEffect(() => {
-    if (chartCreated && previousTheme !== darkMode) {
+    // eslint-disable-next-line react/prop-types
+    if (chartCreated && (previousTheme !== darkMode || data.length !== dataPrev.length)) {
       // remove the tooltip element
       let tooltip = document.getElementById('tooltip-id')
       let node = document.getElementById('test-id')
@@ -75,18 +76,7 @@ const CandleStickChart = ({
       chartCreated.resize(0, 0)
       setChartCreated()
     }
-  }, [chartCreated, darkMode, previousTheme])
-
-  useEffect(() => {
-    if (data !== dataPrev && chartCreated) {
-      // remove the tooltip element
-      let tooltip = document.getElementById('tooltip-id')
-      let node = document.getElementById('test-id')
-      node.removeChild(tooltip)
-      chartCreated.resize(0, 0)
-      setChartCreated()
-    }
-  }, [chartCreated, data, dataPrev])
+  }, [chartCreated, darkMode, previousTheme, data, dataPrev])
 
   // if no chart created yet, create one with options and add to DOM manually
   useEffect(() => {
