@@ -8,7 +8,7 @@ import copy from 'copy-to-clipboard'
 export function useColor(tokenAddress, token) {
   const [color, setColor] = useState('#2172E5')
   if (tokenAddress) {
-    const path = `https://raw.githubusercontent.com/ava-labs/bridge-tokens/main/avalanche-tokens/${isAddress(
+    const path = `https://raw.githubusercontent.com/pangolindex/tokens/main/assets/${isAddress(
       tokenAddress
     )}/logo.png`
     if (path) {
