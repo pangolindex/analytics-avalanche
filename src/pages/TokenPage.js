@@ -24,12 +24,12 @@ import CopyHelper from '../components/Copy'
 import { useMedia } from 'react-use'
 import { useDataForList } from '../contexts/PairData'
 import { useEffect } from 'react'
-import Warning from '../components/Warning'
+import { ArbitraryWarning, MigrateWarning } from '../components/Warning'
 import { usePathDismissed, useSavedTokens } from '../contexts/LocalStorage'
 import { Hover, PageWrapper, ContentWrapper, StyledIcon } from '../components'
 import { PlusCircle, Bookmark } from 'react-feather'
 import FormattedName from '../components/FormattedName'
-import { useListedTokens } from '../contexts/Application'
+import { useListedTokens, useMigratedTokens } from '../contexts/Application'
 
 const DashboardWrapper = styled.div`
   width: 100%;
@@ -159,6 +159,7 @@ function TokenPage({ address, history }) {
   const [dismissed, markAsDismissed] = usePathDismissed(history.location.pathname)
   const [savedTokens, addToken] = useSavedTokens()
   const listedTokens = useListedTokens()
+  const migratedTokens = useMigratedTokens()
 
   useEffect(() => {
     window.scrollTo({
@@ -171,12 +172,14 @@ function TokenPage({ address, history }) {
     <PageWrapper>
       <ThemedBackground backgroundColor={transparentize(0.6, backgroundColor)} />
 
-      <Warning
+      <ArbitraryWarning
         type={'token'}
         show={!dismissed && listedTokens && !listedTokens.includes(address)}
         setShow={markAsDismissed}
         address={address}
       />
+      <MigrateWarning show={migratedTokens && migratedTokens.includes(address)} />
+
       <ContentWrapper>
         <RowBetween style={{ flexWrap: 'wrap', alingItems: 'start' }}>
           <AutoRow align="flex-end" style={{ width: 'fit-content' }}>
