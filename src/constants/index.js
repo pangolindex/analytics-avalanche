@@ -1,6 +1,7 @@
 export const FACTORY_ADDRESS = '0xefa94DE7a4656D787667C749f7E1223D71E9FD88' // new factory
 
 export const WAVAX_ADDRESS = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'
+export const PNG_ADDRESS = '0x60781C2586D68229fde47564546784ab3fACA982'
 
 export const BUNDLE_ID = '1'
 
@@ -14,9 +15,13 @@ export const timeframeOptions = {
 
 // token list urls to fetch tokens from - use for warnings on tokens and pairs
 export const SUPPORTED_LIST_URLS__NO_ENS = [
-  'https://raw.githubusercontent.com/pangolindex/tokenlists/main/aeb.tokenlist.json',
   'https://raw.githubusercontent.com/pangolindex/tokenlists/main/ab.tokenlist.json',
   'https://raw.githubusercontent.com/pangolindex/tokenlists/main/top15.tokenlist.json',
+]
+
+// token list urls to fetch migrated tokens from - use for warnings on tokens and pairs
+export const MIGRATED_LIST_URLS__NO_ENS = [
+  'https://raw.githubusercontent.com/pangolindex/tokenlists/main/aeb.tokenlist.json',
 ]
 
 // hide from overview list
