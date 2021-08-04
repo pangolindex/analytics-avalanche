@@ -174,7 +174,7 @@ function PairList({ pairs, color, disableLinks, maxItems = 10 }) {
           <DataText area="liq">{liquidity}</DataText>
           <DataText area="vol">{volume}</DataText>
           {!below1080 && <DataText area="volWeek">{formattedNum(pairData.oneWeekVolumeUSD, true)}</DataText>}
-          {!below1080 && <DataText area="fees">{formattedNum(pairData.oneDayVolumeUSD * 0.003, true)}</DataText>}
+          {!below1080 && <DataText area="fees">{(pairData.oneDayVolumeUSD * 100).toFixed(1)}%</DataText>}
           {!below1080 && <DataText area="apy">{apy}</DataText>}
         </DashGrid>
       )
@@ -182,6 +182,10 @@ function PairList({ pairs, color, disableLinks, maxItems = 10 }) {
       return ''
     }
   }
+
+  Object.values(pairs).forEach((p) => {
+    p.oneDayVolumeUSD = parseFloat(p.oneWeekVolumeUSD) / parseFloat(p.trackedReserveUSD)
+  })
 
   const pairList =
     pairs &&
@@ -265,7 +269,7 @@ function PairList({ pairs, color, disableLinks, maxItems = 10 }) {
                 setSortDirection(sortedColumn !== SORT_FIELD.FEES ? true : !sortDirection)
               }}
             >
-              Fees (24hr) {sortedColumn === SORT_FIELD.FEES ? (!sortDirection ? '↑' : '↓') : ''}
+              Efficiency {sortedColumn === SORT_FIELD.FEES ? (!sortDirection ? '↑' : '↓') : ''}
             </ClickableText>
           </Flex>
         )}

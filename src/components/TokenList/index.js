@@ -162,6 +162,13 @@ function TopTokenList({ tokens, itemMax = 10 }) {
   }, [tokens, formattedTokens, itemMax])
 
   const filteredList = useMemo(() => {
+    formattedTokens.forEach((item) => {
+      console.log(item)
+      item.priceUSD = item.oneDayVolumeUSD && item.totalLiquidityUSD
+        ? parseFloat(item.oneDayVolumeUSD) / parseFloat(item.totalLiquidityUSD)
+        : 0
+    })
+
     return (
       formattedTokens &&
       formattedTokens
@@ -203,7 +210,7 @@ function TopTokenList({ tokens, itemMax = 10 }) {
         <DataText area="vol">{formattedNum(item.oneDayVolumeUSD, true)}</DataText>
         {!below1080 && (
           <DataText area="price" color="text" fontWeight="500">
-            {formattedNum(item.priceUSD, true)}
+            {(item.priceUSD * 100).toFixed(1)}%
           </DataText>
         )}
         {!below1080 && <DataText area="change">{formattedPercent(item.priceChangeUSD)}</DataText>}
@@ -273,7 +280,7 @@ function TopTokenList({ tokens, itemMax = 10 }) {
                 setSortDirection(sortedColumn !== SORT_FIELD.PRICE ? true : !sortDirection)
               }}
             >
-              Price {sortedColumn === SORT_FIELD.PRICE ? (!sortDirection ? '↑' : '↓') : ''}
+              Efficiency {sortedColumn === SORT_FIELD.PRICE ? (!sortDirection ? '↑' : '↓') : ''}
             </ClickableText>
           </Flex>
         )}
