@@ -141,7 +141,7 @@ export const PRICES_BY_BLOCK = (tokenAddress, blocks) => {
 
 export const TOP_LPS_PER_PAIRS = gql`
   query lps($pair: Bytes!) {
-    liquidityPositions(where: { pair: $pair }, orderBy: liquidityTokenBalance, orderDirection: desc, first: 10) {
+    liquidityPositions(where: { pair: $pair }, orderBy: liquidityTokenBalance, orderDirection: desc, first: 100) {
       user {
         id
       }
