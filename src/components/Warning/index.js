@@ -32,7 +32,7 @@ const StyledWarningIcon = styled(AlertTriangle)`
   stroke: red;
 `
 
-export default function Warning({ type, show, setShow, address }) {
+export function ArbitraryWarning({ type, show, setShow, address }) {
   const below800 = useMedia('(max-width: 800px)')
 
   const textContent = below800 ? (
@@ -47,13 +47,13 @@ export default function Warning({ type, show, setShow, address }) {
       </Text>
     </div>
   ) : (
-      <Text fontWeight={500} lineHeight={'145.23%'} mt={'10px'}>
-        Anyone can create and name any ERC-20 token on Avalanche, including creating fake versions of existing tokens and
-        tokens that claim to represent projects that do not have a token. Similar to Etherscan, this site automatically
-        tracks analytics for all ERC-20 tokens independent of token integrity. Please do your own research before
-        interacting with any ERC-20 token.
-      </Text>
-    )
+    <Text fontWeight={500} lineHeight={'145.23%'} mt={'10px'}>
+      Anyone can create and name any ERC-20 token on Avalanche, including creating fake versions of existing tokens and
+      tokens that claim to represent projects that do not have a token. Similar to Etherscan, this site automatically
+      tracks analytics for all ERC-20 tokens independent of token integrity. Please do your own research before
+      interacting with any ERC-20 token.
+    </Text>
+  )
 
   return (
     <WarningWrapper show={show}>
@@ -86,23 +86,51 @@ export default function Warning({ type, show, setShow, address }) {
             </RowBetween>
           </div>
         ) : (
-            <RowBetween style={{ marginTop: '10px' }}>
-              <Hover>
-                <Link
-                  fontWeight={500}
-                  lineHeight={'145.23%'}
-                  color={'#2172E5'}
-                  href={'https://cchain.explorer.avax.network/address/' + address}
-                  target="_blank"
-                >
-                  View {type === 'token' ? 'token' : 'pair'} contract on Etherscan
+          <RowBetween style={{ marginTop: '10px' }}>
+            <Hover>
+              <Link
+                fontWeight={500}
+                lineHeight={'145.23%'}
+                color={'#2172E5'}
+                href={'https://cchain.explorer.avax.network/address/' + address}
+                target="_blank"
+              >
+                View {type === 'token' ? 'token' : 'pair'} contract on Etherscan
               </Link>
-              </Hover>
-              <ButtonDark color={'#f82d3a'} style={{ minWidth: '140px' }} onClick={() => setShow(false)}>
-                I understand
+            </Hover>
+            <ButtonDark color={'#f82d3a'} style={{ minWidth: '140px' }} onClick={() => setShow(false)}>
+              I understand
             </ButtonDark>
-            </RowBetween>
-          )}
+          </RowBetween>
+        )}
+      </AutoColumn>
+    </WarningWrapper>
+  )
+}
+
+export function MigrateWarning({ show }) {
+  return (
+    <WarningWrapper show={show}>
+      <AutoColumn gap="4px">
+        <RowFixed>
+          <StyledWarningIcon />
+          <Text fontWeight={600} lineHeight={'145.23%'} ml={'10px'}>
+            Token Migration Alert
+          </Text>
+        </RowFixed>
+        <Text fontWeight={500} lineHeight={'145.23%'} mt={'10px'}>
+          Due to the introduction of the faster, cheaper, and safer AB bridge, assets bridged via the old AEB bridge are
+          being migrated 1:1 to their new equivalent token. These tokens are still being traded, but should be migrated
+          for ease of integration with Avalanche dapps.
+        </Text>
+        <RowBetween style={{ marginTop: '10px' }}>
+          <div />
+          <Link href={'https://bridge.avax.network/convert'} target="_blank">
+            <ButtonDark color={'#f82d3a'} style={{ minWidth: '140px' }}>
+              Migrate
+            </ButtonDark>
+          </Link>
+        </RowBetween>
       </AutoColumn>
     </WarningWrapper>
   )

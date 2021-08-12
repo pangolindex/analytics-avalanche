@@ -1,5 +1,11 @@
 import React, { createContext, useContext, useReducer, useMemo, useCallback, useState, useEffect } from 'react'
-import { timeframeOptions, SUPPORTED_LIST_URLS__NO_ENS } from '../constants'
+import {
+  timeframeOptions,
+  SUPPORTED_LIST_URLS__NO_ENS,
+  MIGRATED_LIST_URLS__NO_ENS,
+  WAVAX_ADDRESS,
+  PNG_ADDRESS,
+} from '../constants'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import getTokenList from '../utils/tokenLists'
@@ -11,10 +17,12 @@ const UPDATE = 'UPDATE'
 const UPDATE_TIMEFRAME = 'UPDATE_TIMEFRAME'
 const UPDATE_SESSION_START = 'UPDATE_SESSION_START'
 const UPDATED_SUPPORTED_TOKENS = 'UPDATED_SUPPORTED_TOKENS'
+const UPDATED_MIGRATED_TOKENS = 'UPDATED_MIGRATED_TOKENS'
 const UPDATE_LATEST_BLOCK = 'UPDATE_LATEST_BLOCK'
 const UPDATE_HEAD_BLOCK = 'UPDATE_HEAD_BLOCK'
 
 const SUPPORTED_TOKENS = 'SUPPORTED_TOKENS'
+const MIGRATED_TOKENS = 'MIGRATED_TOKENS'
 const TIME_KEY = 'TIME_KEY'
 const CURRENCY = 'CURRENCY'
 const SESSION_START = 'SESSION_START'
@@ -75,6 +83,14 @@ function reducer(state, { type, payload }) {
       }
     }
 
+    case UPDATED_MIGRATED_TOKENS: {
+      const { migratedTokens } = payload
+      return {
+        ...state,
+        [MIGRATED_TOKENS]: migratedTokens,
+      }
+    }
+
     default: {
       throw Error(`Unexpected action type in DataContext reducer: '${type}'.`)
     }
@@ -126,6 +142,15 @@ export default function Provider({ children }) {
     })
   }, [])
 
+  const updateMigratedTokens = useCallback((migratedTokens) => {
+    dispatch({
+      type: UPDATED_MIGRATED_TOKENS,
+      payload: {
+        migratedTokens,
+      },
+    })
+  }, [])
+
   const updateLatestBlock = useCallback((block) => {
     dispatch({
       type: UPDATE_LATEST_BLOCK,
@@ -154,11 +179,21 @@ export default function Provider({ children }) {
             updateSessionStart,
             updateTimeframe,
             updateSupportedTokens,
+            updateMigratedTokens,
             updateLatestBlock,
             updateHeadBlock,
           },
         ],
-        [state, update, updateTimeframe, updateSessionStart, updateSupportedTokens, updateLatestBlock, updateHeadBlock]
+        [
+          state,
+          update,
+          updateTimeframe,
+          updateSessionStart,
+          updateSupportedTokens,
+          updateMigratedTokens,
+          updateLatestBlock,
+          updateHeadBlock,
+        ]
       )}
     >
       {children}
@@ -281,4 +316,30 @@ export function useListedTokens() {
   }, [updateSupportedTokens, supportedTokens])
 
   return supportedTokens
+}
+
+export function useMigratedTokens() {
+  const [state, { updateMigratedTokens }] = useApplicationContext()
+  const migratedTokens = state?.[MIGRATED_TOKENS]
+
+  useEffect(() => {
+    // WAVAX and PNG should not be included in the migration tokens
+    const excludedTokens = [WAVAX_ADDRESS, PNG_ADDRESS].map((token) => token.toLowerCase())
+    async function fetchList() {
+      const allFetched = await MIGRATED_LIST_URLS__NO_ENS.reduce(async (fetchedTokens, url) => {
+        const tokensSoFar = await fetchedTokens
+        const newTokens = await getTokenList(url)
+        return Promise.resolve([...tokensSoFar, ...newTokens.tokens])
+      }, Promise.resolve([]))
+      const formatted = allFetched
+        ?.map((t) => t.address.toLowerCase())
+        .filter((address) => !excludedTokens.includes(address))
+      updateMigratedTokens(formatted)
+    }
+    if (!migratedTokens) {
+      fetchList()
+    }
+  }, [updateMigratedTokens, migratedTokens])
+
+  return migratedTokens
 }
