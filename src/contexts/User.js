@@ -350,7 +350,7 @@ export function useUserLiquidityChart(account) {
 
       const dayTimestamps = []
       // get date timestamps for all days in view
-      while (dayIndex < currentDayIndex) {
+      while (dayIndex <= currentDayIndex) {
         dayTimestamps.push(parseInt(dayIndex) * 86400)
         dayIndex = dayIndex + 1
       }
