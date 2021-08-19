@@ -107,11 +107,6 @@ function App() {
   return (
     <ApolloProvider client={client}>
       <AppWrapper>
-        <WarningWrapper>
-          <WarningBanner>
-            {`The Pangolin subgraph is currently undergoing updates to accommodate the new Avalanche bridge migration. Data displayed on this site will be temporarily inaccurate. Please check back soon.`}
-          </WarningBanner>
-        </WarningWrapper>
         {showWarning && (
           <WarningWrapper>
             <WarningBanner>
