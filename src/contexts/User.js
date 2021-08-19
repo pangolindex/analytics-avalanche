@@ -15,7 +15,7 @@ import { useEthPrice } from './GlobalData'
 import { getLPReturnsOnPair, getHistoricalPairReturns } from '../utils/returns'
 import { timeframeOptions } from '../constants'
 import _ from 'lodash'
-import { crawlSingleQuery } from "../utils";
+import { crawlSingleQuery } from '../utils'
 
 dayjs.extend(utc)
 
@@ -360,11 +360,16 @@ export function useUserLiquidityChart(account) {
       }, [])
 
       // get all day datas where date is in this list, and pair is in pair list
-      let {
-        data: { pairDayDatas },
-      } = await client.query({
-        query: PAIR_DAY_DATA_BULK(pairs, startDateTimestamp),
-      })
+      const pairDayDatas = await crawlSingleQuery(
+        PAIR_DAY_DATA_BULK,
+        'pairDayDatas',
+        client,
+        { fetchPolicy: 'cache-first' },
+        { pairs: pairs },
+        startDateTimestamp,
+        'date',
+        true
+      )
 
       const formattedHistory = []
 

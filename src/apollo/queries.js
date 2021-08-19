@@ -431,28 +431,25 @@ export const PAIR_DAY_DATA = gql`
   }
 `
 
-export const PAIR_DAY_DATA_BULK = (pairs, startTimestamp) => {
-  let pairsString = `[`
-  pairs.map((pair) => {
-    return (pairsString += `"${pair}"`)
-  })
-  pairsString += ']'
-  const queryString = `
-    query days {
-      pairDayDatas(first: 1000, orderBy: date, orderDirection: asc, where: { pairAddress_in: ${pairsString}, date_gt: ${startTimestamp} }) {
-        id
-        pairAddress
-        date
-        dailyVolumeToken0
-        dailyVolumeToken1
-        dailyVolumeUSD
-        totalSupply
-        reserveUSD
-      }
-    } 
+export const PAIR_DAY_DATA_BULK = gql`
+  query pairDayDatas($pointer: Int!, $pairs: [Bytes]!) {
+    pairDayDatas(
+      first: 1000
+      orderBy: date
+      orderDirection: asc
+      where: { pairAddress_in: $pairs, date_gt: $pointer }
+    ) {
+      id
+      pairAddress
+      date
+      dailyVolumeToken0
+      dailyVolumeToken1
+      dailyVolumeUSD
+      totalSupply
+      reserveUSD
+    }
+  }
 `
-  return gql(queryString)
-}
 
 export const GLOBAL_CHART = gql`
   query pangolinDayDatas($pointer: Int!) {
