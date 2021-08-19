@@ -355,8 +355,8 @@ export function useUserLiquidityChart(account) {
         dayIndex = dayIndex + 1
       }
 
-      const pairs = history.reduce((pairList, position) => {
-        return [...pairList, position.pair.id]
+      // get unique pair addresses from history
+      const pairs = [...new Set(history.map((history) => history.pair.id))]
       }, [])
 
       // get all day datas where date is in this list, and pair is in pair list
