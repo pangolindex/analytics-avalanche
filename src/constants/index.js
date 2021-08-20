@@ -16,6 +16,9 @@ export const timeframeOptions = {
 // token list urls to fetch tokens from - use for warnings on tokens and pairs
 export const SUPPORTED_LIST_URLS__NO_ENS = [
   'https://raw.githubusercontent.com/pangolindex/tokenlists/main/ab.tokenlist.json',
+  'https://raw.githubusercontent.com/pangolindex/tokenlists/main/aeb.tokenlist.json',
+  'https://raw.githubusercontent.com/pangolindex/tokenlists/main/defi.tokenlist.json',
+  'https://raw.githubusercontent.com/pangolindex/tokenlists/main/stablecoin.tokenlist.json',
   'https://raw.githubusercontent.com/pangolindex/tokenlists/main/top15.tokenlist.json',
 ]
 
