@@ -20,6 +20,9 @@ import { BasicLink } from '../components/Link'
 import { useMedia } from 'react-use'
 import Search from '../components/Search'
 import Markr from '../assets/markr.png'
+import Zapper from '../assets/zapper.png'
+import Debank from '../assets/debank.png'
+import Xtracker from '../assets/0xtracker.png'
 
 const AccountWrapper = styled.div`
   background-color: rgba(255, 255, 255, 0.2);
@@ -169,10 +172,25 @@ function AccountPage({ account }) {
             <span>
               <RowFixed gap="8px" justify="flex-start">
                 <TYPE.header fontSize={24}>{account?.slice(0, 6) + '...' + account?.slice(38, 42)}</TYPE.header>
+                <span style={{ marginLeft: '.5rem' }}>Track your portfolio on</span>
                 <Link external href={'https://markr.io/#/wallet?address=' + account} style={{ marginLeft: '.5rem' }}>
                   <ButtonLight style={{ padding: '4px 6px', borderRadius: '4px', display: 'flex', alignItems: 'center' }}>
-                    Track your portfolio on
-                    <img style={{ width: '16px', marginLeft: '.5rem' }} src={Markr} alt="Markr.io" />
+                    <img style={{ width: '16px' }} src={Markr} alt="Markr.io" />
+                  </ButtonLight >
+                </Link>
+                <Link external href={'https://zapper.fi/account/' + account} style={{ marginLeft: '.5rem' }}>
+                  <ButtonLight style={{ padding: '4px 6px', borderRadius: '4px', display: 'flex', alignItems: 'center' }}>
+                    <img style={{ width: '16px' }} src={Zapper} alt="Zapper.fi" />
+                  </ButtonLight >
+                </Link>
+                <Link external href={'https://debank.com/profile/' + account} style={{ marginLeft: '.5rem' }}>
+                  <ButtonLight style={{ padding: '4px 6px', borderRadius: '4px', display: 'flex', alignItems: 'center' }}>
+                    <img style={{ width: '16px' }} src={Debank} alt="Debank.com" />
+                  </ButtonLight >
+                </Link>
+                <Link external href={'https://0xtracker.app/portfolio/' + account} style={{ marginLeft: '.5rem' }}>
+                  <ButtonLight style={{ padding: '4px 6px', borderRadius: '4px', display: 'flex', alignItems: 'center' }}>
+                    <img style={{ width: '16px' }} src={Xtracker} alt="0xtracker.app" />
                   </ButtonLight >
                 </Link>
               </RowFixed>
