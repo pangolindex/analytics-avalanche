@@ -25,12 +25,12 @@ import DoubleTokenLogo from '../components/DoubleLogo'
 import TokenLogo from '../components/TokenLogo'
 import { Hover } from '../components'
 import { useEthPrice } from '../contexts/GlobalData'
-import { ArbitraryWarning } from '../components/Warning'
+import { ArbitraryWarning, MigrateWarning } from '../components/Warning'
 import { usePathDismissed, useSavedPairs } from '../contexts/LocalStorage'
 
 import { Bookmark, PlusCircle } from 'react-feather'
 import FormattedName from '../components/FormattedName'
-import { useListedTokens } from '../contexts/Application'
+import { useListedTokens, useMigratedTokens } from '../contexts/Application'
 
 const DashboardWrapper = styled.div`
   width: 100%;
@@ -128,6 +128,7 @@ function PairPage({ pairAddress, history }) {
 
   const transactions = usePairTransactions(pairAddress)
   const backgroundColor = useColor(pairAddress)
+  const migratedTokens = useMigratedTokens()
 
   // liquidity
   const liquidity = trackedReserveUSD
@@ -203,13 +204,15 @@ function PairPage({ pairAddress, history }) {
   return (
     <PageWrapper>
       <ThemedBackground backgroundColor={transparentize(0.6, backgroundColor)} />
-      <span />
+
       <ArbitraryWarning
         type={'pair'}
         show={!dismissed && listedTokens && !(listedTokens.includes(token0?.id) && listedTokens.includes(token1?.id))}
         setShow={markAsDismissed}
         address={pairAddress}
       />
+      <MigrateWarning show={migratedTokens?.includes(token0?.id) || migratedTokens?.includes(token1?.id)} />
+
       <ContentWrapperLarge>
         <RowBetween style={{ flexWrap: 'wrap', alingItems: 'start' }}>
           <AutoRow align="flex-end" style={{ width: 'fit-content' }}>
