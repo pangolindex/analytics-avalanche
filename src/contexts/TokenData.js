@@ -16,6 +16,7 @@ import { useEthPrice } from './GlobalData'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import _ from 'lodash'
+import CoinGecko from 'coingecko-api'
 
 import {
   get2DayPercentChange,
@@ -43,6 +44,7 @@ const TOKEN_PAIRS_KEY = 'TOKEN_PAIRS_KEY'
 dayjs.extend(utc)
 
 const TokenDataContext = createContext()
+const CoinGeckoClient = new CoinGecko()
 
 function useTokenDataContext() {
   return useContext(TokenDataContext)
@@ -427,6 +429,42 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
     updateNameData({
       token0: data,
     })
+    let coins = await CoinGeckoClient.coins.list()
+    let coinId = '';
+    for (const item of coins.data) {
+      if (item.symbol.toLowerCase() === data.symbol.toLowerCase()) {
+        coinId = item.id;
+        break;
+      }
+    }
+    if (coinId !== '') {
+      let coin = await CoinGeckoClient.coins.fetch(coinId, {
+        tickers: false,
+        community_data: false,
+        developer_data: false,
+        localization: false,
+        sparkline: false
+      })
+      data.coinId = coinId
+      data.homePage = coin.data.links.homepage[0]
+      data.description = coin.data.description.en
+      data.chatURL = coin.data.links.chat_url[0]
+      data.announcementChannel  = coin.data.links.announcement_url[0]
+      data.twitter = coin.data.links.twitter_screen_name
+      data.telegram = coin.data.links.telegram_channel_identifier
+      data.totalValueLockedUSD = coin.data.market_data.total_value_locked.usd
+      data.allTimeHigh = coin.data.market_data.ath.usd
+      data.allTimeHighChangePercentage = coin.data.market_data.ath_change_percentage.usd
+      data.allTimeHighDate = coin.data.market_data.ath_date.usd
+      data.allTimeLow = coin.data.market_data.atl.usd
+      data.allTimeLowChangePercentage = coin.data.market_data.atl_change_percentage.usd
+      data.allTimeLowDate = coin.data.market_data.atl_date.usd
+      data.fullyDilutedValuation = coin.data.market_data.fully_diluted_valuation.usd
+      data.totalSupply = coin.data.market_data.total_supply
+      data.maxSupply = coin.data.market_data.max_supply
+      data.circulatingSupply = coin.data.market_data.circulating_supply
+      data.marketCapUSD = coin.data.market_data.market_cap.usd
+    }
   } catch (e) {
     console.log(e)
   }
@@ -616,6 +654,14 @@ export function useTokenData(tokenAddress) {
 
   useEffect(() => {
     if (!tokenData && ethPrice && ethPriceOld && isAddress(tokenAddress)) {
+      getTokenData(tokenAddress, ethPrice, ethPriceOld).then((data) => {
+        update(tokenAddress, data)
+      })
+    }
+  }, [ethPrice, ethPriceOld, tokenAddress, tokenData, update])
+
+  useEffect(() => {
+    if (isAddress(tokenAddress)) {
       getTokenData(tokenAddress, ethPrice, ethPriceOld).then((data) => {
         update(tokenAddress, data)
       })
