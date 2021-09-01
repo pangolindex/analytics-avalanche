@@ -424,61 +424,61 @@ function TokenPage({ address, history }) {
                 <MarketStatsLayout>
                   <Column>
                     <TYPE.main>Market Cap</TYPE.main>
-                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={24} fontWeight="500">
+                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
                       {formattedMarketCapUSD}
                     </TYPE.main>
                   </Column>
                   <Column>
                     <TYPE.main>Fully Diluted Valuation</TYPE.main>
-                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={24} fontWeight="500">
+                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
                       {formattedFullyDilutedValuation}
                     </TYPE.main>
                   </Column>
                   <Column>
                     <TYPE.main>Total Value Locked</TYPE.main>
-                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={24} fontWeight="500">
+                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
                         {formattedTotalValueLockedUSD}
                       </TYPE.main>
                   </Column>
                   <Column>
                     <TYPE.main>Circulating Supply</TYPE.main>
-                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={24} fontWeight="500">
+                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
                         {formattedCirculatingSupply}
                       </TYPE.main>
                   </Column>
                   <Column>
                     <TYPE.main>Total Supply</TYPE.main>
-                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={24} fontWeight="500">
+                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
                         {formattedTotalSupply}
                       </TYPE.main>
                   </Column>
                   <Column>
                     <TYPE.main>Max Supply</TYPE.main>
-                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={24} fontWeight="500">
+                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
                         {formattedMaxSupply}
                       </TYPE.main>
                   </Column>
                   <Column>
                     <TYPE.main>All-Time High</TYPE.main>
-                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={24} fontWeight="500">
+                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
                         {formattedAllTimeHigh}
                       </TYPE.main>
                   </Column>
                   <Column>
                     <TYPE.main>All-Time Low</TYPE.main>
-                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={24} fontWeight="500">
+                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
                         {formattedAllTimeLow}
                       </TYPE.main>
                   </Column>
                   <Column>
                     <TYPE.main>All-Time High Date</TYPE.main>
-                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={24} fontWeight="500">
+                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
                       {formattedAllTimeHighDate}
                     </TYPE.main>
                   </Column>
                   <Column>
                     <TYPE.main>All-Time Low Date</TYPE.main>
-                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={24} fontWeight="500">
+                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
                       {formattedAllTimeLowDate}
                     </TYPE.main>
                   </Column>
@@ -557,8 +557,8 @@ function TokenPage({ address, history }) {
                 p={20}
               >
                 {description !== '' && <Column>
-                  <TYPE.main>What is <strong>{name}</strong>?</TYPE.main>
-                  <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={16} fontWeight="500">
+                  <TYPE.main fontSize={16}>What is <strong>{name}</strong>?</TYPE.main>
+                  <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={13} fontWeight="400" lineHeight="20px">
                     {description}
                   </TYPE.main>
                 </Column>}
