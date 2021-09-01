@@ -429,10 +429,12 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
     updateNameData({
       token0: data,
     })
+
+    let symbol = data.symbol.split('.')[0];
     let coins = await CoinGeckoClient.coins.list()
     let coinId = '';
     for (const item of coins.data) {
-      if (item.symbol.toLowerCase() === data.symbol.toLowerCase()) {
+      if (item.symbol.toLowerCase() === symbol.toLowerCase()) {
         coinId = item.id;
         break;
       }
@@ -452,7 +454,7 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
       data.announcementChannel  = coin.data.links.announcement_url[0]
       data.twitter = coin.data.links.twitter_screen_name
       data.telegram = coin.data.links.telegram_channel_identifier
-      data.totalValueLockedUSD = coin.data.market_data.total_value_locked.usd
+      data.totalValueLockedUSD = coin.data.market_data.total_value_locked?.usd
       data.allTimeHigh = coin.data.market_data.ath.usd
       data.allTimeHighChangePercentage = coin.data.market_data.ath_change_percentage.usd
       data.allTimeHighDate = coin.data.market_data.ath_date.usd
