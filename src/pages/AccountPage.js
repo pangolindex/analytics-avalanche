@@ -90,11 +90,8 @@ const Warning = styled.div`
   width: calc(100% - 2rem);
 `
 
-const TrackerLink = styled(Link)`
-  margin-left: .5rem;
-`
-
 const TrackerButton = styled(ButtonLight)`
+  margin-left: .5rem;
   padding: 4px 6px;
   border-radius: 4px;
   display: flex;
@@ -191,26 +188,26 @@ function AccountPage({ account }) {
               </Link>
               <RowFixed gap="8px" justify="flex-start">
                 <TYPE.body>Or track on</TYPE.body>
-                <TrackerLink external href={'https://markr.io/#/wallet?address=' + account}>
+                <Link external href={'https://markr.io/#/wallet?address=' + account}>
                   <TrackerButton>
                     <img src={Markr} alt="Markr.io" />
                   </TrackerButton>
-                </TrackerLink>
-                <TrackerLink external href={'https://zapper.fi/account/' + account}>
+                </Link>
+                <Link external href={'https://zapper.fi/account/' + account}>
                   <TrackerButton>
                     <img src={Zapper} alt="Zapper.fi" />
                   </TrackerButton>
-                </TrackerLink>
-                <TrackerLink external href={'https://debank.com/profile/' + account}>
+                </Link>
+                <Link external href={'https://debank.com/profile/' + account}>
                   <TrackerButton>
                     <img src={Debank} alt="Debank.com" />
                   </TrackerButton>
-                </TrackerLink>
-                <TrackerLink external href={'https://0xtracker.app/portfolio/' + account}>
+                </Link>
+                <Link external href={'https://0xtracker.app/portfolio/' + account}>
                   <TrackerButton>
                     <img src={Xtracker} alt="0xtracker.app" />
                   </TrackerButton>
-                </TrackerLink>
+                </Link>
               </RowFixed>
             </span>
             <AccountWrapper>
