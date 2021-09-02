@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom'
 import { Text } from 'rebass'
 import styled from 'styled-components'
 import moment from 'moment'
+import ReactHtmlParser from 'react-html-parser';
 import Link from '../components/Link'
 import Panel from '../components/Panel'
 import TokenLogo from '../components/TokenLogo'
@@ -136,6 +137,12 @@ const TokenInfoLayout = styled.div`
   }
 `
 
+const TokenDescription = styled.div`
+  & > a {
+    color: #2172E5 !important;
+  }
+`
+
 const WarningGrouping = styled.div`
   opacity: ${({ disabled }) => disabled && '0.4'};
   pointer-events: ${({ disabled }) => disabled && 'none'};
@@ -229,9 +236,9 @@ function TokenPage({ address, history }) {
   const formattedMarketCapUSD = marketCapUSD ? formattedNum(marketCapUSD, true) : marketCapUSD === 0 ? '$0' : '-'
   const formattedFullyDilutedValuation = fullyDilutedValuation ? formattedNum(fullyDilutedValuation, true) : fullyDilutedValuation === 0 ? '$0' : '-'
   const formattedTotalValueLockedUSD = totalValueLockedUSD ? formattedNum(totalValueLockedUSD, true) : totalValueLockedUSD === 0 ? '$0' : '-'
-  const formattedCirculatingSupply = circulatingSupply ? formattedNum(circulatingSupply, true) : circulatingSupply === 0 ? '0' : '-'
-  const formattedTotalSupply = totalSupply ? formattedNum(totalSupply, true) : totalSupply === 0 ? '0' : '-'
-  const formattedMaxSupply = maxSupply ? formattedNum(maxSupply, true) : maxSupply === 0 ? '0' : '-'
+  const formattedCirculatingSupply = circulatingSupply ? formattedNum(circulatingSupply, false) : circulatingSupply === 0 ? '0' : '-'
+  const formattedTotalSupply = totalSupply ? formattedNum(totalSupply, false) : totalSupply === 0 ? '0' : '-'
+  const formattedMaxSupply = maxSupply ? formattedNum(maxSupply, false) : maxSupply === 0 ? '0' : '-'
   const formattedAllTimeHigh = allTimeHigh ? formattedNum(allTimeHigh, true) : allTimeHigh === 0 ? '$0' : '-'
   const formattedAllTimeLow = allTimeLow ? formattedNum(allTimeLow, true) : allTimeLow === 0 ? '$0' : '-'
   const formattedAllTimeHighDate = allTimeHighDate ? moment(allTimeHighDate).format('lll') : '-'
@@ -559,7 +566,9 @@ function TokenPage({ address, history }) {
                 {description !== '' && <Column>
                   <TYPE.main fontSize={16}>What is <strong>{name}</strong>?</TYPE.main>
                   <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={13} fontWeight="400" lineHeight="20px">
-                    {description}
+                    <TokenDescription>
+                      { ReactHtmlParser(description) }
+                    </TokenDescription>
                   </TYPE.main>
                 </Column>}
                 <TokenInfoLayout>
