@@ -92,10 +92,6 @@ const Warning = styled.div`
 
 const TrackerLink = styled(Link)`
   margin-left: .5rem;
-
-  img {
-    width: 16px;
-  }
 `
 
 const TrackerButton = styled(ButtonLight)`
@@ -103,6 +99,10 @@ const TrackerButton = styled(ButtonLight)`
   border-radius: 4px;
   display: flex;
   align-items: center;
+
+  img {
+    width: 16px;
+  }
 `
 
 function AccountPage({ account }) {
