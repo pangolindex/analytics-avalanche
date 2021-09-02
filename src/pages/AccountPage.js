@@ -90,6 +90,21 @@ const Warning = styled.div`
   width: calc(100% - 2rem);
 `
 
+const TrackerLink = styled(Link)`
+  margin-left: .5rem;
+
+  img {
+    width: 16px;
+  }
+`
+
+const TrackerButton = styled(ButtonLight)`
+  padding: 4px 6px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+`
+
 function AccountPage({ account }) {
   // get data for this account
   const transactions = useUserTransactions(account)
@@ -176,26 +191,26 @@ function AccountPage({ account }) {
               </Link>
               <RowFixed gap="8px" justify="flex-start">
                 <TYPE.body>Or track on</TYPE.body>
-                <Link external href={'https://markr.io/#/wallet?address=' + account} style={{ marginLeft: '.5rem' }}>
-                  <ButtonLight style={{ padding: '4px 6px', borderRadius: '4px', display: 'flex', alignItems: 'center' }}>
-                    <img style={{ width: '16px' }} src={Markr} alt="Markr.io" />
-                  </ButtonLight >
-                </Link>
-                <Link external href={'https://zapper.fi/account/' + account} style={{ marginLeft: '.5rem' }}>
-                  <ButtonLight style={{ padding: '4px 6px', borderRadius: '4px', display: 'flex', alignItems: 'center' }}>
-                    <img style={{ width: '16px' }} src={Zapper} alt="Zapper.fi" />
-                  </ButtonLight >
-                </Link>
-                <Link external href={'https://debank.com/profile/' + account} style={{ marginLeft: '.5rem' }}>
-                  <ButtonLight style={{ padding: '4px 6px', borderRadius: '4px', display: 'flex', alignItems: 'center' }}>
-                    <img style={{ width: '16px' }} src={Debank} alt="Debank.com" />
-                  </ButtonLight >
-                </Link>
-                <Link external href={'https://0xtracker.app/portfolio/' + account} style={{ marginLeft: '.5rem' }}>
-                  <ButtonLight style={{ padding: '4px 6px', borderRadius: '4px', display: 'flex', alignItems: 'center' }}>
-                    <img style={{ width: '16px' }} src={Xtracker} alt="0xtracker.app" />
-                  </ButtonLight >
-                </Link>
+                <TrackerLink external href={'https://markr.io/#/wallet?address=' + account}>
+                  <TrackerButton>
+                    <img src={Markr} alt="Markr.io" />
+                  </TrackerButton>
+                </TrackerLink>
+                <TrackerLink external href={'https://zapper.fi/account/' + account}>
+                  <TrackerButton>
+                    <img src={Zapper} alt="Zapper.fi" />
+                  </TrackerButton>
+                </TrackerLink>
+                <TrackerLink external href={'https://debank.com/profile/' + account}>
+                  <TrackerButton>
+                    <img src={Debank} alt="Debank.com" />
+                  </TrackerButton>
+                </TrackerLink>
+                <TrackerLink external href={'https://0xtracker.app/portfolio/' + account}>
+                  <TrackerButton>
+                    <img src={Xtracker} alt="0xtracker.app" />
+                  </TrackerButton>
+                </TrackerLink>
               </RowFixed>
             </span>
             <AccountWrapper>
