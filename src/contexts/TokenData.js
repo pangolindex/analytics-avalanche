@@ -451,7 +451,7 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
       data.homePage = coin.data.links.homepage[0]
       data.description = coin.data.description.en
       data.chatURL = coin.data.links.chat_url[0]
-      data.announcementChannel  = coin.data.links.announcement_url[0]
+      data.announcementChannel = coin.data.links.announcement_url[0]
       data.twitter = coin.data.links.twitter_screen_name
       data.telegram = coin.data.links.telegram_channel_identifier
       data.totalValueLockedUSD = coin.data.market_data.total_value_locked?.usd
@@ -654,7 +654,6 @@ export function useTokenData(tokenAddress) {
   const [ethPrice, ethPriceOld] = useEthPrice()
   const tokenData = state?.[tokenAddress]
 
-  
   useEffect(() => {
     if (isAddress(tokenAddress)) {
       getTokenData(tokenAddress, ethPrice, ethPriceOld).then((data) => {

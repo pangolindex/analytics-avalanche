@@ -775,6 +775,7 @@ const TokenFields = `
     id
     name
     symbol
+    decimals
     derivedETH
     tradeVolume
     tradeVolumeUSD
