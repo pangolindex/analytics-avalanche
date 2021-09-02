@@ -170,9 +170,12 @@ function AccountPage({ account }) {
         <Header>
           <RowBetween>
             <span>
+              <TYPE.header fontSize={24}>{account?.slice(0, 6) + '...' + account?.slice(38, 42)}</TYPE.header>
+              <Link lineHeight={'145.23%'} href={'https://cchain.explorer.avax.network/address/' + account} target="_blank">
+                <TYPE.main fontSize={14}>View on the C-Chain Explorer</TYPE.main>
+              </Link>
               <RowFixed gap="8px" justify="flex-start">
-                <TYPE.header fontSize={24}>{account?.slice(0, 6) + '...' + account?.slice(38, 42)}</TYPE.header>
-                <TYPE.body style={{ marginLeft: '.5rem' }}>Track your portfolio on</TYPE.body>
+                <TYPE.body>Or track on</TYPE.body>
                 <Link external href={'https://markr.io/#/wallet?address=' + account} style={{ marginLeft: '.5rem' }}>
                   <ButtonLight style={{ padding: '4px 6px', borderRadius: '4px', display: 'flex', alignItems: 'center' }}>
                     <img style={{ width: '16px' }} src={Markr} alt="Markr.io" />
@@ -194,9 +197,6 @@ function AccountPage({ account }) {
                   </ButtonLight >
                 </Link>
               </RowFixed>
-              <Link lineHeight={'145.23%'} href={'https://cchain.explorer.avax.network/address/' + account} target="_blank">
-                <TYPE.main fontSize={14}>View on the C-Chain Explorer</TYPE.main>
-              </Link>
             </span>
             <AccountWrapper>
               <StyledIcon>
