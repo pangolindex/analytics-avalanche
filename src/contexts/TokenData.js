@@ -431,6 +431,12 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
     })
 
     let symbol = data.symbol.split('.')[0];
+    const isWrappedToken = data.name.split(' ')[0].toLowerCase() === 'wrapped';
+    if (isWrappedToken) {
+      if (symbol.charAt(0).toLocaleLowerCase() === 'w') {
+        symbol = symbol.substring(1);
+      }
+    }
     let coins = await CoinGeckoClient.coins.list()
     let coinId = '';
     for (const item of coins.data) {

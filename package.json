@@ -97,6 +97,7 @@
     "express": "^4.17.1",
     "helmet": "^4.4.1",
     "moment": "^2.29.1",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "react-html-parser": "^2.0.2"
   }
 }
