@@ -61,15 +61,11 @@ const TokenChart = ({ address, color, base, symbol }) => {
     if (timeWindow === timeframeOptions.WEEK && prevWindow && prevWindow !== timeframeOptions.WEEK) {
       setFrequency(DATA_FREQUENCY.HOUR)
     }
-  }, [prevWindow, timeWindow])
-
-  // switch to daily data if switched to month or all time view
-  useEffect(() => {
     if (timeWindow === timeframeOptions.MONTH && prevWindow && prevWindow !== timeframeOptions.MONTH) {
       setFrequency(DATA_FREQUENCY.DAY)
     }
     if (timeWindow === timeframeOptions.ALL_TIME && prevWindow && prevWindow !== timeframeOptions.ALL_TIME) {
-      setFrequency(DATA_FREQUENCY.DAY)
+      setFrequency(DATA_FREQUENCY.LINE)
     }
   }, [prevWindow, timeWindow])
 
