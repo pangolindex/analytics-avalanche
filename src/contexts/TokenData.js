@@ -397,24 +397,24 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
     //   twoDayData?.txCount ?? 0
     // )
 
-    const priceChangeUSD = getPercentChange(
-      data?.derivedETH * ethPrice,
-      parseFloat(oneDayData?.derivedETH ?? 0) * ethPriceOld
-    )
+    // const priceChangeUSD = getPercentChange(
+    //   data?.derivedETH * ethPrice,
+    //   parseFloat(oneDayData?.derivedETH ?? 0) * ethPriceOld
+    // )
 
-    const currentLiquidityUSD = data?.totalLiquidity * ethPrice * data?.derivedETH
-    const oldLiquidityUSD = oneDayData?.totalLiquidity * ethPriceOld * oneDayData?.derivedETH
+    // const currentLiquidityUSD = data?.totalLiquidity * ethPrice * data?.derivedETH
+    // const oldLiquidityUSD = oneDayData?.totalLiquidity * ethPriceOld * oneDayData?.derivedETH
 
     // set data
-    data.priceUSD = data?.derivedETH * ethPrice
-    data.totalLiquidityUSD = currentLiquidityUSD
+    // data.priceUSD = data?.derivedETH * ethPrice
+    // data.totalLiquidityUSD = currentLiquidityUSD
     // data.oneDayVolumeUSD = oneDayVolumeUSD
     // data.volumeChangeUSD = volumeChangeUSD
-    data.priceChangeUSD = priceChangeUSD
+    // data.priceChangeUSD = priceChangeUSD
     data.oneDayVolumeUT = oneDayVolumeUT
     data.volumeChangeUT = volumeChangeUT
-    const liquidityChangeUSD = getPercentChange(currentLiquidityUSD ?? 0, oldLiquidityUSD ?? 0)
-    data.liquidityChangeUSD = liquidityChangeUSD
+    // const liquidityChangeUSD = getPercentChange(currentLiquidityUSD ?? 0, oldLiquidityUSD ?? 0)
+    // data.liquidityChangeUSD = liquidityChangeUSD
     // data.oneDayTxns = oneDayTxns
     // data.txnChange = txnChange
 
@@ -454,24 +454,30 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
         sparkline: false
       })
       data.coinId = coinId
-      data.homePage = coin.data.links.homepage[0]
-      data.description = coin.data.description.en
-      data.chatURL = coin.data.links.chat_url[0]
-      data.announcementChannel  = coin.data.links.announcement_url[0]
+      if (coin.data.links.homepage.length) {
+        data.homePage = coin.data.links.homepage[0]
+      }
+      if (coin.data.links.chat_url.length) {
+        data.chatURL = coin.data.links.chat_url[0]
+      }
+      if (coin.data.links.announcement_url.length) {
+        data.announcementChannel = coin.data.links.announcement_url[0]
+      }
+      data.description = coin.data.description?.en
       data.twitter = coin.data.links.twitter_screen_name
       data.telegram = coin.data.links.telegram_channel_identifier
       data.totalValueLockedUSD = coin.data.market_data.total_value_locked?.usd
-      data.allTimeHigh = coin.data.market_data.ath.usd
-      data.allTimeHighChangePercentage = coin.data.market_data.ath_change_percentage.usd
-      data.allTimeHighDate = coin.data.market_data.ath_date.usd
-      data.allTimeLow = coin.data.market_data.atl.usd
-      data.allTimeLowChangePercentage = coin.data.market_data.atl_change_percentage.usd
-      data.allTimeLowDate = coin.data.market_data.atl_date.usd
-      data.fullyDilutedValuation = coin.data.market_data.fully_diluted_valuation.usd
+      data.allTimeHigh = coin.data.market_data.ath?.usd
+      data.allTimeHighChangePercentage = coin.data.market_data.ath_change_percentage?.usd
+      data.allTimeHighDate = coin.data.market_data.ath_date?.usd
+      data.allTimeLow = coin.data.market_data.atl?.usd
+      data.allTimeLowChangePercentage = coin.data.market_data.atl_change_percentage?.usd
+      data.allTimeLowDate = coin.data.market_data.atl_date?.usd
+      data.fullyDilutedValuation = coin.data.market_data.fully_diluted_valuation?.usd
       data.totalSupply = coin.data.market_data.total_supply
       data.maxSupply = coin.data.market_data.max_supply
       data.circulatingSupply = coin.data.market_data.circulating_supply
-      data.marketCapUSD = coin.data.market_data.market_cap.usd
+      data.marketCapUSD = coin.data.market_data.market_cap?.usd
     }
   } catch (e) {
     console.log(e)
@@ -663,11 +669,11 @@ export function useTokenData(tokenAddress) {
   
   useEffect(() => {
     if (isAddress(tokenAddress)) {
-      getTokenData(tokenAddress, ethPrice, ethPriceOld).then((data) => {
+      getTokenData(tokenAddress).then((data) => {
         update(tokenAddress, data)
       })
     }
-  }, [tokenAddress, ethPrice, ethPriceOld, update])
+  }, [tokenAddress, update])
 
   useEffect(() => {
     if (!tokenData && ethPrice && ethPriceOld && isAddress(tokenAddress)) {
