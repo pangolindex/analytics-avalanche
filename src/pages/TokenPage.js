@@ -17,7 +17,7 @@ import TxnList from '../components/TxnList'
 import TokenChart from '../components/TokenChart'
 import { BasicLink } from '../components/Link'
 import Search from '../components/Search'
-import { formattedNum, formattedPercent, getPoolLink, getSwapLink, localNumber } from '../utils'
+import { formattedNum, formattedPercent, getPoolLink, getSwapLink, localNumber, isAddress } from '../utils'
 import { useTokenData, useTokenTransactions, useTokenPairs } from '../contexts/TokenData'
 import { TYPE, ThemedBackground } from '../Theme'
 import { transparentize } from 'polished'
@@ -32,6 +32,7 @@ import { Hover, PageWrapper, ContentWrapper, StyledIcon } from '../components'
 import { PlusCircle, Bookmark } from 'react-feather'
 import FormattedName from '../components/FormattedName'
 import { useListedTokens, useMigratedTokens } from '../contexts/Application'
+import METAMASK_IMAGE from '../assets/MetaMask.png'
 
 const DashboardWrapper = styled.div`
   width: 100%;
@@ -148,11 +149,18 @@ const WarningGrouping = styled.div`
   pointer-events: ${({ disabled }) => disabled && 'none'};
 `
 
+const Image = styled.img`
+  width: 12px;
+  height: 12px;
+  margin-right: 8px;
+`
+
 function TokenPage({ address, history }) {
   const {
     id,
     name,
     symbol,
+    decimals,
     priceUSD,
     oneDayVolumeUSD,
     totalLiquidityUSD,
@@ -256,6 +264,29 @@ function TokenPage({ address, history }) {
     })
   }, [])
 
+  const addMetamask = async () => {
+    const image = `https://raw.githubusercontent.com/pangolindex/tokens/main/assets/${isAddress(address)}/logo.png`
+    const provider = window.ethereum
+    if (provider) {
+      try {
+        await provider.request({
+          method: 'wallet_watchAsset',
+          params: {
+            type: 'ERC20',
+            options: {
+              address,
+              symbol,
+              decimals,
+              image
+            },
+          },
+        })
+      } catch (error) {
+        console.log('Error => addMetamask')
+      }
+    }
+  }
+
   return (
     <PageWrapper>
       <ThemedBackground backgroundColor={transparentize(0.6, backgroundColor)} />
@@ -315,6 +346,13 @@ function TokenPage({ address, history }) {
                       {priceChange}
                     </>
                   )}
+                  <ButtonDark ml={'.5rem'} mr={below1080 && '.5rem'} color={backgroundColor} onClick={addMetamask}>
+                    <Image
+                      alt='metamask'
+                      src={METAMASK_IMAGE}
+                    />
+                    Add to Metamask
+                  </ButtonDark>
                 </RowFixed>
               </RowFixed>
               <span>
@@ -330,8 +368,8 @@ function TokenPage({ address, history }) {
                       <Bookmark style={{ marginRight: '0.5rem', opacity: 0.4 }} />
                     </StyledIcon>
                   ) : (
-                        <></>
-                      )}
+                    <></>
+                  )}
                   <Link href={getPoolLink(address)} target="_blank">
                     <ButtonLight color={backgroundColor}>+ Add Liquidity</ButtonLight>
                   </Link>
@@ -443,39 +481,39 @@ function TokenPage({ address, history }) {
                   </Column>
                   <Column>
                     <TYPE.main>Total Value Locked</TYPE.main>
-                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
-                        {formattedTotalValueLockedUSD}
-                      </TYPE.main>
+                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
+                      {formattedTotalValueLockedUSD}
+                    </TYPE.main>
                   </Column>
                   <Column>
                     <TYPE.main>Circulating Supply</TYPE.main>
-                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
-                        {formattedCirculatingSupply}
-                      </TYPE.main>
+                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
+                      {formattedCirculatingSupply}
+                    </TYPE.main>
                   </Column>
                   <Column>
                     <TYPE.main>Total Supply</TYPE.main>
-                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
-                        {formattedTotalSupply}
-                      </TYPE.main>
+                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
+                      {formattedTotalSupply}
+                    </TYPE.main>
                   </Column>
                   <Column>
                     <TYPE.main>Max Supply</TYPE.main>
-                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
-                        {formattedMaxSupply}
-                      </TYPE.main>
+                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
+                      {formattedMaxSupply}
+                    </TYPE.main>
                   </Column>
                   <Column>
                     <TYPE.main>All-Time High</TYPE.main>
-                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
-                        {formattedAllTimeHigh}
-                      </TYPE.main>
+                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
+                      {formattedAllTimeHigh}
+                    </TYPE.main>
                   </Column>
                   <Column>
                     <TYPE.main>All-Time Low</TYPE.main>
-                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
-                        {formattedAllTimeLow}
-                      </TYPE.main>
+                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
+                      {formattedAllTimeLow}
+                    </TYPE.main>
                   </Column>
                   <Column>
                     <TYPE.main>All-Time High Date</TYPE.main>
@@ -507,8 +545,8 @@ function TokenPage({ address, history }) {
               {address && fetchedPairsList ? (
                 <PairList color={backgroundColor} address={address} pairs={fetchedPairsList} />
               ) : (
-                  <Loader />
-                )}
+                <Loader />
+              )}
             </Panel>
             <RowBetween mt={40} mb={'1rem'}>
               <TYPE.main fontSize={'1.125rem'}>Transactions</TYPE.main> <div />

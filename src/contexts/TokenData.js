@@ -666,7 +666,6 @@ export function useTokenData(tokenAddress) {
   const [ethPrice, ethPriceOld] = useEthPrice()
   const tokenData = state?.[tokenAddress]
 
-  
   useEffect(() => {
     if (isAddress(tokenAddress)) {
       getTokenData(tokenAddress).then((data) => {
