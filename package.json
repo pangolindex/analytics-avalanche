@@ -4,6 +4,8 @@
   "homepage": "https://info.pangolin.exchange",
   "devDependencies": {
     "@babel/preset-env": "7.8.7",
+    "@pangolindex/token-lists": "^1.0.1",
+    "@pangolindex/tradingview-chart": "^1.0.0",
     "@popperjs/core": "^2.4.2",
     "@reach/portal": "^0.10.3",
     "@reach/router": "^1.2.1",
@@ -14,7 +16,6 @@
     "@types/styled-components": "^5.1.0",
     "@typescript-eslint/eslint-plugin": "^4.4.0",
     "@typescript-eslint/parser": "^4.4.0",
-    "@pangolindex/token-lists": "^1.0.1",
     "ajv": "^6.12.4",
     "animated-number-react": "^0.1.1",
     "apollo-cache-inmemory": "^1.6.3",
@@ -75,7 +76,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "postinstall": "cp -r ./node_modules/@pangolindex/tradingview-chart/ ./public/"
   },
   "browserslist": {
     "production": [

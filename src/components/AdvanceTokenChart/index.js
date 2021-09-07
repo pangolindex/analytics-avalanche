@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react'
 import Datafeed from './datafeed.js'
 import { useDarkModeManager } from '../../contexts/LocalStorage'
 import { useMedia } from 'react-use'
-import { widget } from '../../assets/charting_library'
+import { widget } from '@pangolindex/tradingview-chart'
 
 const AdvanceTokenChart = ({ tokenAddress, symbolName, base }) => {
   const [darkMode] = useDarkModeManager()
@@ -15,7 +15,7 @@ const AdvanceTokenChart = ({ tokenAddress, symbolName, base }) => {
       datafeed: Datafeed(tokenAddress, symbolName, base),
       interval: '1D',
       container_id: 'tv_chart_container',
-      library_path: '/charting_library/',
+      library_path: '/tradingview-chart/',
       timeframe: '2M',
       debug: true,
       time_frames: [
@@ -31,6 +31,7 @@ const AdvanceTokenChart = ({ tokenAddress, symbolName, base }) => {
       autosize: true,
       theme: darkMode ? 'Dark' : 'Light',
       preset: below600 ? 'mobile' : undefined,
+      loading_screen: { foregroundColor: "#000000" }
     }
 
     const tvWidget = new widget(widgetOptions)

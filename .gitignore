@@ -25,6 +25,4 @@ yarn-error.log*
 
 .idea/
 
-src/assets/charting_library
-
-public/charting_library
+public/tradingview-chart
