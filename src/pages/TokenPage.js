@@ -214,8 +214,8 @@ function TokenPage({ address, history }) {
     oneDayVolumeUSD || oneDayVolumeUSD === 0
       ? formattedNum(oneDayVolumeUSD === 0 ? oneDayVolumeUT : oneDayVolumeUSD, true)
       : oneDayVolumeUSD === 0
-        ? '$0'
-        : '-'
+      ? '$0'
+      : '-'
 
   // mark if using untracked volume
   const [usingUtVolume, setUsingUtVolume] = useState(false)
@@ -444,15 +444,16 @@ function TokenPage({ address, history }) {
                     </RowBetween>
                   </AutoColumn>
                 </Panel>
-                <Panel
-                  style={{
-                    gridColumn: below1080 ? '1' : '2/4',
-                    gridRow: below1080 ? '' : '1/4',
-                  }}
-                >
-                  <TokenChart address={address} color={backgroundColor} base={priceUSD} />
-                </Panel>
               </PanelWrapper>
+
+              <Panel
+                style={{
+                  marginTop: '1.5rem',
+                  padding: '1.125rem',
+                }}
+              >
+                <TokenChart address={address} color={backgroundColor} base={priceUSD} symbol={symbol} />
+              </Panel>
             </>
             {coinId && <>
               <RowBetween style={{ marginTop: '3rem' }}>
@@ -588,7 +589,11 @@ function TokenPage({ address, history }) {
                     </AutoRow>
                   </Column>
                   <ButtonLight color={backgroundColor}>
-                    <Link color={backgroundColor} external href={'https://cchain.explorer.avax.network/address/' + address}>
+                    <Link
+                      color={backgroundColor}
+                      external
+                      href={'https://cchain.explorer.avax.network/address/' + address}
+                    >
                       View on the C-Chain Explorer ↗
                     </Link>
                   </ButtonLight>

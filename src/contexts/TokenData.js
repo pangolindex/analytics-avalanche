@@ -246,76 +246,76 @@ const getTopTokens = async (ethPrice, ethPriceOld) => {
 
     let bulkResults = await Promise.all(
       current &&
-      oneDayData &&
-      twoDayData &&
-      current?.data?.tokens.map(async (token) => {
-        let data = token
+        oneDayData &&
+        twoDayData &&
+        current?.data?.tokens.map(async (token) => {
+          let data = token
 
-        // let liquidityDataThisToken = liquidityData?.[token.id]
-        let oneDayHistory = oneDayData?.[token.id]
-        let twoDayHistory = twoDayData?.[token.id]
+          // let liquidityDataThisToken = liquidityData?.[token.id]
+          let oneDayHistory = oneDayData?.[token.id]
+          let twoDayHistory = twoDayData?.[token.id]
 
-        // catch the case where token wasnt in top list in previous days
-        if (!oneDayHistory) {
-          let oneDayResult = await client.query({
-            query: TOKEN_DATA(token.id, oneDayBlock),
-            fetchPolicy: 'cache-first',
+          // catch the case where token wasnt in top list in previous days
+          if (!oneDayHistory) {
+            let oneDayResult = await client.query({
+              query: TOKEN_DATA(token.id, oneDayBlock),
+              fetchPolicy: 'cache-first',
+            })
+            oneDayHistory = oneDayResult.data.tokens[0]
+          }
+          if (!twoDayHistory) {
+            let twoDayResult = await client.query({
+              query: TOKEN_DATA(token.id, twoDayBlock),
+              fetchPolicy: 'cache-first',
+            })
+            twoDayHistory = twoDayResult.data.tokens[0]
+          }
+
+          // calculate percentage changes and daily changes
+          const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
+            data.tradeVolumeUSD,
+            oneDayHistory?.tradeVolumeUSD ?? 0,
+            twoDayHistory?.tradeVolumeUSD ?? 0
+          )
+          const [oneDayTxns, txnChange] = get2DayPercentChange(
+            data.txCount,
+            oneDayHistory?.txCount ?? 0,
+            twoDayHistory?.txCount ?? 0
+          )
+
+          const currentLiquidityUSD = data?.totalLiquidity * ethPrice * data?.derivedETH
+          const oldLiquidityUSD = oneDayHistory?.totalLiquidity * ethPriceOld * oneDayHistory?.derivedETH
+
+          // percent changes
+          const priceChangeUSD = getPercentChange(
+            data?.derivedETH * ethPrice,
+            oneDayHistory?.derivedETH ? oneDayHistory?.derivedETH * ethPriceOld : 0
+          )
+
+          // set data
+          data.priceUSD = data?.derivedETH * ethPrice
+          data.totalLiquidityUSD = currentLiquidityUSD
+          data.oneDayVolumeUSD = parseFloat(oneDayVolumeUSD)
+          data.volumeChangeUSD = volumeChangeUSD
+          data.priceChangeUSD = priceChangeUSD
+          data.liquidityChangeUSD = getPercentChange(currentLiquidityUSD ?? 0, oldLiquidityUSD ?? 0)
+          data.oneDayTxns = oneDayTxns
+          data.txnChange = txnChange
+
+          // new tokens
+          if (!oneDayHistory && data) {
+            data.oneDayVolumeUSD = data.tradeVolumeUSD
+            data.oneDayVolumeETH = data.tradeVolume * data.derivedETH
+            data.oneDayTxns = data.txCount
+          }
+
+          // update name data for
+          updateNameData({
+            token0: data,
           })
-          oneDayHistory = oneDayResult.data.tokens[0]
-        }
-        if (!twoDayHistory) {
-          let twoDayResult = await client.query({
-            query: TOKEN_DATA(token.id, twoDayBlock),
-            fetchPolicy: 'cache-first',
-          })
-          twoDayHistory = twoDayResult.data.tokens[0]
-        }
 
-        // calculate percentage changes and daily changes
-        const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-          data.tradeVolumeUSD,
-          oneDayHistory?.tradeVolumeUSD ?? 0,
-          twoDayHistory?.tradeVolumeUSD ?? 0
-        )
-        const [oneDayTxns, txnChange] = get2DayPercentChange(
-          data.txCount,
-          oneDayHistory?.txCount ?? 0,
-          twoDayHistory?.txCount ?? 0
-        )
-
-        const currentLiquidityUSD = data?.totalLiquidity * ethPrice * data?.derivedETH
-        const oldLiquidityUSD = oneDayHistory?.totalLiquidity * ethPriceOld * oneDayHistory?.derivedETH
-
-        // percent changes
-        const priceChangeUSD = getPercentChange(
-          data?.derivedETH * ethPrice,
-          oneDayHistory?.derivedETH ? oneDayHistory?.derivedETH * ethPriceOld : 0
-        )
-
-        // set data
-        data.priceUSD = data?.derivedETH * ethPrice
-        data.totalLiquidityUSD = currentLiquidityUSD
-        data.oneDayVolumeUSD = parseFloat(oneDayVolumeUSD)
-        data.volumeChangeUSD = volumeChangeUSD
-        data.priceChangeUSD = priceChangeUSD
-        data.liquidityChangeUSD = getPercentChange(currentLiquidityUSD ?? 0, oldLiquidityUSD ?? 0)
-        data.oneDayTxns = oneDayTxns
-        data.txnChange = txnChange
-
-        // new tokens
-        if (!oneDayHistory && data) {
-          data.oneDayVolumeUSD = data.tradeVolumeUSD
-          data.oneDayVolumeETH = data.tradeVolume * data.derivedETH
-          data.oneDayTxns = data.txCount
-        }
-
-        // update name data for
-        updateNameData({
-          token0: data,
+          return data
         })
-
-        return data
-      })
     )
 
     return bulkResults
@@ -511,12 +511,19 @@ const getTokenPairs = async (tokenAddress) => {
   }
 }
 
-const getIntervalTokenData = async (tokenAddress, startTime, interval = 3600, latestBlock) => {
-  const utcEndTime = dayjs.utc().unix()
+export const getIntervalTokenData = async (
+  tokenAddress,
+  startTime,
+  to = dayjs.utc().unix(),
+  interval = 3600 * 24,
+  latestBlock
+) => {
+  const utcEndTime = to
   let time = startTime
 
   // create an array of hour start times until we reach current hour
   // buffer by half hour to catch case where graph isnt synced to latest block
+
   const timestamps = []
   while (time < utcEndTime) {
     timestamps.push(time)
@@ -763,7 +770,8 @@ export function useTokenPriceData(tokenAddress, timeWindow, interval = 3600) {
         : currentTime.subtract(1, windowSize).startOf('hour').unix()
 
     async function fetch() {
-      let data = await getIntervalTokenData(tokenAddress, startTime, interval, latestBlock)
+      let data = await getIntervalTokenData(tokenAddress, startTime, undefined, interval, latestBlock)
+
       updatePriceData(tokenAddress, data, timeWindow, interval)
     }
     if (!chartData) {
