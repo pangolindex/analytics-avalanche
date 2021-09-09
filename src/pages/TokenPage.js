@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom'
 import { Text } from 'rebass'
 import styled from 'styled-components'
 import moment from 'moment'
-import ReactHtmlParser from 'react-html-parser';
+import ReactHtmlParser from 'react-html-parser'
 import Link from '../components/Link'
 import Panel from '../components/Panel'
 import TokenLogo from '../components/TokenLogo'
@@ -138,9 +138,13 @@ const TokenInfoLayout = styled.div`
   }
 `
 
+const DesktopMetaMask = styled.div`
+  margin-left: 0.5rem;
+`
+
 const TokenDescription = styled.div`
   & > a {
-    color: #2172E5 !important;
+    color: #2172e5 !important;
   }
 `
 
@@ -187,7 +191,7 @@ function TokenPage({ address, history }) {
     announcementChannel,
     twitter,
     telegram,
-    coinId
+    coinId,
   } = useTokenData(address)
 
   useEffect(() => {
@@ -242,9 +246,21 @@ function TokenPage({ address, history }) {
   const formattedSymbol = symbol?.length > LENGTH ? symbol.slice(0, LENGTH) + '...' : symbol
 
   const formattedMarketCapUSD = marketCapUSD ? formattedNum(marketCapUSD, true) : marketCapUSD === 0 ? '$0' : '-'
-  const formattedFullyDilutedValuation = fullyDilutedValuation ? formattedNum(fullyDilutedValuation, true) : fullyDilutedValuation === 0 ? '$0' : '-'
-  const formattedTotalValueLockedUSD = totalValueLockedUSD ? formattedNum(totalValueLockedUSD, true) : totalValueLockedUSD === 0 ? '$0' : '-'
-  const formattedCirculatingSupply = circulatingSupply ? formattedNum(circulatingSupply, false) : circulatingSupply === 0 ? '0' : '-'
+  const formattedFullyDilutedValuation = fullyDilutedValuation
+    ? formattedNum(fullyDilutedValuation, true)
+    : fullyDilutedValuation === 0
+    ? '$0'
+    : '-'
+  const formattedTotalValueLockedUSD = totalValueLockedUSD
+    ? formattedNum(totalValueLockedUSD, true)
+    : totalValueLockedUSD === 0
+    ? '$0'
+    : '-'
+  const formattedCirculatingSupply = circulatingSupply
+    ? formattedNum(circulatingSupply, false)
+    : circulatingSupply === 0
+    ? '0'
+    : '-'
   const formattedTotalSupply = totalSupply ? formattedNum(totalSupply, false) : totalSupply === 0 ? '0' : '-'
   const formattedMaxSupply = maxSupply ? formattedNum(maxSupply, false) : maxSupply === 0 ? '0' : '-'
   const formattedAllTimeHigh = allTimeHigh ? formattedNum(allTimeHigh, true) : allTimeHigh === 0 ? '$0' : '-'
@@ -277,7 +293,7 @@ function TokenPage({ address, history }) {
               address,
               symbol,
               decimals,
-              image
+              image,
             },
           },
         })
@@ -285,6 +301,15 @@ function TokenPage({ address, history }) {
         console.log('Error => addMetamask')
       }
     }
+  }
+
+  const MetaMaskButton = () => {
+    return (
+      <ButtonDark mr={below1080 && '.5rem'} color={backgroundColor} onClick={addMetamask}>
+        <Image alt="metamask" src={METAMASK_IMAGE} />
+        Add to Metamask
+      </ButtonDark>
+    )
   }
 
   return (
@@ -346,14 +371,17 @@ function TokenPage({ address, history }) {
                       {priceChange}
                     </>
                   )}
-                  <ButtonDark ml={'.5rem'} mr={below1080 && '.5rem'} color={backgroundColor} onClick={addMetamask}>
-                    <Image
-                      alt='metamask'
-                      src={METAMASK_IMAGE}
-                    />
-                    Add to Metamask
-                  </ButtonDark>
+                  {!below800 && (
+                    <DesktopMetaMask>
+                      <MetaMaskButton />
+                    </DesktopMetaMask>
+                  )}
                 </RowFixed>
+                {below800 && (
+                  <RowFixed style={{ alignItems: 'baseline', marginTop: '.5rem' }}>
+                    <MetaMaskButton />
+                  </RowFixed>
+                )}
               </RowFixed>
               <span>
                 <RowFixed ml={below500 ? '0' : '2.5rem'} mt={below500 ? '1rem' : '0'}>
@@ -455,82 +483,84 @@ function TokenPage({ address, history }) {
                 <TokenChart address={address} color={backgroundColor} base={priceUSD} symbol={symbol} />
               </Panel>
             </>
-            {coinId && <>
-              <RowBetween style={{ marginTop: '3rem' }}>
-                <TYPE.main fontSize={'1.125rem'}>Market Stats</TYPE.main>{' '}
-              </RowBetween>
-              <Panel
-                rounded
-                style={{
-                  marginTop: '1.5rem',
-                  paddingBottom: '0'
-                }}
-                p={20}
-              >
-                <MarketStatsLayout>
-                  <Column>
-                    <TYPE.main>Market Cap</TYPE.main>
-                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
-                      {formattedMarketCapUSD}
-                    </TYPE.main>
-                  </Column>
-                  <Column>
-                    <TYPE.main>Fully Diluted Valuation</TYPE.main>
-                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
-                      {formattedFullyDilutedValuation}
-                    </TYPE.main>
-                  </Column>
-                  <Column>
-                    <TYPE.main>Total Value Locked</TYPE.main>
-                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
-                      {formattedTotalValueLockedUSD}
-                    </TYPE.main>
-                  </Column>
-                  <Column>
-                    <TYPE.main>Circulating Supply</TYPE.main>
-                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
-                      {formattedCirculatingSupply}
-                    </TYPE.main>
-                  </Column>
-                  <Column>
-                    <TYPE.main>Total Supply</TYPE.main>
-                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
-                      {formattedTotalSupply}
-                    </TYPE.main>
-                  </Column>
-                  <Column>
-                    <TYPE.main>Max Supply</TYPE.main>
-                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
-                      {formattedMaxSupply}
-                    </TYPE.main>
-                  </Column>
-                  <Column>
-                    <TYPE.main>All-Time High</TYPE.main>
-                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
-                      {formattedAllTimeHigh}
-                    </TYPE.main>
-                  </Column>
-                  <Column>
-                    <TYPE.main>All-Time Low</TYPE.main>
-                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
-                      {formattedAllTimeLow}
-                    </TYPE.main>
-                  </Column>
-                  <Column>
-                    <TYPE.main>All-Time High Date</TYPE.main>
-                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
-                      {formattedAllTimeHighDate}
-                    </TYPE.main>
-                  </Column>
-                  <Column>
-                    <TYPE.main>All-Time Low Date</TYPE.main>
-                    <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
-                      {formattedAllTimeLowDate}
-                    </TYPE.main>
-                  </Column>
-                </MarketStatsLayout>
-              </Panel>
-            </>}
+            {coinId && (
+              <>
+                <RowBetween style={{ marginTop: '3rem' }}>
+                  <TYPE.main fontSize={'1.125rem'}>Market Stats</TYPE.main>{' '}
+                </RowBetween>
+                <Panel
+                  rounded
+                  style={{
+                    marginTop: '1.5rem',
+                    paddingBottom: '0',
+                  }}
+                  p={20}
+                >
+                  <MarketStatsLayout>
+                    <Column>
+                      <TYPE.main>Market Cap</TYPE.main>
+                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
+                        {formattedMarketCapUSD}
+                      </TYPE.main>
+                    </Column>
+                    <Column>
+                      <TYPE.main>Fully Diluted Valuation</TYPE.main>
+                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
+                        {formattedFullyDilutedValuation}
+                      </TYPE.main>
+                    </Column>
+                    <Column>
+                      <TYPE.main>Total Value Locked</TYPE.main>
+                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
+                        {formattedTotalValueLockedUSD}
+                      </TYPE.main>
+                    </Column>
+                    <Column>
+                      <TYPE.main>Circulating Supply</TYPE.main>
+                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
+                        {formattedCirculatingSupply}
+                      </TYPE.main>
+                    </Column>
+                    <Column>
+                      <TYPE.main>Total Supply</TYPE.main>
+                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
+                        {formattedTotalSupply}
+                      </TYPE.main>
+                    </Column>
+                    <Column>
+                      <TYPE.main>Max Supply</TYPE.main>
+                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
+                        {formattedMaxSupply}
+                      </TYPE.main>
+                    </Column>
+                    <Column>
+                      <TYPE.main>All-Time High</TYPE.main>
+                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
+                        {formattedAllTimeHigh}
+                      </TYPE.main>
+                    </Column>
+                    <Column>
+                      <TYPE.main>All-Time Low</TYPE.main>
+                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
+                        {formattedAllTimeLow}
+                      </TYPE.main>
+                    </Column>
+                    <Column>
+                      <TYPE.main>All-Time High Date</TYPE.main>
+                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
+                        {formattedAllTimeHighDate}
+                      </TYPE.main>
+                    </Column>
+                    <Column>
+                      <TYPE.main>All-Time Low Date</TYPE.main>
+                      <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={18} fontWeight="500">
+                        {formattedAllTimeLowDate}
+                      </TYPE.main>
+                    </Column>
+                  </MarketStatsLayout>
+                </Panel>
+              </>
+            )}
             <span>
               <TYPE.main fontSize={'1.125rem'} style={{ marginTop: '3rem' }}>
                 Top Pairs
@@ -599,59 +629,76 @@ function TokenPage({ address, history }) {
                   </ButtonLight>
                 </TokenDetailsLayout>
               </Panel>
-              {coinId && <Panel
-                rounded
-                style={{
-                  marginTop: '1.5rem',
-                }}
-                p={20}
-              >
-                {description !== '' && <Column>
-                  <TYPE.main fontSize={16}>What is <strong>{name}</strong>?</TYPE.main>
-                  <TYPE.main style={{ marginTop: '.5rem', marginBottom: '2rem' }} fontSize={13} fontWeight="400" lineHeight="20px">
-                    <TokenDescription>
-                      { ReactHtmlParser(description) }
-                    </TokenDescription>
-                  </TYPE.main>
-                </Column>}
-                <TokenInfoLayout>
-                  <Column>
-                    <ButtonLight color={backgroundColor}>
-                      <Link color={backgroundColor} external href={homePage}>
-                        Homepage ↗
-                      </Link>
-                    </ButtonLight>
-                  </Column>
-                  {chatURL !== '' && <Column>
-                    <ButtonLight color={backgroundColor}>
-                      <Link color={backgroundColor} external href={chatURL}>
-                        Discord ↗
-                      </Link>
-                    </ButtonLight>
-                  </Column>}
-                  {announcementChannel !== '' && <Column>
-                    <ButtonLight color={backgroundColor}>
-                      <Link color={backgroundColor} external href={announcementChannel}>
-                        Announcement Channel ↗
-                      </Link>
-                    </ButtonLight>
-                  </Column>}
-                  {twitter !== '' && <Column>
-                    <ButtonLight color={backgroundColor}>
-                      <Link color={backgroundColor} external href={`https://twitter.com/${twitter}`}>
-                        Twitter ↗
-                      </Link>
-                    </ButtonLight>
-                  </Column>}
-                  {telegram !== '' && <Column>
-                    <ButtonLight color={backgroundColor}>
-                      <Link color={backgroundColor} external href={`https://t.me/${telegram}`}>
-                        Telegram ↗
-                      </Link>
-                    </ButtonLight>
-                  </Column>}
-                </TokenInfoLayout>
-              </Panel>}
+              {coinId && (
+                <Panel
+                  rounded
+                  style={{
+                    marginTop: '1.5rem',
+                  }}
+                  p={20}
+                >
+                  {description !== '' && (
+                    <Column>
+                      <TYPE.main fontSize={16}>
+                        What is <strong>{name}</strong>?
+                      </TYPE.main>
+                      <TYPE.main
+                        style={{ marginTop: '.5rem', marginBottom: '2rem' }}
+                        fontSize={13}
+                        fontWeight="400"
+                        lineHeight="20px"
+                      >
+                        <TokenDescription>{ReactHtmlParser(description)}</TokenDescription>
+                      </TYPE.main>
+                    </Column>
+                  )}
+                  <TokenInfoLayout>
+                    <Column>
+                      <ButtonLight color={backgroundColor}>
+                        <Link color={backgroundColor} external href={homePage}>
+                          Homepage ↗
+                        </Link>
+                      </ButtonLight>
+                    </Column>
+                    {chatURL !== '' && (
+                      <Column>
+                        <ButtonLight color={backgroundColor}>
+                          <Link color={backgroundColor} external href={chatURL}>
+                            Discord ↗
+                          </Link>
+                        </ButtonLight>
+                      </Column>
+                    )}
+                    {announcementChannel !== '' && (
+                      <Column>
+                        <ButtonLight color={backgroundColor}>
+                          <Link color={backgroundColor} external href={announcementChannel}>
+                            Announcement Channel ↗
+                          </Link>
+                        </ButtonLight>
+                      </Column>
+                    )}
+                    {twitter !== '' && (
+                      <Column>
+                        <ButtonLight color={backgroundColor}>
+                          <Link color={backgroundColor} external href={`https://twitter.com/${twitter}`}>
+                            Twitter ↗
+                          </Link>
+                        </ButtonLight>
+                      </Column>
+                    )}
+                    {telegram !== '' && (
+                      <Column>
+                        <ButtonLight color={backgroundColor}>
+                          <Link color={backgroundColor} external href={`https://t.me/${telegram}`}>
+                            Telegram ↗
+                          </Link>
+                        </ButtonLight>
+                      </Column>
+                    )}
+                  </TokenInfoLayout>
+                </Panel>
+              )}
             </>
           </DashboardWrapper>
         </WarningGrouping>
