@@ -5,7 +5,7 @@
   "devDependencies": {
     "@babel/preset-env": "7.8.7",
     "@pangolindex/token-lists": "^1.0.1",
-    "@pangolindex/tradingview-chart": "^1.0.0",
+    "@pangolindex/tradingview-chart": "^1.0.1",
     "@popperjs/core": "^2.4.2",
     "@reach/portal": "^0.10.3",
     "@reach/router": "^1.2.1",

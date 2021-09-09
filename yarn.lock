@@ -1668,10 +1668,10 @@
   resolved "https://registry.yarnpkg.com/@pangolindex/token-lists/-/token-lists-1.0.1.tgz#922f6e9de22a71b5d4a7ec4dc8ad183afa8f6cb1"
   integrity sha512-01MOB0lA5/Chc/g2fzzFPJVHzPAe1dNjBkD9XU6UFDupIAdwEUn9WB4ZqU0p6mAG0ASBdTB2pGEt7cWNBybyXw==
 
-"@pangolindex/tradingview-chart@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@pangolindex/tradingview-chart/-/tradingview-chart-1.0.0.tgz#dfeebe63d67376334acb090d02c73aa7ffc60986"
-  integrity sha512-Vv/hL/h5Aizq0CiOZURak1MetcRks8klM0UCNH4SZsJPZy525IGCqmH/zNQ4MXOigVdph3PrUDgIwY+PFHa/mA==
+"@pangolindex/tradingview-chart@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@pangolindex/tradingview-chart/-/tradingview-chart-1.0.1.tgz#85a23bece0864f87c5ca1ff51a579d159762c635"
+  integrity sha512-mKP05TwpeUXIHNDygAM8gRJFXw9CG6hKVEPv5/Lc646NigVmeWwnF8iE9L1AiJtTZNhBnNkP9pcJkLKrUdm1hQ==
 
 "@popperjs/core@^2.4.2":
   version "2.6.0"
