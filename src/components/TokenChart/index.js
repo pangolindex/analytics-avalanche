@@ -141,7 +141,7 @@ const TokenChart = ({ address, color, base, symbol }) => {
           </AutoColumn>
 
           {chartFilter !== CHART_VIEW.PRICE && (
-            <AutoRow justify="flex-end" gap="6px" align="flex-start">
+            <AutoRow justify="flex-end" gap="6px" align="flex-start" style={{ width: 'auto' }}>
               <OptionButton
                 active={timeWindow === timeframeOptions.WEEK}
                 onClick={() => setTimeWindow(timeframeOptions.WEEK)}
