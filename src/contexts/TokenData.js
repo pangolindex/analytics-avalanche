@@ -377,11 +377,11 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
     }
 
     // calculate percentage changes and daily changes
-    // const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-    //   data.tradeVolumeUSD,
-    //   oneDayData?.tradeVolumeUSD ?? 0,
-    //   twoDayData?.tradeVolumeUSD ?? 0
-    // )
+    const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
+      data.tradeVolumeUSD,
+      oneDayData?.tradeVolumeUSD ?? 0,
+      twoDayData?.tradeVolumeUSD ?? 0
+    )
 
     // calculate percentage changes and daily changes
     const [oneDayVolumeUT, volumeChangeUT] = get2DayPercentChange(
@@ -391,38 +391,113 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
     )
 
     // calculate percentage changes and daily changes
-    // const [oneDayTxns, txnChange] = get2DayPercentChange(
-    //   data.txCount,
-    //   oneDayData?.txCount ?? 0,
-    //   twoDayData?.txCount ?? 0
-    // )
+    const [oneDayTxns, txnChange] = get2DayPercentChange(
+      data.txCount,
+      oneDayData?.txCount ?? 0,
+      twoDayData?.txCount ?? 0
+    )
 
-    // const priceChangeUSD = getPercentChange(
-    //   data?.derivedETH * ethPrice,
-    //   parseFloat(oneDayData?.derivedETH ?? 0) * ethPriceOld
-    // )
+    const priceChangeUSD = getPercentChange(
+      data?.derivedETH * ethPrice,
+      parseFloat(oneDayData?.derivedETH ?? 0) * ethPriceOld
+    )
 
-    // const currentLiquidityUSD = data?.totalLiquidity * ethPrice * data?.derivedETH
-    // const oldLiquidityUSD = oneDayData?.totalLiquidity * ethPriceOld * oneDayData?.derivedETH
+    const currentLiquidityUSD = data?.totalLiquidity * ethPrice * data?.derivedETH
+    const oldLiquidityUSD = oneDayData?.totalLiquidity * ethPriceOld * oneDayData?.derivedETH
 
     // set data
-    // data.priceUSD = data?.derivedETH * ethPrice
-    // data.totalLiquidityUSD = currentLiquidityUSD
-    // data.oneDayVolumeUSD = oneDayVolumeUSD
-    // data.volumeChangeUSD = volumeChangeUSD
-    // data.priceChangeUSD = priceChangeUSD
+    data.priceUSD = data?.derivedETH * ethPrice
+    data.totalLiquidityUSD = currentLiquidityUSD
+    data.oneDayVolumeUSD = oneDayVolumeUSD
+    data.volumeChangeUSD = volumeChangeUSD
+    data.priceChangeUSD = priceChangeUSD
     data.oneDayVolumeUT = oneDayVolumeUT
     data.volumeChangeUT = volumeChangeUT
-    // const liquidityChangeUSD = getPercentChange(currentLiquidityUSD ?? 0, oldLiquidityUSD ?? 0)
-    // data.liquidityChangeUSD = liquidityChangeUSD
-    // data.oneDayTxns = oneDayTxns
-    // data.txnChange = txnChange
+    const liquidityChangeUSD = getPercentChange(currentLiquidityUSD ?? 0, oldLiquidityUSD ?? 0)
+    data.liquidityChangeUSD = liquidityChangeUSD
+    data.oneDayTxns = oneDayTxns
+    data.txnChange = txnChange
 
     // new tokens
     if (!oneDayData && data) {
-      // data.oneDayVolumeUSD = data.tradeVolumeUSD
+      data.oneDayVolumeUSD = data.tradeVolumeUSD
       data.oneDayVolumeETH = data.tradeVolume * data.derivedETH
-      // data.oneDayTxns = data.txCount
+      data.oneDayTxns = data.txCount
+    }
+
+    // update name data for
+    updateNameData({
+      token0: data,
+    })
+  } catch (e) {
+    console.log(e)
+  }
+  return data
+}
+
+const getTokenDataForMarketStats = async (address) => {
+  const utcCurrentTime = dayjs()
+  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').startOf('minute').unix()
+  const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').startOf('minute').unix()
+  let oneDayBlock = await getBlockFromTimestamp(utcOneDayBack)
+  let twoDayBlock = await getBlockFromTimestamp(utcTwoDaysBack)
+
+  // initialize data arrays
+  let data = {}
+  let oneDayData = {}
+  let twoDayData = {}
+
+  try {
+    const resultQuery = client.query({
+      query: TOKEN_DATA(address),
+      fetchPolicy: 'cache-first',
+    })
+
+    const oneDayResultQuery = client.query({
+      query: TOKEN_DATA(address, oneDayBlock),
+      fetchPolicy: 'cache-first',
+    })
+
+    const twoDayResultQuery = client.query({
+      query: TOKEN_DATA(address, twoDayBlock),
+      fetchPolicy: 'cache-first',
+    })
+
+    const [result, oneDayResult, twoDayResult] = await Promise.all([resultQuery, oneDayResultQuery, twoDayResultQuery])
+
+    data = result?.data?.tokens?.[0]
+    oneDayData = oneDayResult.data.tokens[0]
+    twoDayData = twoDayResult.data.tokens[0]
+
+    // catch the case where token wasnt in top list in previous days
+    if (!oneDayData) {
+      let oneDayResult = await client.query({
+        query: TOKEN_DATA(address, oneDayBlock),
+        fetchPolicy: 'cache-first',
+      })
+      oneDayData = oneDayResult.data.tokens[0]
+    }
+    if (!twoDayData) {
+      let twoDayResult = await client.query({
+        query: TOKEN_DATA(address, twoDayBlock),
+        fetchPolicy: 'cache-first',
+      })
+      twoDayData = twoDayResult.data.tokens[0]
+    }
+
+    // calculate percentage changes and daily changes
+    const [oneDayVolumeUT, volumeChangeUT] = get2DayPercentChange(
+      data.untrackedVolumeUSD,
+      oneDayData?.untrackedVolumeUSD ?? 0,
+      twoDayData?.untrackedVolumeUSD ?? 0
+    )
+  
+    data.oneDayVolumeUT = oneDayVolumeUT
+    data.volumeChangeUT = volumeChangeUT
+
+    // new tokens
+    if (!oneDayData && data) {
+      data.oneDayVolumeETH = data.tradeVolume * data.derivedETH
     }
 
     // update name data for
@@ -668,7 +743,7 @@ export function useTokenData(tokenAddress) {
 
   useEffect(() => {
     if (isAddress(tokenAddress)) {
-      getTokenData(tokenAddress).then((data) => {
+      getTokenDataForMarketStats(tokenAddress).then((data) => {
         update(tokenAddress, data)
       })
     }
