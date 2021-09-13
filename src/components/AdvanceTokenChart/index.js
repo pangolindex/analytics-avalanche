@@ -17,7 +17,7 @@ const AdvanceTokenChart = ({ tokenAddress, symbolName, base }) => {
       container_id: 'tv_chart_container',
       library_path: '/tradingview-chart/',
       timeframe: '2M',
-      debug: true,
+      debug: false,
       time_frames: [
         { text: '1Y', resolution: '1W', description: '1 Year', title: '1yr' },
         { text: '1M', resolution: '1D', description: '1 Months' },

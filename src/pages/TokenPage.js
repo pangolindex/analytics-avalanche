@@ -18,7 +18,7 @@ import TokenChart from '../components/TokenChart'
 import { BasicLink } from '../components/Link'
 import Search from '../components/Search'
 import { formattedNum, formattedPercent, getPoolLink, getSwapLink, localNumber, isAddress } from '../utils'
-import { useTokenData, useTokenTransactions, useTokenPairs } from '../contexts/TokenData'
+import { useTokenData, useTokenTransactions, useTokenPairs, useCoinGeckoTokenData } from '../contexts/TokenData'
 import { TYPE, ThemedBackground } from '../Theme'
 import { transparentize } from 'polished'
 import { useColor } from '../hooks'
@@ -175,6 +175,9 @@ function TokenPage({ address, history }) {
     liquidityChangeUSD,
     oneDayTxns,
     txnChange,
+  } = useTokenData(address)
+
+  const {
     marketCapUSD,
     totalValueLockedUSD,
     allTimeHigh,
@@ -192,7 +195,7 @@ function TokenPage({ address, history }) {
     twitter,
     telegram,
     coinId,
-  } = useTokenData(address)
+  } = useCoinGeckoTokenData(symbol, name)
 
   useEffect(() => {
     document.querySelector('body').scrollTo(0, 0)
