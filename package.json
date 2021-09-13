@@ -77,7 +77,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "postinstall": "copyfiles ./node_modules/@pangolindex/tradingview-chart/** ./public/tradingview-chart -u 3 && copyfiles ./node_modules/@pangolindex/tradingview-chart/**/** ./public/tradingview-chart -u 3"
+    "postinstall": "copyfiles ./node_modules/@pangolindex/tradingview-chart/** ./public/ -u 2"
   },
   "browserslist": {
     "production": [
