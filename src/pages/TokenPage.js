@@ -631,7 +631,7 @@ function TokenPage({ address, history }) {
                         View on the C-Chain Explorer ↗
                       </Link>
                     </ButtonLight>
-                    <ButtonLight color={backgroundColor}>
+                    <ButtonLight color={backgroundColor} style={{ marginLeft: '8px' }}>
                       <Link
                         color={backgroundColor}
                         external
