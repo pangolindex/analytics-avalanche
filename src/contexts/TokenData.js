@@ -31,6 +31,7 @@ import {
 import { timeframeOptions } from '../constants'
 import { useLatestBlocks } from './Application'
 import { updateNameData } from '../utils/data'
+import { COIN_ID_OVERRIDE } from '../constants/overrides'
 
 const UPDATE = 'UPDATE'
 const UPDATE_TOKEN_TXNS = 'UPDATE_TOKEN_TXNS'
@@ -750,16 +751,15 @@ export function useCoinGeckoTokenData(symbol, name) {
             newSymbol = newSymbol?.substring(1)
           }
         }
-        let coins = await CoinGeckoClient.coins.list()
-        let coinId = ''
-        for (const item of coins.data) {
-          if (item?.symbol?.toLowerCase() === newSymbol?.toLowerCase()) {
-            coinId = item?.id
-            break
-          }
-        }
+        newSymbol = newSymbol?.toUpperCase()
 
-        if (coinId !== '') {
+        const coins = await CoinGeckoClient.coins.list()
+
+        const coinId = COIN_ID_OVERRIDE[newSymbol]
+          ? COIN_ID_OVERRIDE[newSymbol]
+          : coins.data.find((data) => data?.symbol?.toUpperCase() === newSymbol)?.id
+
+        if (!!coinId) {
           let coin = await CoinGeckoClient.coins.fetch(coinId, {
             tickers: false,
             community_data: false,
