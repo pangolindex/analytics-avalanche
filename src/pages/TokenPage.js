@@ -621,15 +621,26 @@ function TokenPage({ address, history }) {
                       <CopyHelper toCopy={address} />
                     </AutoRow>
                   </Column>
-                  <ButtonLight color={backgroundColor}>
-                    <Link
-                      color={backgroundColor}
-                      external
-                      href={'https://cchain.explorer.avax.network/address/' + address}
-                    >
-                      View on the C-Chain Explorer ↗
-                    </Link>
-                  </ButtonLight>
+                  <AutoRow style={{ justifyContent: 'end' }}>
+                    <ButtonLight color={backgroundColor}>
+                      <Link
+                        color={backgroundColor}
+                        external
+                        href={'https://cchain.explorer.avax.network/address/' + address}
+                      >
+                        View on the C-Chain Explorer ↗
+                      </Link>
+                    </ButtonLight>
+                    <ButtonLight color={backgroundColor}>
+                      <Link
+                        color={backgroundColor}
+                        external
+                        href={'https://dex.guru/token/' + address + '-avalanche'}
+                      >
+                        View Chart
+                      </Link>
+                    </ButtonLight>
+                  </AutoRow>
                 </TokenDetailsLayout>
               </Panel>
               {coinId && (
