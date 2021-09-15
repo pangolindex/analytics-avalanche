@@ -755,9 +755,10 @@ export function useCoinGeckoTokenData(symbol, name) {
 
         const coins = await CoinGeckoClient.coins.list()
 
-        const coinId = COIN_ID_OVERRIDE[newSymbol]
-          ? COIN_ID_OVERRIDE[newSymbol]
-          : coins.data.find((data) => data?.symbol?.toUpperCase() === newSymbol)?.id
+        const coinId =
+          newSymbol in COIN_ID_OVERRIDE // here we are checking existance of key instead of value of key, because value of key might be undefined
+            ? COIN_ID_OVERRIDE[newSymbol]
+            : coins.data.find((data) => data?.symbol?.toUpperCase() === newSymbol)?.id
 
         if (!!coinId) {
           let coin = await CoinGeckoClient.coins.fetch(coinId, {
