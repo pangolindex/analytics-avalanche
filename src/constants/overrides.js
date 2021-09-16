@@ -6,4 +6,5 @@ export const COIN_ID_OVERRIDE = {
   NEKO: undefined,
   VEE: undefined,
   PARTY: undefined,
+  SNP: undefined,
 }
