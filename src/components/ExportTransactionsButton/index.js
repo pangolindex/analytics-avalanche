@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
 import { writeToString } from '@fast-csv/format'
+import PropTypes from 'prop-types'
+import React, { useState } from 'react'
 import { Download, Loader } from 'react-feather'
 
 import { updateNameData } from '../../utils/data'
@@ -35,6 +36,7 @@ function prepareTransactionsForExport(transactions) {
   const swaps = transactions.swaps.map((swap) => {
     const newSwap = { ...swap }
 
+    // TODO: We should really be using a number library because JS is bad at maths.
     const netToken0 = swap.amount0In - swap.amount0Out
     const netToken1 = swap.amount1In - swap.amount1Out
     if (netToken0 < 0) {
@@ -62,11 +64,9 @@ function prepareTransactionsForExport(transactions) {
     }
   })
 
-  const aa = [...mints, ...burns, ...swaps]
+  return [...mints, ...burns, ...swaps]
     .sort((a, b) => a.date - b.date)
     .map(({ date, ...rest }) => ({ date: new Date(date).toISOString(), ...rest }))
-
-  return aa
 }
 
 function createTransactionExport(transactions) {
@@ -78,6 +78,7 @@ const PrepareDownloadButton = ({ onClick }) => (
   <ButtonDark
     color={'rgba(255, 255, 255, 0.2)'}
     style={{
+      // TODO: Replace developer styling with actual designs
       padding: '4px 11px',
       borderRadius: '100px',
       alignItems: 'center',
@@ -91,10 +92,15 @@ const PrepareDownloadButton = ({ onClick }) => (
   </ButtonDark>
 )
 
+PrepareDownloadButton.propTypes = {
+  onClick: PropTypes.func,
+}
+
 const PreparingDownloadButton = () => (
   <ButtonDark
     color={'rgba(255, 255, 255, 0.2)'}
     style={{
+      // TODO: Replace developer styling with actual designs
       padding: '4px 11px',
       borderRadius: '100px',
       alignItems: 'center',
@@ -112,6 +118,7 @@ const PreparedDownloadButton = ({ url }) => (
     <ButtonDark
       color={'rgba(255, 255, 255, 0.2)'}
       style={{
+        // TODO: Replace developer styling with actual designs
         padding: '4px 11px',
         borderRadius: '100px',
         alignItems: 'center',
@@ -125,7 +132,11 @@ const PreparedDownloadButton = ({ url }) => (
   </a>
 )
 
-export const ExportTransactionsButton = ({ transactions }) => {
+PreparedDownloadButton.propTypes = {
+  url: PropTypes.string,
+}
+
+const ExportTransactionsButton = ({ transactions }) => {
   const [transactionsPreparing, setTransactionsPreparing] = useState(false)
   const [transactionsBlob, setTransactionsBlob] = useState(undefined)
 
@@ -155,3 +166,41 @@ export const ExportTransactionsButton = ({ transactions }) => {
 
   return <PrepareDownloadButton onClick={prepareTransactions} />
 }
+
+const transactionShape = PropTypes.shape({
+  __typename: PropTypes.oneOf(['Burn', 'Mint', 'Swap']),
+  amount0: PropTypes.string,
+  amount1: PropTypes.string,
+  amountUSD: PropTypes.string,
+  id: PropTypes.string,
+  liquidity: PropTypes.string,
+  pair: PropTypes.shape({
+    __typename: PropTypes.oneOf(['Pair']),
+    id: PropTypes.string,
+    token0: PropTypes.shape({
+      __typename: PropTypes.oneOf(['Token']),
+      symbol: PropTypes.string,
+    }),
+    token1: PropTypes.shape({
+      __typename: PropTypes.oneOf(['Token']),
+      symbol: PropTypes.string,
+    }),
+  }),
+  sender: PropTypes.string,
+  to: PropTypes.string,
+  transaction: PropTypes.shape({
+    __typename: PropTypes.oneOf(['Transaction']),
+    id: PropTypes.string,
+    timestamp: PropTypes.string,
+  }),
+})
+
+ExportTransactionsButton.propTypes = {
+  transactions: PropTypes.shape({
+    burns: PropTypes.arrayOf(transactionShape),
+    mints: PropTypes.arrayOf(transactionShape),
+    swaps: PropTypes.arrayOf(transactionShape),
+  }),
+}
+
+export { ExportTransactionsButton }
