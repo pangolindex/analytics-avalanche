@@ -2,22 +2,20 @@ import React, { useState, useRef, useEffect } from 'react'
 import styled from 'styled-components'
 import { Area, XAxis, YAxis, ResponsiveContainer, Tooltip, AreaChart, BarChart, Bar } from 'recharts'
 import { RowBetween, AutoRow } from '../Row'
-
 import { toK, toNiceDate, toNiceDateYear, formattedNum, getTimeframe } from '../../utils'
 import { OptionButton } from '../ButtonStyled'
 import { darken } from 'polished'
-import { usePairChartData, useHourlyRateData, usePairData } from '../../contexts/PairData'
+import { usePairChartData, usePairData } from '../../contexts/PairData'
 import { timeframeOptions } from '../../constants'
 import { useMedia } from 'react-use'
 import { EmptyCard } from '..'
 import DropdownSelect from '../DropdownSelect'
-import CandleStickChart from '../CandleChart'
 import LocalLoader from '../LocalLoader'
 import { useDarkModeManager } from '../../contexts/LocalStorage'
+import AdvancePairChart from '../AdvancePairChart'
 
 const ChartWrapper = styled.div`
   height: 100%;
-  max-height: 340px;
 
   @media screen and (max-width: 600px) {
     min-height: 200px;
@@ -66,9 +64,6 @@ const PairChart = ({ address, color, base0, base1 }) => {
   // get data for pair, and rates
   const pairData = usePairData(address)
   let chartData = usePairChartData(address)
-  const hourlyData = useHourlyRateData(address, timeWindow)
-  const hourlyRate0 = hourlyData && hourlyData[0]
-  const hourlyRate1 = hourlyData && hourlyData[1]
 
   // formatted symbols for overflow
   const formattedSymbol0 =
@@ -118,7 +113,9 @@ const PairChart = ({ address, color, base0, base1 }) => {
       {below600 ? (
         <RowBetween mb={40}>
           <DropdownSelect options={CHART_VIEW} active={chartFilter} setActive={setChartFilter} color={color} />
-          <DropdownSelect options={timeframeOptions} active={timeWindow} setActive={setTimeWindow} color={color} />
+          {(chartFilter === CHART_VIEW.VOLUME || chartFilter === CHART_VIEW.LIQUIDITY) && (
+            <DropdownSelect options={timeframeOptions} active={timeWindow} setActive={setTimeWindow} color={color} />
+          )}
         </RowBetween>
       ) : (
         <OptionsRow>
@@ -160,26 +157,28 @@ const PairChart = ({ address, color, base0, base1 }) => {
               {pairData.token0 ? formattedSymbol0 + '/' + formattedSymbol1 : '-'}
             </OptionButton>
           </AutoRow>
-          <AutoRow justify="flex-end" gap="6px">
-            <OptionButton
-              active={timeWindow === timeframeOptions.WEEK}
-              onClick={() => setTimeWindow(timeframeOptions.WEEK)}
-            >
-              1W
-            </OptionButton>
-            <OptionButton
-              active={timeWindow === timeframeOptions.MONTH}
-              onClick={() => setTimeWindow(timeframeOptions.MONTH)}
-            >
-              1M
-            </OptionButton>
-            <OptionButton
-              active={timeWindow === timeframeOptions.ALL_TIME}
-              onClick={() => setTimeWindow(timeframeOptions.ALL_TIME)}
-            >
-              All
-            </OptionButton>
-          </AutoRow>
+          {(chartFilter === CHART_VIEW.VOLUME || chartFilter === CHART_VIEW.LIQUIDITY) && (
+            <AutoRow justify="flex-end" gap="6px">
+              <OptionButton
+                active={timeWindow === timeframeOptions.WEEK}
+                onClick={() => setTimeWindow(timeframeOptions.WEEK)}
+              >
+                1W
+              </OptionButton>
+              <OptionButton
+                active={timeWindow === timeframeOptions.MONTH}
+                onClick={() => setTimeWindow(timeframeOptions.MONTH)}
+              >
+                1M
+              </OptionButton>
+              <OptionButton
+                active={timeWindow === timeframeOptions.ALL_TIME}
+                onClick={() => setTimeWindow(timeframeOptions.ALL_TIME)}
+              >
+                All
+              </OptionButton>
+            </AutoRow>
+          )}
         </OptionsRow>
       )}
       {chartFilter === CHART_VIEW.LIQUIDITY && (
@@ -243,30 +242,32 @@ const PairChart = ({ address, color, base0, base1 }) => {
       )}
 
       {chartFilter === CHART_VIEW.RATE1 &&
-        (hourlyRate1 ? (
+        (formattedSymbol0 && formattedSymbol1 ? (
           <ResponsiveContainer aspect={aspect} ref={ref}>
-            <CandleStickChart
-              data={hourlyRate1}
-              base={base0}
-              margin={false}
-              width={width}
-              valueFormatter={valueFormatter}
-            />
+            <div style={{ height: 350 }}>
+              <AdvancePairChart
+                tokenAddress={address}
+                symbolName={formattedSymbol0 + '/' + formattedSymbol1}
+                base={base0}
+                pair={CHART_VIEW.RATE1}
+              />
+            </div>
           </ResponsiveContainer>
         ) : (
           <LocalLoader />
         ))}
 
       {chartFilter === CHART_VIEW.RATE0 &&
-        (hourlyRate0 ? (
+        (formattedSymbol0 && formattedSymbol1 ? (
           <ResponsiveContainer aspect={aspect} ref={ref}>
-            <CandleStickChart
-              data={hourlyRate0}
-              base={base1}
-              margin={false}
-              width={width}
-              valueFormatter={valueFormatter}
-            />
+            <div style={{ height: 350 }}>
+              <AdvancePairChart
+                tokenAddress={address}
+                symbolName={formattedSymbol1 + '/' + formattedSymbol0}
+                base={base1}
+                pair={CHART_VIEW.RATE0}
+              />
+            </div>
           </ResponsiveContainer>
         ) : (
           <LocalLoader />
