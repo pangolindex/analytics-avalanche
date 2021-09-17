@@ -195,7 +195,7 @@ function TokenPage({ address, history }) {
     twitter,
     telegram,
     coinId,
-  } = useCoinGeckoTokenData(symbol, name)
+  } = useCoinGeckoTokenData(address)
 
   useEffect(() => {
     document.querySelector('body').scrollTo(0, 0)
