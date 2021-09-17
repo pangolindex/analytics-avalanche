@@ -5,6 +5,7 @@
   "devDependencies": {
     "@babel/preset-env": "7.8.7",
     "@pangolindex/token-lists": "^1.0.1",
+    "@pangolindex/tradingview-chart": "^1.0.1",
     "@popperjs/core": "^2.4.2",
     "@reach/portal": "^0.10.3",
     "@reach/router": "^1.2.1",
@@ -75,7 +76,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "postinstall": "copyfiles ./node_modules/@pangolindex/tradingview-chart/** ./public/ -u 2 && copyfiles ./node_modules/@pangolindex/tradingview-chart/**/** ./public/ -u 2"
   },
   "browserslist": {
     "production": [
@@ -92,10 +94,14 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "coingecko-api": "^1.0.10",
+    "copyfiles": "^2.4.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "fast-csv": "^4.3.6",
     "helmet": "^4.4.1",
-    "path": "^0.12.7"
+    "moment": "^2.29.1",
+    "path": "^0.12.7",
+    "react-html-parser": "^2.0.2"
   }
 }

@@ -268,6 +268,7 @@ async function getGlobalData() {
 
       // format the total liquidity in USD
       data.totalLiquidityUSD = parseFloat(data.totalLiquidityUSD)
+      data.totalLiquidityETH = parseFloat(data.totalLiquidityETH)
 
       if (oneDayData && twoDayData) {
         let [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
@@ -292,11 +293,11 @@ async function getGlobalData() {
           data.weeklyVolumeChange = weeklyVolumeChange
         }
 
-        const liquidityChangeUSD = getPercentChange(
-          data.totalLiquidityETH,
-          oneDayData.totalLiquidityETH
-        )
+        const liquidityChangeUSD = getPercentChange(data.totalLiquidityUSD, oneDayData.totalLiquidityUSD)
+        const liquidityChangeETH = getPercentChange(data.totalLiquidityETH, oneDayData.totalLiquidityETH)
+
         data.liquidityChangeUSD = liquidityChangeUSD
+        data.liquidityChangeETH = liquidityChangeETH
 
         // add relevant fields with the calculated amounts
         data.oneDayVolumeUSD = oneDayVolumeUSD
@@ -304,7 +305,6 @@ async function getGlobalData() {
         data.oneDayTxns = oneDayTxns
         data.txnChange = txnChange
       }
-
     }
   } catch (e) {
     console.log(e)

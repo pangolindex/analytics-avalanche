@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useMemo, useCallback, useEffect } from 'react'
+import React, { createContext, useContext, useReducer, useMemo, useCallback, useEffect, useState } from 'react'
 
 import { client } from '../apollo/client'
 import {
@@ -16,6 +16,7 @@ import { useEthPrice } from './GlobalData'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import _ from 'lodash'
+import CoinGecko from 'coingecko-api'
 
 import {
   get2DayPercentChange,
@@ -30,6 +31,7 @@ import {
 import { timeframeOptions } from '../constants'
 import { useLatestBlocks } from './Application'
 import { updateNameData } from '../utils/data'
+import { COIN_ID_OVERRIDE } from '../constants/overrides'
 
 const UPDATE = 'UPDATE'
 const UPDATE_TOKEN_TXNS = 'UPDATE_TOKEN_TXNS'
@@ -43,6 +45,7 @@ const TOKEN_PAIRS_KEY = 'TOKEN_PAIRS_KEY'
 dayjs.extend(utc)
 
 const TokenDataContext = createContext()
+const CoinGeckoClient = new CoinGecko()
 
 function useTokenDataContext() {
   return useContext(TokenDataContext)
@@ -244,76 +247,76 @@ const getTopTokens = async (ethPrice, ethPriceOld) => {
 
     let bulkResults = await Promise.all(
       current &&
-      oneDayData &&
-      twoDayData &&
-      current?.data?.tokens.map(async (token) => {
-        let data = token
+        oneDayData &&
+        twoDayData &&
+        current?.data?.tokens.map(async (token) => {
+          let data = token
 
-        // let liquidityDataThisToken = liquidityData?.[token.id]
-        let oneDayHistory = oneDayData?.[token.id]
-        let twoDayHistory = twoDayData?.[token.id]
+          // let liquidityDataThisToken = liquidityData?.[token.id]
+          let oneDayHistory = oneDayData?.[token.id]
+          let twoDayHistory = twoDayData?.[token.id]
 
-        // catch the case where token wasnt in top list in previous days
-        if (!oneDayHistory) {
-          let oneDayResult = await client.query({
-            query: TOKEN_DATA(token.id, oneDayBlock),
-            fetchPolicy: 'cache-first',
+          // catch the case where token wasnt in top list in previous days
+          if (!oneDayHistory) {
+            let oneDayResult = await client.query({
+              query: TOKEN_DATA(token.id, oneDayBlock),
+              fetchPolicy: 'cache-first',
+            })
+            oneDayHistory = oneDayResult.data.tokens[0]
+          }
+          if (!twoDayHistory) {
+            let twoDayResult = await client.query({
+              query: TOKEN_DATA(token.id, twoDayBlock),
+              fetchPolicy: 'cache-first',
+            })
+            twoDayHistory = twoDayResult.data.tokens[0]
+          }
+
+          // calculate percentage changes and daily changes
+          const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
+            data.tradeVolumeUSD,
+            oneDayHistory?.tradeVolumeUSD ?? 0,
+            twoDayHistory?.tradeVolumeUSD ?? 0
+          )
+          const [oneDayTxns, txnChange] = get2DayPercentChange(
+            data.txCount,
+            oneDayHistory?.txCount ?? 0,
+            twoDayHistory?.txCount ?? 0
+          )
+
+          const currentLiquidityUSD = data?.totalLiquidity * ethPrice * data?.derivedETH
+          const oldLiquidityUSD = oneDayHistory?.totalLiquidity * ethPriceOld * oneDayHistory?.derivedETH
+
+          // percent changes
+          const priceChangeUSD = getPercentChange(
+            data?.derivedETH * ethPrice,
+            oneDayHistory?.derivedETH ? oneDayHistory?.derivedETH * ethPriceOld : 0
+          )
+
+          // set data
+          data.priceUSD = data?.derivedETH * ethPrice
+          data.totalLiquidityUSD = currentLiquidityUSD
+          data.oneDayVolumeUSD = parseFloat(oneDayVolumeUSD)
+          data.volumeChangeUSD = volumeChangeUSD
+          data.priceChangeUSD = priceChangeUSD
+          data.liquidityChangeUSD = getPercentChange(currentLiquidityUSD ?? 0, oldLiquidityUSD ?? 0)
+          data.oneDayTxns = oneDayTxns
+          data.txnChange = txnChange
+
+          // new tokens
+          if (!oneDayHistory && data) {
+            data.oneDayVolumeUSD = data.tradeVolumeUSD
+            data.oneDayVolumeETH = data.tradeVolume * data.derivedETH
+            data.oneDayTxns = data.txCount
+          }
+
+          // update name data for
+          updateNameData({
+            token0: data,
           })
-          oneDayHistory = oneDayResult.data.tokens[0]
-        }
-        if (!twoDayHistory) {
-          let twoDayResult = await client.query({
-            query: TOKEN_DATA(token.id, twoDayBlock),
-            fetchPolicy: 'cache-first',
-          })
-          twoDayHistory = twoDayResult.data.tokens[0]
-        }
 
-        // calculate percentage changes and daily changes
-        const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-          data.tradeVolumeUSD,
-          oneDayHistory?.tradeVolumeUSD ?? 0,
-          twoDayHistory?.tradeVolumeUSD ?? 0
-        )
-        const [oneDayTxns, txnChange] = get2DayPercentChange(
-          data.txCount,
-          oneDayHistory?.txCount ?? 0,
-          twoDayHistory?.txCount ?? 0
-        )
-
-        const currentLiquidityUSD = data?.totalLiquidity * ethPrice * data?.derivedETH
-        const oldLiquidityUSD = oneDayHistory?.totalLiquidity * ethPriceOld * oneDayHistory?.derivedETH
-
-        // percent changes
-        const priceChangeUSD = getPercentChange(
-          data?.derivedETH * ethPrice,
-          oneDayHistory?.derivedETH ? oneDayHistory?.derivedETH * ethPriceOld : 0
-        )
-
-        // set data
-        data.priceUSD = data?.derivedETH * ethPrice
-        data.totalLiquidityUSD = currentLiquidityUSD
-        data.oneDayVolumeUSD = parseFloat(oneDayVolumeUSD)
-        data.volumeChangeUSD = volumeChangeUSD
-        data.priceChangeUSD = priceChangeUSD
-        data.liquidityChangeUSD = getPercentChange(currentLiquidityUSD ?? 0, oldLiquidityUSD ?? 0)
-        data.oneDayTxns = oneDayTxns
-        data.txnChange = txnChange
-
-        // new tokens
-        if (!oneDayHistory && data) {
-          data.oneDayVolumeUSD = data.tradeVolumeUSD
-          data.oneDayVolumeETH = data.tradeVolume * data.derivedETH
-          data.oneDayTxns = data.txCount
-        }
-
-        // update name data for
-        updateNameData({
-          token0: data,
+          return data
         })
-
-        return data
-      })
     )
 
     return bulkResults
@@ -465,12 +468,19 @@ const getTokenPairs = async (tokenAddress) => {
   }
 }
 
-const getIntervalTokenData = async (tokenAddress, startTime, interval = 3600, latestBlock) => {
-  const utcEndTime = dayjs.utc().unix()
+export const getIntervalTokenData = async (
+  tokenAddress,
+  startTime,
+  to = dayjs.utc().unix(),
+  interval = 3600 * 24,
+  latestBlock
+) => {
+  const utcEndTime = to
   let time = startTime
 
   // create an array of hour start times until we reach current hour
   // buffer by half hour to catch case where graph isnt synced to latest block
+
   const timestamps = []
   while (time < utcEndTime) {
     timestamps.push(time)
@@ -709,7 +719,8 @@ export function useTokenPriceData(tokenAddress, timeWindow, interval = 3600) {
         : currentTime.subtract(1, windowSize).startOf('hour').unix()
 
     async function fetch() {
-      let data = await getIntervalTokenData(tokenAddress, startTime, interval, latestBlock)
+      let data = await getIntervalTokenData(tokenAddress, startTime, undefined, interval, latestBlock)
+
       updatePriceData(tokenAddress, data, timeWindow, interval)
     }
     if (!chartData) {
@@ -723,4 +734,70 @@ export function useTokenPriceData(tokenAddress, timeWindow, interval = 3600) {
 export function useAllTokenData() {
   const [state] = useTokenDataContext()
   return state
+}
+
+export function useCoinGeckoTokenData(symbol, name) {
+  const [result, setResult] = useState({})
+
+  useEffect(() => {
+    let data = {}
+
+    let getCoinData = async () => {
+      try {
+        let newSymbol = (symbol || '')?.split('.')[0]
+        const isWrappedToken = (name || '')?.split(' ')[0].toLowerCase() === 'wrapped'
+        if (isWrappedToken) {
+          if (newSymbol?.charAt(0)?.toLocaleLowerCase() === 'w') {
+            newSymbol = newSymbol?.substring(1)
+          }
+        }
+        newSymbol = newSymbol?.toUpperCase()
+
+        const coins = await CoinGeckoClient.coins.list()
+
+        const coinId =
+          newSymbol in COIN_ID_OVERRIDE // here we are checking existance of key instead of value of key, because value of key might be undefined
+            ? COIN_ID_OVERRIDE[newSymbol]
+            : coins.data.find((data) => data?.symbol?.toUpperCase() === newSymbol)?.id
+
+        if (!!coinId) {
+          let coin = await CoinGeckoClient.coins.fetch(coinId, {
+            tickers: false,
+            community_data: false,
+            developer_data: false,
+            localization: false,
+            sparkline: false,
+          })
+          data.coinId = coinId
+          data.homePage = coin?.data?.links?.homepage?.[0]
+          data.description = coin?.data?.description.en
+          data.chatURL = coin?.data?.links?.chat_url?.[0]
+          data.announcementChannel = coin?.data?.links?.announcement_url?.[0]
+          data.twitter = coin?.data?.links?.twitter_screen_name
+          data.telegram = coin?.data?.links?.telegram_channel_identifier
+          data.totalValueLockedUSD = coin?.data?.market_data?.total_value_locked?.usd
+          data.allTimeHigh = coin?.data?.market_data?.ath?.usd
+          data.allTimeHighChangePercentage = coin?.data?.market_data?.ath_change_percentage.usd
+          data.allTimeHighDate = coin?.data?.market_data?.ath_date?.usd
+          data.allTimeLow = coin?.data?.market_data?.atl?.usd
+          data.allTimeLowChangePercentage = coin?.data?.market_data?.atl_change_percentage.usd
+          data.allTimeLowDate = coin?.data?.market_data?.atl_date.usd
+          data.fullyDilutedValuation = coin?.data?.market_data?.fully_diluted_valuation.usd
+          data.totalSupply = coin?.data?.market_data?.total_supply
+          data.maxSupply = coin?.data?.market_data?.max_supply
+          data.circulatingSupply = coin?.data?.market_data?.circulating_supply
+          data.marketCapUSD = coin?.data?.market_data?.market_cap?.usd
+        }
+
+        setResult(data)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+    if (symbol && name) {
+      getCoinData()
+    }
+  }, [symbol, name])
+
+  return result
 }

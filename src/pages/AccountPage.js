@@ -21,6 +21,9 @@ import { useMedia } from 'react-use'
 import Search from '../components/Search'
 import { ExportTransactionsButton } from '../components/ExportTransactionsButton'
 import Markr from '../assets/markr.png'
+import Zapper from '../assets/zapper.png'
+import Debank from '../assets/debank.png'
+import Xtracker from '../assets/0xtracker.png'
 
 const AccountWrapper = styled.div`
   background-color: rgba(255, 255, 255, 0.2);
@@ -86,6 +89,18 @@ const Warning = styled.div`
   border-radius: 10px;
   margin-bottom: 1rem;
   width: calc(100% - 2rem);
+`
+
+const TrackerButton = styled(ButtonLight)`
+  margin-left: .5rem;
+  padding: 4px 6px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+
+  img {
+    width: 16px;
+  }
 `
 
 function AccountPage({ account }) {
@@ -168,18 +183,33 @@ function AccountPage({ account }) {
         <Header>
           <RowBetween>
             <span>
-              <RowFixed gap="8px" justify="flex-start">
-                <TYPE.header fontSize={24}>{account?.slice(0, 6) + '...' + account?.slice(38, 42)}</TYPE.header>
-                <Link external href={'https://markr.io/#/wallet?address=' + account} style={{ marginLeft: '.5rem' }}>
-                  <ButtonLight style={{ padding: '4px 6px', borderRadius: '4px', display: 'flex', alignItems: 'center' }}>
-                    Track your portfolio on
-                    <img style={{ width: '16px', marginLeft: '.5rem' }} src={Markr} alt="Markr.io" />
-                  </ButtonLight >
-                </Link>
-              </RowFixed>
+              <TYPE.header fontSize={24}>{account?.slice(0, 6) + '...' + account?.slice(38, 42)}</TYPE.header>
               <Link lineHeight={'145.23%'} href={'https://cchain.explorer.avax.network/address/' + account} target="_blank">
                 <TYPE.main fontSize={14}>View on the C-Chain Explorer</TYPE.main>
               </Link>
+              <RowFixed gap="8px" justify="flex-start">
+                <TYPE.body>Or track on</TYPE.body>
+                <Link external href={'https://markr.io/#/wallet?address=' + account}>
+                  <TrackerButton>
+                    <img src={Markr} alt="Markr.io" />
+                  </TrackerButton>
+                </Link>
+                <Link external href={'https://zapper.fi/account/' + account}>
+                  <TrackerButton>
+                    <img src={Zapper} alt="Zapper.fi" />
+                  </TrackerButton>
+                </Link>
+                <Link external href={'https://debank.com/profile/' + account}>
+                  <TrackerButton>
+                    <img src={Debank} alt="Debank.com" />
+                  </TrackerButton>
+                </Link>
+                <Link external href={'https://0xtracker.app/portfolio/' + account}>
+                  <TrackerButton>
+                    <img src={Xtracker} alt="0xtracker.app" />
+                  </TrackerButton>
+                </Link>
+              </RowFixed>
             </span>
             <AccountWrapper>
               <StyledIcon>

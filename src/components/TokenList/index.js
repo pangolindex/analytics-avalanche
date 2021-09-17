@@ -200,12 +200,13 @@ function TopTokenList({ tokens, itemMax = 10 }) {
           </DataText>
         )}
         <DataText area="liq">{formattedNum(item.totalLiquidityUSD, true)}</DataText>
-        <DataText area="vol">{formattedNum(item.oneDayVolumeUSD, true)}</DataText>
-        {!below1080 && (
-          <DataText area="price" color="text" fontWeight="500">
-            {formattedNum(item.priceUSD, true)}
-          </DataText>
-        )}
+
+        <DataText area="price" color="text" fontWeight="500">
+          {formattedNum(item.priceUSD, true)}
+        </DataText>
+
+        {!below1080 && <DataText area="vol">{formattedNum(item.oneDayVolumeUSD, true)}</DataText>}
+
         {!below1080 && <DataText area="change">{formattedPercent(item.priceChangeUSD)}</DataText>}
       </DashGrid>
     )
@@ -252,31 +253,34 @@ function TopTokenList({ tokens, itemMax = 10 }) {
             Liquidity {sortedColumn === SORT_FIELD.LIQ ? (!sortDirection ? '↑' : '↓') : ''}
           </ClickableText>
         </Flex>
+
         <Flex alignItems="center">
           <ClickableText
-            area="vol"
+            area="price"
             onClick={(e) => {
-              setSortedColumn(SORT_FIELD.VOL)
-              setSortDirection(sortedColumn !== SORT_FIELD.VOL ? true : !sortDirection)
+              setSortedColumn(SORT_FIELD.PRICE)
+              setSortDirection(sortedColumn !== SORT_FIELD.PRICE ? true : !sortDirection)
             }}
           >
-            Volume (24hrs)
-            {sortedColumn === SORT_FIELD.VOL ? (!sortDirection ? '↑' : '↓') : ''}
+            Price {sortedColumn === SORT_FIELD.PRICE ? (!sortDirection ? '↑' : '↓') : ''}
           </ClickableText>
         </Flex>
+
         {!below1080 && (
           <Flex alignItems="center">
             <ClickableText
-              area="price"
+              area="vol"
               onClick={(e) => {
-                setSortedColumn(SORT_FIELD.PRICE)
-                setSortDirection(sortedColumn !== SORT_FIELD.PRICE ? true : !sortDirection)
+                setSortedColumn(SORT_FIELD.VOL)
+                setSortDirection(sortedColumn !== SORT_FIELD.VOL ? true : !sortDirection)
               }}
             >
-              Price {sortedColumn === SORT_FIELD.PRICE ? (!sortDirection ? '↑' : '↓') : ''}
+              Volume (24hrs)
+              {sortedColumn === SORT_FIELD.VOL ? (!sortDirection ? '↑' : '↓') : ''}
             </ClickableText>
           </Flex>
         )}
+
         {!below1080 && (
           <Flex alignItems="center">
             <ClickableText
@@ -294,7 +298,7 @@ function TopTokenList({ tokens, itemMax = 10 }) {
       </DashGrid>
       <Divider />
       <List p={0}>
-        {filteredList && filteredList.length > 0 ?
+        {filteredList && filteredList.length > 0 ? (
           filteredList.map((item, index) => {
             return (
               <div key={index}>
@@ -303,7 +307,9 @@ function TopTokenList({ tokens, itemMax = 10 }) {
               </div>
             )
           })
-        : <LocalLoader />}
+        ) : (
+          <LocalLoader />
+        )}
       </List>
       <PageButtons>
         <div onClick={() => setPage(page === 1 ? page : page - 1)}>
