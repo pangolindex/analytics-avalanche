@@ -158,7 +158,7 @@ const PairChart = ({ address, color, base0, base1 }) => {
             </OptionButton>
           </AutoRow>
           {(chartFilter === CHART_VIEW.VOLUME || chartFilter === CHART_VIEW.LIQUIDITY) && (
-            <AutoRow justify="flex-end" gap="6px">
+            <AutoRow justify="flex-end" gap="6px" style={{ width: 'auto' }}>
               <OptionButton
                 active={timeWindow === timeframeOptions.WEEK}
                 onClick={() => setTimeWindow(timeframeOptions.WEEK)}
