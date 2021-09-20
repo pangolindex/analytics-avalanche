@@ -1,4 +1,6 @@
-import { getIntervalTokenData } from '../../contexts/TokenData'
+import { getHourlyRateData } from '../../contexts/PairData'
+import { PAIR_CHART_VIEW_OPTIONS } from '../../constants'
+import { convertIntervalToSeconds } from '../../utils'
 import dayjs from 'dayjs'
 
 const configurationData = {
@@ -12,38 +14,7 @@ const configurationData = {
   ],
 }
 
-const getIntervalInSeconds = (resolution) => {
-  let seconds
-
-  const exceptLast = resolution.slice(0, resolution.length - 1)
-  const last = resolution.slice(resolution.length - 1)
-
-  // xS -> seconds
-  if (last === 'S') {
-    seconds = exceptLast
-  }
-  // xD -> in days
-  else if (last === 'D') {
-    seconds = parseInt(exceptLast) * 24 * 3600
-  }
-  // xW -> in weeks
-  else if (last === 'W') {
-    seconds = parseInt(exceptLast) * 7 * 24 * 3600
-  }
-
-  // xM -> in months
-  else if (last === 'M') {
-    seconds = parseInt(exceptLast) * 30.436875 * 24 * 3600
-  }
-  // 1 -> just numbers -> minutes
-  else {
-    seconds = resolution * 60
-  }
-
-  return seconds
-}
-
-export default (tokenAddress, symbol, base) => {
+export default (tokenAddress, symbol, base, pair) => {
   return {
     onReady: (callback) => {
       setTimeout(() => callback(configurationData))
@@ -78,16 +49,20 @@ export default (tokenAddress, symbol, base) => {
       const { from, to } = periodParams
 
       try {
-        const interval = getIntervalInSeconds(resolution)
-        let data = await getIntervalTokenData(tokenAddress, from, to, interval, undefined)
+        const interval = convertIntervalToSeconds(resolution)
 
-        if (data.length === 0) {
+        let pairChartdata = await getHourlyRateData(tokenAddress, from, to, interval, undefined)
+
+        if (pairChartdata.length === 0) {
           // "noData" should be set if there is no data in the requested period.
           onHistoryCallback([], {
             noData: true,
           })
           return
         }
+
+        let data =
+          pair === PAIR_CHART_VIEW_OPTIONS.RATE0 && pairChartdata.length > 0 ? pairChartdata?.[0] : pairChartdata?.[1]
         let bars = []
         data.forEach((bar) => {
           if (bar.timestamp >= from && bar.timestamp < to) {

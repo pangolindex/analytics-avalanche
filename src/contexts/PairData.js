@@ -41,9 +41,9 @@ dayjs.extend(utc)
 export function safeAccess(object, path) {
   return object
     ? path.reduce(
-      (accumulator, currentValue) => (accumulator && accumulator[currentValue] ? accumulator[currentValue] : null),
-      object
-    )
+        (accumulator, currentValue) => (accumulator && accumulator[currentValue] ? accumulator[currentValue] : null),
+        object
+      )
     : null
 }
 
@@ -231,35 +231,35 @@ async function getBulkPairData(pairList, ethPrice) {
 
     let pairData = await Promise.all(
       current &&
-      current.data.pairs.map(async (pair) => {
-        let data = pair
-        let oneDayHistory = oneDayData?.[pair.id]
-        if (!oneDayHistory) {
-          let newData = await client.query({
-            query: PAIR_DATA(pair.id, b1),
-            fetchPolicy: 'cache-first',
-          })
-          oneDayHistory = newData.data.pairs[0]
-        }
-        let twoDayHistory = twoDayData?.[pair.id]
-        if (!twoDayHistory) {
-          let newData = await client.query({
-            query: PAIR_DATA(pair.id, b2),
-            fetchPolicy: 'cache-first',
-          })
-          twoDayHistory = newData.data.pairs[0]
-        }
-        let oneWeekHistory = oneWeekData?.[pair.id]
-        if (!oneWeekHistory) {
-          let newData = await client.query({
-            query: PAIR_DATA(pair.id, bWeek),
-            fetchPolicy: 'cache-first',
-          })
-          oneWeekHistory = newData.data.pairs[0]
-        }
-        data = parseData(data, oneDayHistory, twoDayHistory, oneWeekHistory, ethPrice, b1)
-        return data
-      })
+        current.data.pairs.map(async (pair) => {
+          let data = pair
+          let oneDayHistory = oneDayData?.[pair.id]
+          if (!oneDayHistory) {
+            let newData = await client.query({
+              query: PAIR_DATA(pair.id, b1),
+              fetchPolicy: 'cache-first',
+            })
+            oneDayHistory = newData.data.pairs[0]
+          }
+          let twoDayHistory = twoDayData?.[pair.id]
+          if (!twoDayHistory) {
+            let newData = await client.query({
+              query: PAIR_DATA(pair.id, b2),
+              fetchPolicy: 'cache-first',
+            })
+            twoDayHistory = newData.data.pairs[0]
+          }
+          let oneWeekHistory = oneWeekData?.[pair.id]
+          if (!oneWeekHistory) {
+            let newData = await client.query({
+              query: PAIR_DATA(pair.id, bWeek),
+              fetchPolicy: 'cache-first',
+            })
+            oneWeekHistory = newData.data.pairs[0]
+          }
+          data = parseData(data, oneDayHistory, twoDayHistory, oneWeekHistory, ethPrice, b1)
+          return data
+        })
     )
     return pairData
   } catch (e) {
@@ -390,16 +390,23 @@ const getPairChartData = async (pairAddress) => {
   return data
 }
 
-const getHourlyRateData = async (pairAddress, startTime, latestBlock) => {
+export const getHourlyRateData = async (
+  pairAddress,
+  startTime,
+  to = dayjs.utc().unix(),
+  interval = 3600 * 24,
+  latestBlock
+) => {
   try {
-    const utcEndTime = dayjs.utc()
+    const utcEndTime = to
     let time = startTime
 
     // create an array of hour start times until we reach current hour
     const timestamps = []
-    while (time <= utcEndTime.unix() - 3600) {
+
+    while (time < utcEndTime) {
       timestamps.push(time)
-      time += 3600
+      time += interval
     }
 
     // backout if invalid timestamp format
@@ -489,7 +496,7 @@ export function Updater() {
   return null
 }
 
-export function useHourlyRateData(pairAddress, timeWindow) {
+export function useHourlyRateData(pairAddress, timeWindow, interval = 3600) {
   const [state, { updateHourlyData }] = usePairDataContext()
   const chartData = state?.[pairAddress]?.hourlyData?.[timeWindow]
   const [latestBlock] = useLatestBlocks()
@@ -505,13 +512,13 @@ export function useHourlyRateData(pairAddress, timeWindow) {
         : currentTime.subtract(1, windowSize).startOf('hour').unix()
 
     async function fetch() {
-      let data = await getHourlyRateData(pairAddress, startTime, latestBlock)
+      let data = await getHourlyRateData(pairAddress, startTime, undefined, interval, latestBlock)
       updateHourlyData(pairAddress, data, timeWindow)
     }
     if (!chartData) {
       fetch()
     }
-  }, [chartData, timeWindow, pairAddress, updateHourlyData, latestBlock])
+  }, [chartData, interval, timeWindow, pairAddress, updateHourlyData, latestBlock])
 
   return chartData
 }
