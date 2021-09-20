@@ -3,7 +3,7 @@ import { useDarkModeManager } from '../../contexts/LocalStorage'
 import { useMedia } from 'react-use'
 import { widget } from '@pangolindex/tradingview-chart'
 
-const AdvanceChart = ({ tokenAddress, symbolName, base, pair, style, datafeed }) => {
+const AdvanceChart = ({ symbolName, style, datafeed }) => {
   const [darkMode] = useDarkModeManager()
   const below600 = useMedia('(max-width: 600px)')
   const tvWidgetRef = useRef(null)
@@ -11,7 +11,7 @@ const AdvanceChart = ({ tokenAddress, symbolName, base, pair, style, datafeed })
   useEffect(() => {
     const widgetOptions = {
       symbol: symbolName || 'PNG',
-      datafeed: datafeed(tokenAddress, symbolName, base, pair),
+      datafeed: datafeed,
       interval: '1D',
       container_id: 'tv_chart_container',
       library_path: '/tradingview-chart/',

@@ -1,5 +1,6 @@
 import { getHourlyRateData } from '../../contexts/PairData'
 import { PAIR_CHART_VIEW_OPTIONS } from '../../constants'
+import { getIntervalInSeconds } from '../../utils'
 import dayjs from 'dayjs'
 
 const configurationData = {
@@ -11,37 +12,6 @@ const configurationData = {
       desc: 'Pangolin',
     },
   ],
-}
-
-const getIntervalInSeconds = (resolution) => {
-  let seconds
-
-  const exceptLast = resolution.slice(0, resolution.length - 1)
-  const last = resolution.slice(resolution.length - 1)
-
-  // xS -> seconds
-  if (last === 'S') {
-    seconds = exceptLast
-  }
-  // xD -> in days
-  else if (last === 'D') {
-    seconds = parseInt(exceptLast) * 24 * 3600
-  }
-  // xW -> in weeks
-  else if (last === 'W') {
-    seconds = parseInt(exceptLast) * 7 * 24 * 3600
-  }
-
-  // xM -> in months
-  else if (last === 'M') {
-    seconds = parseInt(exceptLast) * 30.436875 * 24 * 3600
-  }
-  // 1 -> just numbers -> minutes
-  else {
-    seconds = resolution * 60
-  }
-
-  return seconds
 }
 
 export default (tokenAddress, symbol, base, pair) => {

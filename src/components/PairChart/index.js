@@ -203,6 +203,7 @@ const PairChart = ({ address, color, base0, base1 }) => {
                   }
                   setChartVisible(false)
                   setIsFullScreen(!isFullScreen)
+                  // we are doing this because we want to reset chart on toggle fullscreen
                   setTimeout(() => {
                     setChartVisible(true)
                   }, 500)
@@ -278,12 +279,14 @@ const PairChart = ({ address, color, base0, base1 }) => {
         (formattedSymbol0 && formattedSymbol1 && chartVisible ? (
           <div style={{ height: isFullScreen ? '100%' : '380px' }}>
             <AdvanceChart
-              tokenAddress={address}
               symbolName={formattedSymbol0 + '/' + formattedSymbol1}
-              base={base0}
-              pair={PAIR_CHART_VIEW_OPTIONS.RATE1}
               style={{ height: isFullScreen ? 'calc(100% - 60px)' : '100%' }}
-              datafeed={datafeed}
+              datafeed={datafeed(
+                address,
+                formattedSymbol0 + '/' + formattedSymbol1,
+                base0,
+                PAIR_CHART_VIEW_OPTIONS.RATE1
+              )}
             />
           </div>
         ) : (
@@ -294,12 +297,14 @@ const PairChart = ({ address, color, base0, base1 }) => {
         (formattedSymbol0 && formattedSymbol1 && chartVisible ? (
           <div style={{ height: isFullScreen ? '100%' : '380px' }}>
             <AdvanceChart
-              tokenAddress={address}
               symbolName={formattedSymbol1 + '/' + formattedSymbol0}
-              base={base1}
-              pair={PAIR_CHART_VIEW_OPTIONS.RATE0}
               style={{ height: isFullScreen ? 'calc(100% - 60px)' : '100%' }}
-              datafeed={datafeed}
+              datafeed={datafeed(
+                address,
+                formattedSymbol1 + '/' + formattedSymbol0,
+                base1,
+                PAIR_CHART_VIEW_OPTIONS.RATE0
+              )}
             />
           </div>
         ) : (

@@ -230,11 +230,9 @@ const TokenChart = ({ address, color, base, symbol }) => {
           <ResponsiveContainer aspect={aspect} ref={ref}>
             <div style={{ height: 500 }}>
               <AdvanceChart
-                tokenAddress={address}
                 symbolName={symbol}
-                base={base}
                 style={{ marginTop: '10px', height: '100%' }}
-                datafeed={datafeed}
+                datafeed={datafeed(address, symbol, base)}
               />
             </div>
           </ResponsiveContainer>
