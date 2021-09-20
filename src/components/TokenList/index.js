@@ -201,7 +201,7 @@ function TopTokenList({ tokens, itemMax = 10 }) {
         )}
         <DataText area="liq">{formattedNum(item.totalLiquidityUSD, true)}</DataText>
 
-        <DataText area="price" color="text" fontWeight="500">
+        <DataText area="price" fontWeight="500">
           {formattedNum(item.priceUSD, true)}
         </DataText>
 
@@ -217,7 +217,6 @@ function TopTokenList({ tokens, itemMax = 10 }) {
       <DashGrid center={true} style={{ height: 'fit-content', padding: '0 1.125rem 1rem 1.125rem' }}>
         <Flex alignItems="center" justifyContent="flexStart">
           <ClickableText
-            color="text"
             area="name"
             fontWeight="500"
             onClick={(e) => {
