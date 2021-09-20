@@ -31,6 +31,7 @@ import {
 import { timeframeOptions } from '../constants'
 import { useLatestBlocks } from './Application'
 import { updateNameData } from '../utils/data'
+import { COIN_ID_MAP } from '../constants/coingecko'
 
 const UPDATE = 'UPDATE'
 const UPDATE_TOKEN_TXNS = 'UPDATE_TOKEN_TXNS'
@@ -735,32 +736,18 @@ export function useAllTokenData() {
   return state
 }
 
-export function useCoinGeckoTokenData(symbol, name) {
+export function useCoinGeckoTokenData(address) {
   const [result, setResult] = useState({})
 
   useEffect(() => {
     let data = {}
 
-    let getCoinData = async () => {
+    const getCoinData = async () => {
       try {
-        let newSymbol = (symbol || '')?.split('.')[0]
-        const isWrappedToken = (name || '')?.split(' ')[0].toLowerCase() === 'wrapped'
-        if (isWrappedToken) {
-          if (newSymbol?.charAt(0)?.toLocaleLowerCase() === 'w') {
-            newSymbol = newSymbol?.substring(1)
-          }
-        }
-        let coins = await CoinGeckoClient.coins.list()
-        let coinId = ''
-        for (const item of coins.data) {
-          if (item?.symbol?.toLowerCase() === newSymbol?.toLowerCase()) {
-            coinId = item?.id
-            break
-          }
-        }
+        const coinId = COIN_ID_MAP[address.toLowerCase()]
 
-        if (coinId !== '') {
-          let coin = await CoinGeckoClient.coins.fetch(coinId, {
+        if (!!coinId) {
+          const coin = await CoinGeckoClient.coins.fetch(coinId, {
             tickers: false,
             community_data: false,
             developer_data: false,
@@ -790,13 +777,13 @@ export function useCoinGeckoTokenData(symbol, name) {
 
         setResult(data)
       } catch (e) {
-        console.log(e)
+        console.error(e)
       }
     }
-    if (symbol && name) {
+    if (address) {
       getCoinData()
     }
-  }, [symbol, name])
+  }, [address])
 
   return result
 }

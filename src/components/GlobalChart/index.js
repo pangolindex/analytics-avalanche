@@ -40,6 +40,7 @@ const GlobalChart = ({ display }) => {
     oneDayVolumeUSD,
     volumeChangeUSD,
     liquidityChangeUSD,
+    liquidityChangeETH,
     oneWeekVolume,
     weeklyVolumeChange,
   } = useGlobalData()
@@ -94,7 +95,7 @@ const GlobalChart = ({ display }) => {
             data={chartDataFiltered}
             isUSD={liquidityBase === LIQUIDITY_BASE.USD}
             base={liquidityBase === LIQUIDITY_BASE.USD ? totalLiquidityUSD : totalLiquidityETH}
-            baseChange={liquidityChangeUSD}
+            baseChange={liquidityBase === LIQUIDITY_BASE.USD ? liquidityChangeUSD : liquidityChangeETH}
             title={liquidityBase === LIQUIDITY_BASE.USD ? 'Liquidity' : 'Liquidity (AVAX)'}
             field={liquidityBase === LIQUIDITY_BASE.USD ? 'totalLiquidityUSD' : 'totalLiquidityETH'}
             width={width}

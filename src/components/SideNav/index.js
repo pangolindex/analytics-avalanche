@@ -169,12 +169,12 @@ function SideNav({ history }) {
               </Link>
             </HeaderText>
             <HeaderText>
-              <Link href="https://chat.avalabs.org" target="_blank">
+              <Link href="https://discord.com/invite/PARrDYYbfw" target="_blank">
                 Discord
               </Link>
             </HeaderText>
             <HeaderText>
-              <Link href="https://twitter.com/avalancheavax" target="_blank">
+              <Link href="https://twitter.com/pangolindex" target="_blank">
                 Twitter
               </Link>
             </HeaderText>
