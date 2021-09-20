@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import styled from 'styled-components'
+import 'feather-icons'
+import { Maximize, Minimize } from 'react-feather'
 import { Area, XAxis, YAxis, ResponsiveContainer, Tooltip, AreaChart, BarChart, Bar } from 'recharts'
 import { AutoRow, RowBetween, RowFixed } from '../Row'
 import { toK, toNiceDate, toNiceDateYear, formattedNum, getTimeframe } from '../../utils'
@@ -24,6 +26,28 @@ const ChartWrapper = styled.div`
   }
 `
 
+const MaximizeIcon = styled(Maximize)`
+  min-height: 14px;
+  min-width: 14px;
+`
+
+const MinimizeIcon = styled(Minimize)`
+  min-height: 14px;
+  min-width: 14px;
+`
+
+const fullScreenStyle = {
+  height: '100%',
+  width: '100%',
+  position: 'fixed',
+  top: 0,
+  right: 0,
+  left: 0,
+  bottom: 0,
+  background: '#000',
+  zIndex: 9999999,
+}
+
 const CHART_VIEW = {
   VOLUME: 'Volume',
   LIQUIDITY: 'Liquidity',
@@ -40,6 +64,8 @@ const TokenChart = ({ address, color, base, symbol }) => {
   // settings for the window and candle width
   const [chartFilter, setChartFilter] = useState(CHART_VIEW.PRICE)
   const [frequency, setFrequency] = useState(DATA_FREQUENCY.HOUR)
+  const [isFullScreen, setIsFullScreen] = useState(false)
+  const [chartVisible, setChartVisible] = useState(true)
 
   const [darkMode] = useDarkModeManager()
   const textColor = darkMode ? 'white' : 'black'
@@ -95,7 +121,7 @@ const TokenChart = ({ address, color, base, symbol }) => {
   }, [isClient, width]) // Empty array ensures that effect is only run on mount and unmount
 
   return (
-    <ChartWrapper>
+    <ChartWrapper style={isFullScreen ? fullScreenStyle : {}}>
       {below600 ? (
         <RowBetween mb={40}>
           <DropdownSelect options={CHART_VIEW} active={chartFilter} setActive={setChartFilter} color={color} />
@@ -113,32 +139,37 @@ const TokenChart = ({ address, color, base, symbol }) => {
               : 0
           }
           align="flex-start"
+          style={{ padding: isFullScreen ? '10px' : 0 }}
         >
           <AutoColumn gap="8px">
-            <RowFixed>
-              <OptionButton
-                active={chartFilter === CHART_VIEW.LIQUIDITY}
-                onClick={() => setChartFilter(CHART_VIEW.LIQUIDITY)}
-                style={{ marginRight: '6px' }}
-              >
-                Liquidity
-              </OptionButton>
-              <OptionButton
-                active={chartFilter === CHART_VIEW.VOLUME}
-                onClick={() => setChartFilter(CHART_VIEW.VOLUME)}
-                style={{ marginRight: '6px' }}
-              >
-                Volume
-              </OptionButton>
-              <OptionButton
-                active={chartFilter === CHART_VIEW.PRICE}
-                onClick={() => {
-                  setChartFilter(CHART_VIEW.PRICE)
-                }}
-              >
-                Price
-              </OptionButton>
-            </RowFixed>
+            {!isFullScreen && (
+              <RowFixed>
+                <OptionButton
+                  active={chartFilter === CHART_VIEW.LIQUIDITY}
+                  onClick={() => setChartFilter(CHART_VIEW.LIQUIDITY)}
+                  style={{ marginRight: '6px' }}
+                >
+                  Liquidity
+                </OptionButton>
+
+                <OptionButton
+                  active={chartFilter === CHART_VIEW.VOLUME}
+                  onClick={() => setChartFilter(CHART_VIEW.VOLUME)}
+                  style={{ marginRight: '6px' }}
+                >
+                  Volume
+                </OptionButton>
+
+                <OptionButton
+                  active={chartFilter === CHART_VIEW.PRICE}
+                  onClick={() => {
+                    setChartFilter(CHART_VIEW.PRICE)
+                  }}
+                >
+                  Price
+                </OptionButton>
+              </RowFixed>
+            )}
           </AutoColumn>
 
           {chartFilter !== CHART_VIEW.PRICE && (
@@ -160,6 +191,28 @@ const TokenChart = ({ address, color, base, symbol }) => {
                 onClick={() => setTimeWindow(timeframeOptions.ALL_TIME)}
               >
                 All
+              </OptionButton>
+            </AutoRow>
+          )}
+
+          {chartFilter === CHART_VIEW.PRICE && (
+            <AutoRow justify="flex-end" gap="6px" style={{ width: 'auto' }}>
+              <OptionButton
+                onClick={() => {
+                  if (isFullScreen) {
+                    document.body.style.overflow = 'visible'
+                  } else {
+                    document.body.style.overflow = 'hidden'
+                  }
+                  setChartVisible(false)
+                  setIsFullScreen(!isFullScreen)
+                  // we are doing this because we want to reset chart on toggle fullscreen
+                  setTimeout(() => {
+                    setChartVisible(true)
+                  }, 500)
+                }}
+              >
+                {isFullScreen ? <MinimizeIcon size={16} /> : <MaximizeIcon size={16} />}
               </OptionButton>
             </AutoRow>
           )}
@@ -226,16 +279,14 @@ const TokenChart = ({ address, color, base, symbol }) => {
         </ResponsiveContainer>
       )}
       {chartFilter === CHART_VIEW.PRICE &&
-        (symbol ? (
-          <ResponsiveContainer aspect={aspect} ref={ref}>
-            <div style={{ height: 500 }}>
-              <AdvanceChart
-                symbolName={symbol}
-                style={{ marginTop: '10px', height: '100%' }}
-                datafeed={datafeed(address, symbol, base)}
-              />
-            </div>
-          </ResponsiveContainer>
+        (symbol && chartVisible ? (
+          <div style={{ height: isFullScreen ? '100%' : '500px' }}>
+            <AdvanceChart
+              symbolName={symbol}
+              style={{ marginTop: isFullScreen ? 0 : '10px', height: isFullScreen ? 'calc(100% - 60px)' : '100%' }}
+              datafeed={datafeed(address, symbol, base)}
+            />
+          </div>
         ) : (
           <LocalLoader />
         ))}
