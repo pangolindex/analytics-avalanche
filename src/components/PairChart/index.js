@@ -1,18 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react'
 import styled from 'styled-components'
+import 'feather-icons'
+import { Maximize, Minimize } from 'react-feather'
 import { Area, XAxis, YAxis, ResponsiveContainer, Tooltip, AreaChart, BarChart, Bar } from 'recharts'
 import { RowBetween, AutoRow } from '../Row'
 import { toK, toNiceDate, toNiceDateYear, formattedNum, getTimeframe } from '../../utils'
 import { OptionButton } from '../ButtonStyled'
 import { darken } from 'polished'
 import { usePairChartData, usePairData } from '../../contexts/PairData'
-import { timeframeOptions } from '../../constants'
+import { timeframeOptions, PAIR_CHART_VIEW_OPTIONS } from '../../constants'
 import { useMedia } from 'react-use'
 import { EmptyCard } from '..'
 import DropdownSelect from '../DropdownSelect'
 import LocalLoader from '../LocalLoader'
 import { useDarkModeManager } from '../../contexts/LocalStorage'
-import AdvancePairChart from '../AdvancePairChart'
+import AdvanceChart from '../AdvanceChart'
+import datafeed from './datafeed.js'
 
 const ChartWrapper = styled.div`
   height: 100%;
@@ -25,21 +28,41 @@ const ChartWrapper = styled.div`
 const OptionsRow = styled.div`
   display: flex;
   flex-direction: row;
-  width: 100%;
-  margin-bottom: 40px;
+  width: auto;
+  margin-bottom: ${(props) => (props.isFullScreen ? 0 : '20px')};
+  padding: ${(props) => (props.isFullScreen ? '10px' : '0px')};
 `
 
-const CHART_VIEW = {
-  VOLUME: 'Volume',
-  LIQUIDITY: 'Liquidity',
-  RATE0: 'Rate 0',
-  RATE1: 'Rate 1',
+const MaximizeIcon = styled(Maximize)`
+  min-height: 14px;
+  min-width: 14px;
+`
+
+const MinimizeIcon = styled(Minimize)`
+  min-height: 14px;
+  min-width: 14px;
+`
+
+const fullScreenStyle = {
+  height: '100%',
+  width: '100%',
+  position: 'fixed',
+  top: 0,
+  right: 0,
+  left: 0,
+  bottom: 0,
+  background: '#000',
+  zIndex: 9999999,
 }
 
 const PairChart = ({ address, color, base0, base1 }) => {
-  const [chartFilter, setChartFilter] = useState(CHART_VIEW.LIQUIDITY)
+  const [chartFilter, setChartFilter] = useState(PAIR_CHART_VIEW_OPTIONS.LIQUIDITY)
 
   const [timeWindow, setTimeWindow] = useState(timeframeOptions.MONTH)
+
+  const [isFullScreen, setIsFullScreen] = useState(false)
+
+  const [chartVisible, setChartVisible] = useState(true)
 
   const [darkMode] = useDarkModeManager()
   const textColor = darkMode ? 'white' : 'black'
@@ -86,78 +109,67 @@ const PairChart = ({ address, color, base0, base1 }) => {
     )
   }
 
-  /**
-   * Used to format values on chart on scroll
-   * Needs to be raw html for chart API to parse styles
-   * @param {*} val
-   */
-  function valueFormatter(val) {
-    if (chartFilter === CHART_VIEW.RATE0) {
-      return (
-        formattedNum(val) +
-        `<span style="font-size: 12px; margin-left: 4px;">${formattedSymbol1}/${formattedSymbol0}<span>`
-      )
-    }
-    if (chartFilter === CHART_VIEW.RATE1) {
-      return (
-        formattedNum(val) +
-        `<span style="font-size: 12px; margin-left: 4px;">${formattedSymbol0}/${formattedSymbol1}<span>`
-      )
-    }
-  }
-
   const aspect = below1080 ? 60 / 20 : below1600 ? 60 / 28 : 60 / 22
 
   return (
-    <ChartWrapper>
+    <ChartWrapper style={isFullScreen ? fullScreenStyle : {}}>
       {below600 ? (
         <RowBetween mb={40}>
-          <DropdownSelect options={CHART_VIEW} active={chartFilter} setActive={setChartFilter} color={color} />
-          {(chartFilter === CHART_VIEW.VOLUME || chartFilter === CHART_VIEW.LIQUIDITY) && (
+          <DropdownSelect
+            options={PAIR_CHART_VIEW_OPTIONS}
+            active={chartFilter}
+            setActive={setChartFilter}
+            color={color}
+          />
+          {(chartFilter === PAIR_CHART_VIEW_OPTIONS.VOLUME || chartFilter === PAIR_CHART_VIEW_OPTIONS.LIQUIDITY) && (
             <DropdownSelect options={timeframeOptions} active={timeWindow} setActive={setTimeWindow} color={color} />
           )}
         </RowBetween>
       ) : (
-        <OptionsRow>
+        <OptionsRow isFullScreen={isFullScreen}>
           <AutoRow gap="6px" style={{ flexWrap: 'nowrap' }}>
+            {!isFullScreen && (
+              <OptionButton
+                active={chartFilter === PAIR_CHART_VIEW_OPTIONS.LIQUIDITY}
+                onClick={() => {
+                  setTimeWindow(timeframeOptions.ALL_TIME)
+                  setChartFilter(PAIR_CHART_VIEW_OPTIONS.LIQUIDITY)
+                }}
+              >
+                Liquidity
+              </OptionButton>
+            )}
+            {!isFullScreen && (
+              <OptionButton
+                active={chartFilter === PAIR_CHART_VIEW_OPTIONS.VOLUME}
+                onClick={() => {
+                  setTimeWindow(timeframeOptions.ALL_TIME)
+                  setChartFilter(PAIR_CHART_VIEW_OPTIONS.VOLUME)
+                }}
+              >
+                Volume
+              </OptionButton>
+            )}
             <OptionButton
-              active={chartFilter === CHART_VIEW.LIQUIDITY}
-              onClick={() => {
-                setTimeWindow(timeframeOptions.ALL_TIME)
-                setChartFilter(CHART_VIEW.LIQUIDITY)
-              }}
-            >
-              Liquidity
-            </OptionButton>
-            <OptionButton
-              active={chartFilter === CHART_VIEW.VOLUME}
-              onClick={() => {
-                setTimeWindow(timeframeOptions.ALL_TIME)
-                setChartFilter(CHART_VIEW.VOLUME)
-              }}
-            >
-              Volume
-            </OptionButton>
-            <OptionButton
-              active={chartFilter === CHART_VIEW.RATE0}
+              active={chartFilter === PAIR_CHART_VIEW_OPTIONS.RATE0}
               onClick={() => {
                 setTimeWindow(timeframeOptions.WEEK)
-                setChartFilter(CHART_VIEW.RATE0)
+                setChartFilter(PAIR_CHART_VIEW_OPTIONS.RATE0)
               }}
             >
               {pairData.token0 ? formattedSymbol1 + '/' + formattedSymbol0 : '-'}
             </OptionButton>
             <OptionButton
-              active={chartFilter === CHART_VIEW.RATE1}
+              active={chartFilter === PAIR_CHART_VIEW_OPTIONS.RATE1}
               onClick={() => {
                 setTimeWindow(timeframeOptions.WEEK)
-                setChartFilter(CHART_VIEW.RATE1)
+                setChartFilter(PAIR_CHART_VIEW_OPTIONS.RATE1)
               }}
             >
               {pairData.token0 ? formattedSymbol0 + '/' + formattedSymbol1 : '-'}
             </OptionButton>
           </AutoRow>
-          {(chartFilter === CHART_VIEW.VOLUME || chartFilter === CHART_VIEW.LIQUIDITY) && (
+          {(chartFilter === PAIR_CHART_VIEW_OPTIONS.VOLUME || chartFilter === PAIR_CHART_VIEW_OPTIONS.LIQUIDITY) && (
             <AutoRow justify="flex-end" gap="6px" style={{ width: 'auto' }}>
               <OptionButton
                 active={timeWindow === timeframeOptions.WEEK}
@@ -179,9 +191,30 @@ const PairChart = ({ address, color, base0, base1 }) => {
               </OptionButton>
             </AutoRow>
           )}
+
+          {(chartFilter === PAIR_CHART_VIEW_OPTIONS.RATE1 || chartFilter === PAIR_CHART_VIEW_OPTIONS.RATE0) && (
+            <AutoRow justify="flex-end" gap="6px" style={{ width: 'auto' }}>
+              <OptionButton
+                onClick={() => {
+                  if (isFullScreen) {
+                    document.body.style.overflow = 'visible'
+                  } else {
+                    document.body.style.overflow = 'hidden'
+                  }
+                  setChartVisible(false)
+                  setIsFullScreen(!isFullScreen)
+                  setTimeout(() => {
+                    setChartVisible(true)
+                  }, 500)
+                }}
+              >
+                {isFullScreen ? <MinimizeIcon size={16} /> : <MaximizeIcon size={16} />}
+              </OptionButton>
+            </AutoRow>
+          )}
         </OptionsRow>
       )}
-      {chartFilter === CHART_VIEW.LIQUIDITY && (
+      {chartFilter === PAIR_CHART_VIEW_OPTIONS.LIQUIDITY && (
         <ResponsiveContainer aspect={aspect}>
           <AreaChart margin={{ top: 0, right: 10, bottom: 6, left: 0 }} barCategoryGap={1} data={chartData}>
             <defs>
@@ -241,39 +274,39 @@ const PairChart = ({ address, color, base0, base1 }) => {
         </ResponsiveContainer>
       )}
 
-      {chartFilter === CHART_VIEW.RATE1 &&
-        (formattedSymbol0 && formattedSymbol1 ? (
-          <ResponsiveContainer aspect={aspect} ref={ref}>
-            <div style={{ height: 350 }}>
-              <AdvancePairChart
-                tokenAddress={address}
-                symbolName={formattedSymbol0 + '/' + formattedSymbol1}
-                base={base0}
-                pair={CHART_VIEW.RATE1}
-              />
-            </div>
-          </ResponsiveContainer>
+      {chartFilter === PAIR_CHART_VIEW_OPTIONS.RATE1 &&
+        (formattedSymbol0 && formattedSymbol1 && chartVisible ? (
+          <div style={{ height: isFullScreen ? '100%' : '380px' }}>
+            <AdvanceChart
+              tokenAddress={address}
+              symbolName={formattedSymbol0 + '/' + formattedSymbol1}
+              base={base0}
+              pair={PAIR_CHART_VIEW_OPTIONS.RATE1}
+              style={{ height: isFullScreen ? 'calc(100% - 60px)' : '100%' }}
+              datafeed={datafeed}
+            />
+          </div>
         ) : (
           <LocalLoader />
         ))}
 
-      {chartFilter === CHART_VIEW.RATE0 &&
-        (formattedSymbol0 && formattedSymbol1 ? (
-          <ResponsiveContainer aspect={aspect} ref={ref}>
-            <div style={{ height: 350 }}>
-              <AdvancePairChart
-                tokenAddress={address}
-                symbolName={formattedSymbol1 + '/' + formattedSymbol0}
-                base={base1}
-                pair={CHART_VIEW.RATE0}
-              />
-            </div>
-          </ResponsiveContainer>
+      {chartFilter === PAIR_CHART_VIEW_OPTIONS.RATE0 &&
+        (formattedSymbol0 && formattedSymbol1 && chartVisible ? (
+          <div style={{ height: isFullScreen ? '100%' : '380px' }}>
+            <AdvanceChart
+              tokenAddress={address}
+              symbolName={formattedSymbol1 + '/' + formattedSymbol0}
+              base={base1}
+              pair={PAIR_CHART_VIEW_OPTIONS.RATE0}
+              style={{ height: isFullScreen ? 'calc(100% - 60px)' : '100%' }}
+              datafeed={datafeed}
+            />
+          </div>
         ) : (
           <LocalLoader />
         ))}
 
-      {chartFilter === CHART_VIEW.VOLUME && (
+      {chartFilter === PAIR_CHART_VIEW_OPTIONS.VOLUME && (
         <ResponsiveContainer aspect={aspect}>
           <BarChart
             margin={{ top: 0, right: 0, bottom: 6, left: below1080 ? 0 : 10 }}

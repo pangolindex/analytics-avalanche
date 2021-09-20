@@ -40,3 +40,11 @@ export const PAIR_BLACKLIST = []
  * For tokens that cause errors on fee calculations
  */
 export const FEE_WARNING_TOKENS = []
+
+
+export const PAIR_CHART_VIEW_OPTIONS  = {
+  VOLUME: 'Volume',
+  LIQUIDITY: 'Liquidity',
+  RATE0: 'Rate 0',
+  RATE1: 'Rate 1',
+}

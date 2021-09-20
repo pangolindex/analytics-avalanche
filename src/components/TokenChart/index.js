@@ -12,7 +12,8 @@ import DropdownSelect from '../DropdownSelect'
 import LocalLoader from '../LocalLoader'
 import { AutoColumn } from '../Column'
 import { useDarkModeManager } from '../../contexts/LocalStorage'
-import AdvanceTokenChart from '../AdvanceTokenChart'
+import AdvanceChart from '../AdvanceChart'
+import datafeed from './datafeed.js'
 
 const ChartWrapper = styled.div`
   height: 100%;
@@ -228,7 +229,13 @@ const TokenChart = ({ address, color, base, symbol }) => {
         (symbol ? (
           <ResponsiveContainer aspect={aspect} ref={ref}>
             <div style={{ height: 500 }}>
-              <AdvanceTokenChart tokenAddress={address} symbolName={symbol} base={base} />
+              <AdvanceChart
+                tokenAddress={address}
+                symbolName={symbol}
+                base={base}
+                style={{ marginTop: '10px', height: '100%' }}
+                datafeed={datafeed}
+              />
             </div>
           </ResponsiveContainer>
         ) : (

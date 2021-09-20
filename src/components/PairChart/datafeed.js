@@ -1,4 +1,5 @@
 import { getHourlyRateData } from '../../contexts/PairData'
+import { PAIR_CHART_VIEW_OPTIONS } from '../../constants'
 import dayjs from 'dayjs'
 
 const configurationData = {
@@ -90,7 +91,8 @@ export default (tokenAddress, symbol, base, pair) => {
           return
         }
 
-        let data = pair === 'Rate 0' && pairChartdata.length > 0 ? pairChartdata?.[0] : pairChartdata?.[1]
+        let data =
+          pair === PAIR_CHART_VIEW_OPTIONS.RATE0 && pairChartdata.length > 0 ? pairChartdata?.[0] : pairChartdata?.[1]
         let bars = []
         data.forEach((bar) => {
           if (bar.timestamp >= from && bar.timestamp < to) {
