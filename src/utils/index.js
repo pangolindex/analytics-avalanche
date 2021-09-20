@@ -529,8 +529,11 @@ export function isEquivalent(a, b) {
   return true
 }
 
-
-export const getIntervalInSeconds = (resolution) => {
+/**
+ * convert advance chart intervals to seconds
+ * @param {*} resolution -> xS, xD, xW, xM, number
+ */
+export const convertIntervalToSeconds = (resolution) => {
   let seconds
 
   const exceptLast = resolution.slice(0, resolution.length - 1)

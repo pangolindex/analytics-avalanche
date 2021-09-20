@@ -1,6 +1,6 @@
 import { getIntervalTokenData } from '../../contexts/TokenData'
 import dayjs from 'dayjs'
-import { getIntervalInSeconds } from '../../utils'
+import { convertIntervalToSeconds } from '../../utils'
 
 const configurationData = {
   supports_search: false,
@@ -48,7 +48,7 @@ export default (tokenAddress, symbol, base) => {
       const { from, to } = periodParams
 
       try {
-        const interval = getIntervalInSeconds(resolution)
+        const interval = convertIntervalToSeconds(resolution)
         let data = await getIntervalTokenData(tokenAddress, from, to, interval, undefined)
 
         if (data.length === 0) {

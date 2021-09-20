@@ -1,6 +1,6 @@
 import { getHourlyRateData } from '../../contexts/PairData'
 import { PAIR_CHART_VIEW_OPTIONS } from '../../constants'
-import { getIntervalInSeconds } from '../../utils'
+import { convertIntervalToSeconds } from '../../utils'
 import dayjs from 'dayjs'
 
 const configurationData = {
@@ -49,7 +49,7 @@ export default (tokenAddress, symbol, base, pair) => {
       const { from, to } = periodParams
 
       try {
-        const interval = getIntervalInSeconds(resolution)
+        const interval = convertIntervalToSeconds(resolution)
 
         let pairChartdata = await getHourlyRateData(tokenAddress, from, to, interval, undefined)
 
