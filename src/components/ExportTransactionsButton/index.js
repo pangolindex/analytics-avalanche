@@ -1,6 +1,6 @@
 import { writeToString } from '@fast-csv/format'
 import PropTypes from 'prop-types'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Download, Loader } from 'react-feather'
 
 import { updateNameData } from '../../utils/data'
@@ -139,6 +139,7 @@ PreparedDownloadButton.propTypes = {
 const ExportTransactionsButton = ({ transactions }) => {
   const [transactionsPreparing, setTransactionsPreparing] = useState(false)
   const [transactionsBlob, setTransactionsBlob] = useState(undefined)
+  const { mints, burns, swaps } = transactions
 
   const prepareTransactions = () => {
     setTransactionsPreparing(true)
@@ -154,6 +155,14 @@ const ExportTransactionsButton = ({ transactions }) => {
         setTransactionsBlob(undefined)
         setTransactionsPreparing(false)
       })
+  }
+
+  useEffect(() => {
+    setTransactionsBlob(undefined)
+  }, [transactions])
+
+  if (!mints?.length && !burns?.length && !swaps?.length) {
+    return null
   }
 
   if (transactionsPreparing) {
@@ -200,7 +209,7 @@ ExportTransactionsButton.propTypes = {
     burns: PropTypes.arrayOf(transactionShape),
     mints: PropTypes.arrayOf(transactionShape),
     swaps: PropTypes.arrayOf(transactionShape),
-  }),
+  }).isRequired,
 }
 
 export { ExportTransactionsButton }
