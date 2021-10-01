@@ -74,7 +74,21 @@ function createTransactionExport(transactions) {
   return writeToString(rows)
 }
 
-const PrepareDownloadButton = ({ onClick }) => (
+function downloadTransactionExport(fileString) {
+  const file = new File([fileString], 'transactions.csv', { type: 'text/plain' })
+  const fileUrl = window.URL.createObjectURL(file)
+  const a = document.createElement('a')
+  a.href = fileUrl
+  a.download = 'transactions.csv'
+  document.body.appendChild(a)
+  a.click()
+  setTimeout(() => {
+    window.URL.revokeObjectURL(fileUrl)
+    a.remove()
+  }, 0)
+}
+
+const DownloadButton = ({ onClick }) => (
   <ButtonDark
     color={'rgba(255, 255, 255, 0.2)'}
     style={{
@@ -92,11 +106,11 @@ const PrepareDownloadButton = ({ onClick }) => (
   </ButtonDark>
 )
 
-PrepareDownloadButton.propTypes = {
+DownloadButton.propTypes = {
   onClick: PropTypes.func,
 }
 
-const PreparingDownloadButton = () => (
+const LoadingButton = () => (
   <ButtonDark
     color={'rgba(255, 255, 255, 0.2)'}
     style={{
@@ -138,42 +152,31 @@ PreparedDownloadButton.propTypes = {
 
 const ExportTransactionsButton = ({ transactions }) => {
   const [transactionsPreparing, setTransactionsPreparing] = useState(false)
-  const [transactionsBlob, setTransactionsBlob] = useState(undefined)
   const { mints, burns, swaps } = transactions
 
   const prepareTransactions = () => {
     setTransactionsPreparing(true)
     const preparedTransactions = prepareTransactionsForExport(transactions)
     createTransactionExport(preparedTransactions)
-      .then((csv) => {
-        const blob = new Blob([csv], { type: 'text/plain' })
-        setTransactionsBlob(window.URL.createObjectURL(blob))
+      .then((fileString) => {
+        downloadTransactionExport(fileString)
         setTransactionsPreparing(false)
       })
       .catch((err) => {
         console.error('Failed to create transaction export', err.stack || err)
-        setTransactionsBlob(undefined)
         setTransactionsPreparing(false)
       })
   }
-
-  useEffect(() => {
-    setTransactionsBlob(undefined)
-  }, [transactions])
 
   if (!mints?.length && !burns?.length && !swaps?.length) {
     return null
   }
 
   if (transactionsPreparing) {
-    return <PreparingDownloadButton />
+    return <LoadingButton />
   }
 
-  if (transactionsBlob) {
-    return <PreparedDownloadButton url={transactionsBlob} />
-  }
-
-  return <PrepareDownloadButton onClick={prepareTransactions} />
+  return <DownloadButton onClick={prepareTransactions} />
 }
 
 const transactionShape = PropTypes.shape({
