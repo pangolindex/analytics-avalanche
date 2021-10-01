@@ -4,14 +4,14 @@ import { ApolloProvider } from 'react-apollo'
 import { client } from './apollo/client'
 import { Route, Switch, Redirect, HashRouter } from 'react-router-dom'
 import GlobalPage from './pages/GlobalPage'
-import TokenPage from './pages/TokenPage'
-import PairPage from './pages/PairPage'
-import { useGlobalData, useGlobalChartData } from './contexts/GlobalData'
-import { isAddress } from './utils'
 import AccountPage from './pages/AccountPage'
 import AllTokensPage from './pages/AllTokensPage'
 import AllPairsPage from './pages/AllPairsPage'
-import PinnedData from './components/PinnedData'
+// import TokenPage from './pages/TokenPage'
+// import PairPage from './pages/PairPage'
+// import PinnedData from './components/PinnedData'
+import { useGlobalData, useGlobalChartData } from './contexts/GlobalData'
+import { isAddress } from './utils'
 
 import SideNav from './components/SideNav'
 import AccountLookup from './pages/AccountLookup'
@@ -25,7 +25,7 @@ const AppWrapper = styled.div`
 `
 const ContentWrapper = styled.div`
   display: grid;
-  grid-template-columns: ${({ open }) => (open ? '220px 1fr 200px' : '220px 1fr 64px')};
+  grid-template-columns: ${({ open }: { open: boolean }) => (open ? '220px 1fr 200px' : '220px 1fr 64px')};
 
   @media screen and (max-width: 1400px) {
     grid-template-columns: 220px 1fr;
@@ -44,8 +44,8 @@ const Right = styled.div`
   right: 0;
   bottom: 0rem;
   z-index: 99;
-  width: ${({ open }) => (open ? '220px' : '64px')};
-  height: ${({ open }) => (open ? 'fit-content' : '64px')};
+  width: ${({ open }: { open: boolean }) => (open ? '220px' : '64px')};
+  height: ${({ open }: { open: boolean }) => (open ? 'fit-content' : '64px')};
   overflow: auto;
   background-color: ${({ theme }) => theme.bg1};
   @media screen and (max-width: 1400px) {
@@ -78,14 +78,22 @@ const WarningBanner = styled.div`
 /**
  * Wrap the component with the header and sidebar pinned tab
  */
-const LayoutWrapper = ({ children, savedOpen, setSavedOpen }) => {
+
+interface LayoutWrapperProps {
+  children: React.ReactNode,
+  savedOpen: boolean,
+  setSavedOpen: (savedOpen: boolean) => void
+}
+
+const LayoutWrapper = ({ children, savedOpen, setSavedOpen }: LayoutWrapperProps) => {
   return (
     <>
       <ContentWrapper open={savedOpen}>
         <SideNav />
         <Center id="center">{children}</Center>
         <Right open={savedOpen}>
-          <PinnedData open={savedOpen} setSavedOpen={setSavedOpen} />
+          {/* hide by great.dolphin.ls
+          <PinnedData open={savedOpen} setSavedOpen={setSavedOpen} /> */}
         </Right>
       </ContentWrapper>
     </>
@@ -115,14 +123,14 @@ function App() {
           </WarningWrapper>
         )}
         {latestBlock &&
-        globalData &&
-        Object.keys(globalData).length > 0 &&
-        globalChartData &&
-        Object.keys(globalChartData).length > 0 ? (
+          globalData &&
+          Object.keys(globalData).length > 0 &&
+          globalChartData &&
+          Object.keys(globalChartData).length > 0 ? (
           <HashRouter>
             <Switch>
               <Route
-                exacts
+                exact
                 strict
                 path="/token/:tokenAddress"
                 render={({ match }) => {
@@ -132,7 +140,8 @@ function App() {
                   if (isAddress(match.params.tokenAddress.toLowerCase())) {
                     return (
                       <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
-                        <TokenPage address={match.params.tokenAddress.toLowerCase()} />
+                        {/* hide by great.dolphin.ls
+                        <TokenPage address={match.params.tokenAddress.toLowerCase()} /> */}
                       </LayoutWrapper>
                     )
                   } else {
@@ -141,7 +150,7 @@ function App() {
                 }}
               />
               <Route
-                exacts
+                exact
                 strict
                 path="/pair/:pairAddress"
                 render={({ match }) => {
@@ -151,7 +160,8 @@ function App() {
                   if (isAddress(match.params.pairAddress.toLowerCase())) {
                     return (
                       <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
-                        <PairPage pairAddress={match.params.pairAddress.toLowerCase()} />
+                        {/* hide by great.dolphin.ls
+                        <PairPage pairAddress={match.params.pairAddress.toLowerCase()} /> */}
                       </LayoutWrapper>
                     )
                   } else {
@@ -160,7 +170,7 @@ function App() {
                 }}
               />
               <Route
-                exacts
+                exact
                 strict
                 path="/account/:accountAddress"
                 render={({ match }) => {

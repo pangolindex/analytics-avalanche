@@ -19,21 +19,23 @@ if (typeof GOOGLE_ANALYTICS_ID === 'string') {
     customBrowserType: !isMobile
       ? 'desktop'
       : 'web3' in window || 'ethereum' in window
-      ? 'mobileWeb3'
-      : 'mobileRegular',
+        ? 'mobileWeb3'
+        : 'mobileRegular',
   })
 } else {
   ReactGA.initialize('test', { testMode: true, debug: true })
 }
 
-function ContextProviders({ children }) {
+function ContextProviders({ children }: { children: React.ReactNode }) {
   return (
     <LocalStorageContextProvider>
       <ApplicationContextProvider>
         <TokenDataContextProvider>
           <GlobalDataContextProvider>
             <PairDataContextProvider>
-              <UserContextProvider>{children}</UserContextProvider>
+              <UserContextProvider>
+                {children}
+              </UserContextProvider>
             </PairDataContextProvider>
           </GlobalDataContextProvider>
         </TokenDataContextProvider>
