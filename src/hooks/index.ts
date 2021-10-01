@@ -4,8 +4,9 @@ import Vibrant from 'node-vibrant'
 import { hex } from 'wcag-contrast'
 import { isAddress } from '../utils'
 import copy from 'copy-to-clipboard'
+import { Token } from '@pangolindex/sdk'
 
-export function useColor(tokenAddress, token) {
+export function useColor(tokenAddress?: Token, token?: String) {
   const [color, setColor] = useState('#2172E5')
   if (tokenAddress) {
     const path = `https://raw.githubusercontent.com/pangolindex/tokens/main/assets/${isAddress(
@@ -50,13 +51,14 @@ export function useCopyClipboard(timeout = 500) {
         clearTimeout(hide)
       }
     }
+    return undefined
   }, [isCopied, setIsCopied, timeout])
 
   return [isCopied, staticCopy]
 }
 
-export const useOutsideClick = (ref, ref2, callback) => {
-  const handleClick = (e) => {
+export const useOutsideClick = (ref: any, ref2: any, callback: (flag: boolean) => void,) => {
+  const handleClick = useCallback((e) => {
     if (ref.current && ref.current && !ref2.current) {
       callback(true)
     } else if (ref.current && !ref.current.contains(e.target) && ref2.current && !ref2.current.contains(e.target)) {
@@ -64,7 +66,8 @@ export const useOutsideClick = (ref, ref2, callback) => {
     } else {
       callback(false)
     }
-  }
+  }, [ref, ref2, callback])
+
   useEffect(() => {
     document.addEventListener('click', handleClick)
     return () => {

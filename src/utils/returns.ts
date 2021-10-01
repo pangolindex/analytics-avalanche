@@ -36,7 +36,7 @@ interface Position {
 const PRICE_DISCOVERY_START_TIMESTAMP = 1612876523
 
 // TODO: Address avalanche specific assets and timeframes
-function formatPricesForEarlyTimestamps(position): Position {
+function formatPricesForEarlyTimestamps(position: any): Position {
   if (position.timestamp < PRICE_DISCOVERY_START_TIMESTAMP) {
     if (priceOverrides.includes(position?.pair?.token0.id)) {
       position.token0PriceUSD = 1
@@ -179,14 +179,14 @@ export function getMetricsForPositionWindow(positionT0: Position, positionT1: Po
  * @param pairSnapshots // history of entries and exits for lp on this pair
  * @param currentETHPrice // current price of eth used for usd conversions
  */
-export async function getHistoricalPairReturns(startDateTimestamp, currentPairData, pairSnapshots, currentETHPrice) {
+export async function getHistoricalPairReturns(startDateTimestamp: any, currentPairData: any, pairSnapshots: any, currentETHPrice: any) {
   // catch case where data not puplated yet
   if (!currentPairData.createdAtTimestamp) {
     return []
   }
   let dayIndex: number = Math.round(startDateTimestamp / 86400) // get unique day bucket unix
   const currentDayIndex: number = Math.round(dayjs.utc().unix() / 86400)
-  const sortedPositions = pairSnapshots.sort((a, b) => {
+  const sortedPositions = pairSnapshots.sort((a: any, b: any) => {
     return parseInt(a.timestamp) > parseInt(b.timestamp) ? 1 : -1
   })
   if (sortedPositions[0].timestamp > startDateTimestamp) {
@@ -203,7 +203,7 @@ export async function getHistoricalPairReturns(startDateTimestamp, currentPairDa
   }
 
   const shareValues = await getShareValueOverTime(currentPairData.id, dayTimestamps)
-  const shareValuesFormatted = {}
+  const shareValuesFormatted: any = {}
   shareValues?.map((share) => {
     shareValuesFormatted[share.timestamp] = share
   })
@@ -220,7 +220,7 @@ export async function getHistoricalPairReturns(startDateTimestamp, currentPairDa
     const timestampCeiling = dayTimestamp + 86400
 
     // for each change in position value that day, create a window and update
-    const dailyChanges = pairSnapshots.filter((snapshot) => {
+    const dailyChanges = pairSnapshots.filter((snapshot: any) => {
       return snapshot.timestamp < timestampCeiling && snapshot.timestamp > dayTimestamp
     })
     for (let i = 0; i < dailyChanges.length; i++) {
@@ -271,7 +271,7 @@ export async function getHistoricalPairReturns(startDateTimestamp, currentPairDa
  * @param pair
  * @param ethPrice
  */
-export async function getLPReturnsOnPair(user: string, pair, ethPrice: number, snapshots) {
+export async function getLPReturnsOnPair(user: string, pair: any, ethPrice: number, snapshots: any) {
   // initialize values
   const principal = await getPrincipalForUserPerPair(user, pair.id)
   let hodlReturn = 0
@@ -281,7 +281,7 @@ export async function getLPReturnsOnPair(user: string, pair, ethPrice: number, s
   let feesToken0 = 0
   let feesToken1 = 0
 
-  snapshots = snapshots.filter((entry) => {
+  snapshots = snapshots.filter((entry: any) => {
     return entry.pair.id === pair.id
   })
 
