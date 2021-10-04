@@ -19,6 +19,7 @@ import { FEE_WARNING_TOKENS } from '../constants'
 import { BasicLink } from '../components/Link'
 import { useMedia } from 'react-use'
 import Search from '../components/Search'
+import { ExportTransactionsButton } from '../components/ExportTransactionsButton'
 import Markr from '../assets/markr.png'
 import Zapper from '../assets/zapper.png'
 import Debank from '../assets/debank.png'
@@ -340,7 +341,10 @@ function AccountPage({ account }) {
             <PositionList positions={positions} />
           </Panel>
           <TYPE.main fontSize={'1.125rem'} style={{ marginTop: '3rem' }}>
-            Transactions
+            <RowBetween>
+              <span>Transactions</span>
+              <ExportTransactionsButton transactions={transactions} />
+            </RowBetween>
           </TYPE.main>{' '}
           <Panel
             style={{
