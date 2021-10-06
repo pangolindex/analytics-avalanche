@@ -374,13 +374,13 @@ function TokenPage({ address, history }) {
                       {priceChange}
                     </>
                   )}
-                  {!below800 && (
+                  {!below800 && !!window.ethereum && (
                     <DesktopMetaMask>
                       <MetaMaskButton />
                     </DesktopMetaMask>
                   )}
                 </RowFixed>
-                {below800 && (
+                {below800 && !!window.ethereum && (
                   <RowFixed style={{ alignItems: 'baseline', marginTop: '.5rem' }}>
                     <MetaMaskButton />
                   </RowFixed>
