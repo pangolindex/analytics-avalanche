@@ -14,6 +14,7 @@ import DoubleTokenLogo from '../DoubleLogo'
 import FormattedName from '../FormattedName'
 import QuestionHelper from '../QuestionHelper'
 import { TYPE } from '../../Theme'
+import { SWAP_FEE_TO_LP } from '../../constants'
 
 dayjs.extend(utc)
 
@@ -150,7 +151,7 @@ function PairList({ pairs, color, disableLinks, maxItems = 10 }) {
     if (pairData && pairData.token0 && pairData.token1) {
       const liquidity = formattedNum(pairData.trackedReserveUSD, true)
       const volume = formattedNum(pairData.oneDayVolumeUSD, true)
-      const apy = formattedPercent((pairData.oneDayVolumeUSD * 0.0025 * 365 * 100) / pairData.trackedReserveUSD)
+      const apy = formattedPercent((pairData.oneDayVolumeUSD * SWAP_FEE_TO_LP * 365 * 100) / pairData.trackedReserveUSD)
 
       return (
         <DashGrid style={{ height: '48px' }} disableLinks={disableLinks} focus={true}>
@@ -174,7 +175,7 @@ function PairList({ pairs, color, disableLinks, maxItems = 10 }) {
           <DataText area="liq">{liquidity}</DataText>
           <DataText area="vol">{volume}</DataText>
           {!below1080 && <DataText area="volWeek">{formattedNum(pairData.oneWeekVolumeUSD, true)}</DataText>}
-          {!below1080 && <DataText area="fees">{formattedNum(pairData.oneDayVolumeUSD * 0.0025, true)}</DataText>}
+          {!below1080 && <DataText area="fees">{formattedNum(pairData.oneDayVolumeUSD * SWAP_FEE_TO_LP, true)}</DataText>}
           {!below1080 && <DataText area="apy">{apy}</DataText>}
         </DashGrid>
       )
@@ -190,8 +191,8 @@ function PairList({ pairs, color, disableLinks, maxItems = 10 }) {
         const pairA = pairs[addressA]
         const pairB = pairs[addressB]
         if (sortedColumn === SORT_FIELD.APY) {
-          const apy0 = parseFloat(pairA.oneDayVolumeUSD * 0.0025 * 365 * 100) / parseFloat(pairA.trackedReserveUSD)
-          const apy1 = parseFloat(pairB.oneDayVolumeUSD * 0.0025 * 365 * 100) / parseFloat(pairB.trackedReserveUSD)
+          const apy0 = parseFloat(pairA.oneDayVolumeUSD * SWAP_FEE_TO_LP * 365 * 100) / parseFloat(pairA.trackedReserveUSD)
+          const apy1 = parseFloat(pairB.oneDayVolumeUSD * SWAP_FEE_TO_LP * 365 * 100) / parseFloat(pairB.trackedReserveUSD)
           return apy0 > apy1 ? (sortDirection ? -1 : 1) : (sortDirection ? 1 : -1)
         }
         return parseFloat(pairA[FIELD_TO_VALUE[sortedColumn]]) > parseFloat(pairB[FIELD_TO_VALUE[sortedColumn]])
