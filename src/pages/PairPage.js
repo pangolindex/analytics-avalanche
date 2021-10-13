@@ -31,6 +31,7 @@ import { usePathDismissed, useSavedPairs } from '../contexts/LocalStorage'
 import { Bookmark, PlusCircle } from 'react-feather'
 import FormattedName from '../components/FormattedName'
 import { useListedTokens, useMigratedTokens } from '../contexts/Application'
+import { SWAP_FEE_TO_LP } from '../constants'
 
 const DashboardWrapper = styled.div`
   width: 100%;
@@ -155,17 +156,17 @@ function PairPage({ pairAddress, history }) {
   // mark if using untracked volume
   const [usingUtVolume, setUsingUtVolume] = useState(false)
   useEffect(() => {
-    setUsingUtVolume(oneDayVolumeUSD === 0 ? true : false)
+    setUsingUtVolume(oneDayVolumeUSD === 0)
   }, [oneDayVolumeUSD])
 
   const volumeChange = formattedPercent(!usingUtVolume ? volumeChangeUSD : volumeChangeUntracked)
 
-  // get fees	  // get fees
+  // get fees
   const fees =
     oneDayVolumeUSD || oneDayVolumeUSD === 0
       ? usingUtVolume
-        ? formattedNum(oneDayVolumeUntracked * 0.003, true)
-        : formattedNum(oneDayVolumeUSD * 0.003, true)
+        ? formattedNum(oneDayVolumeUntracked * SWAP_FEE_TO_LP, true)
+        : formattedNum(oneDayVolumeUSD * SWAP_FEE_TO_LP, true)
       : '-'
 
   // token data for usd

@@ -5,6 +5,9 @@ export const PNG_ADDRESS = '0x60781C2586D68229fde47564546784ab3fACA982'
 
 export const BUNDLE_ID = '1'
 
+export const SWAP_FEE = 0.003
+export const SWAP_FEE_TO_LP = 0.0025
+
 export const timeframeOptions = {
   WEEK: '1 week',
   MONTH: '1 month',
