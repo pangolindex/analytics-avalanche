@@ -351,10 +351,10 @@ export const setThemeColor = (theme) => document.documentElement.style.setProper
 export const Big = (number) => new BigNumber(number)
 
 export const urls = {
-  showTransaction: (tx) => `https://cchain.explorer.avax.network/tx/${tx}/`,
-  showAddress: (address) => `https://cchain.explorer.avax.network/address/${address}/`,
-  showToken: (address) => `https://cchain.explorer.avax.network/token/${address}/`,
-  showBlock: (block) => `https://cchain.explorer.avax.network/blocks/${block}/`,
+  showTransaction: (tx) => `https://snowtrace.io/tx/${tx}/`,
+  showAddress: (address) => `https://snowtrace.io/address/${address}/`,
+  showToken: (address) => `https://snowtrace.io/token/${address}/`,
+  showBlock: (block) => `https://snowtrace.io/blocks/${block}/`,
 }
 
 export const formatTime = (unix) => {

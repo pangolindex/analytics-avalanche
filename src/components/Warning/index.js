@@ -72,7 +72,7 @@ export function ArbitraryWarning({ type, show, setShow, address }) {
                 fontWeight={500}
                 lineHeight={'145.23%'}
                 color={'#2172E5'}
-                href={'https://cchain.explorer.avax.network/address/' + address}
+                href={'https://snowtrace.io/address/' + address}
                 target="_blank"
               >
                 View {type === 'token' ? 'token' : 'pair'} contract on Etherscan
@@ -92,7 +92,7 @@ export function ArbitraryWarning({ type, show, setShow, address }) {
                 fontWeight={500}
                 lineHeight={'145.23%'}
                 color={'#2172E5'}
-                href={'https://cchain.explorer.avax.network/address/' + address}
+                href={'https://snowtrace.io/address/' + address}
                 target="_blank"
               >
                 View {type === 'token' ? 'token' : 'pair'} contract on Etherscan
