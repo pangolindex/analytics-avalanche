@@ -338,7 +338,7 @@ function TokenPage({ address, history }) {
               style={{ width: 'fit-content' }}
               color={backgroundColor}
               external
-              href={'https://cchain.explorer.avax.network/address/' + address}
+              href={'https://snowtrace.io/address/' + address}
             >
               <Text style={{ marginLeft: '.15rem' }} fontSize={'14px'} fontWeight={400}>
                 ({address.slice(0, 8) + '...' + address.slice(36, 42)})
@@ -625,9 +625,9 @@ function TokenPage({ address, history }) {
                     <Link
                       color={backgroundColor}
                       external
-                      href={'https://cchain.explorer.avax.network/address/' + address}
+                      href={'https://snowtrace.io/address/' + address}
                     >
-                      View on the C-Chain Explorer ↗
+                      View on the Snowtrace Explorer ↗
                     </Link>
                   </ButtonLight>
                 </TokenDetailsLayout>
