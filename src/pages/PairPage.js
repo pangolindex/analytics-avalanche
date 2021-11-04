@@ -494,7 +494,7 @@ function PairPage({ pairAddress, history }) {
                   </Column>
                   <ButtonLight color={backgroundColor}>
                     <Link color={backgroundColor} external href={'https://snowtrace.io/address/' + pairAddress}>
-                      View on the C-Chain Explorer ↗
+                      View on the Snowtrace Explorer ↗
                     </Link>
                   </ButtonLight>
                 </TokenDetailsLayout>

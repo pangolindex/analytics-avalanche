@@ -354,7 +354,7 @@ export const urls = {
   showTransaction: (tx) => `https://snowtrace.io/tx/${tx}/`,
   showAddress: (address) => `https://snowtrace.io/address/${address}/`,
   showToken: (address) => `https://snowtrace.io/token/${address}/`,
-  showBlock: (block) => `https://snowtrace.io/blocks/${block}/`,
+  showBlock: (block) => `https://snowtrace.io/block/${block}/`,
 }
 
 export const formatTime = (unix) => {

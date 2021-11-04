@@ -185,7 +185,7 @@ function AccountPage({ account }) {
             <span>
               <TYPE.header fontSize={24}>{account?.slice(0, 6) + '...' + account?.slice(38, 42)}</TYPE.header>
               <Link lineHeight={'145.23%'} href={'https://snowtrace.io/address/' + account} target="_blank">
-                <TYPE.main fontSize={14}>View on the C-Chain Explorer</TYPE.main>
+                <TYPE.main fontSize={14}>View on the Snowtrace Explorer</TYPE.main>
               </Link>
               <RowFixed gap="8px" justify="flex-start">
                 <TYPE.body>Or track on</TYPE.body>
