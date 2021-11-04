@@ -627,7 +627,7 @@ function TokenPage({ address, history }) {
                       external
                       href={'https://snowtrace.io/address/' + address}
                     >
-                      View on the C-Chain Explorer ↗
+                      View on the Snowtrace Explorer ↗
                     </Link>
                   </ButtonLight>
                 </TokenDetailsLayout>
