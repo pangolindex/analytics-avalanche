@@ -88,6 +88,8 @@ const UNFORMATTED_COIN_ID_MAP = {
   '0xbe6D6323eA233fD1DBe1fF66c5252170c69fb6c7': undefined, // ZUBAX
   '0x69A61f38Df59CBB51962E69C54D39184E21C27Ec': undefined, // PARTY
   '0xd039C9079ca7F2a87D632A9C0d7cEa0137bAcFB5': 'ape-x', // APE-X
+
+  '0x61eCd63e42C27415696e10864d70ecEA4aA11289': 'rugpull-prevention', // RUGPULL
 }
 
 // Ensure all address keys are lowercase
