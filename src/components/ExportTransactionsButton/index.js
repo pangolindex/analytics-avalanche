@@ -1,6 +1,6 @@
 import { writeToString } from '@fast-csv/format'
 import PropTypes from 'prop-types'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Download, Loader } from 'react-feather'
 
 import { updateNameData } from '../../utils/data'

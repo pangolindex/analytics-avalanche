@@ -24,6 +24,7 @@ import Markr from '../assets/markr.png'
 import Zapper from '../assets/zapper.png'
 import Debank from '../assets/debank.png'
 import Xtracker from '../assets/0xtracker.png'
+import DefiWatch from '../assets/defiwatch.png'
 
 const AccountWrapper = styled.div`
   background-color: rgba(255, 255, 255, 0.2);
@@ -207,6 +208,11 @@ function AccountPage({ account }) {
                 <Link external href={'https://0xtracker.app/portfolio/' + account}>
                   <TrackerButton>
                     <img src={Xtracker} alt="0xtracker.app" />
+                  </TrackerButton>
+                </Link>
+                <Link external href={'https://defi.watch/account/' + account}>
+                  <TrackerButton>
+                    <img src={DefiWatch} alt="defi.watch" />
                   </TrackerButton>
                 </Link>
               </RowFixed>
