@@ -34,6 +34,7 @@ export const MIGRATED_LIST_URLS__NO_ENS = [
 export const OVERVIEW_TOKEN_BLACKLIST = [
   '0xa47a05ed74f80fa31621612887d26df40bcf0ca9', // Das Coin (DAS)
   '0x97b99b4009041e948337ebca7e6ae52f9f6e633c', // Connor Coin (CON)
+  '0x2bc8834bc217f15df898fcab896e2b3e3673faf6', // SXI - Deprecated for SWAPXI
 
   // AEB Tokens
   '0xf20d962a6c8f70c731bd838a3a388D7d48fA6e15', // ETH
