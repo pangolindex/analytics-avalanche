@@ -330,6 +330,9 @@ export const Search = ({ small = false }) => {
           if (PAIR_BLACKLIST.includes(pair.id)) {
             return false
           }
+          if (OVERVIEW_TOKEN_BLACKLIST.includes(pair.token0.id) || OVERVIEW_TOKEN_BLACKLIST.includes(pair.token1.id)) {
+            return false
+          }
           if (value && value.includes(' ')) {
             const pairA = value.split(' ')[0]?.toUpperCase()
             const pairB = value.split(' ')[1]?.toUpperCase()
