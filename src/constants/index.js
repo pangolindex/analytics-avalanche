@@ -56,7 +56,6 @@ export const PAIR_BLACKLIST = []
  */
 export const FEE_WARNING_TOKENS = []
 
-
 export const PAIR_CHART_VIEW_OPTIONS  = {
   VOLUME: 'Volume',
   LIQUIDITY: 'Liquidity',
