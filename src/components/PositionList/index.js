@@ -254,6 +254,9 @@ function PositionList({ positions }) {
         if (sortedColumn === SORT_FIELD.VALUE) {
           const bal0 = (p0.liquidityTokenBalance / p0.pair.totalSupply) * p0.pair.reserveUSD
           const bal1 = (p1.liquidityTokenBalance / p1.pair.totalSupply) * p1.pair.reserveUSD
+          if (isNaN(bal0) && !isNaN(bal1)) return sortDirection ? 1 : -1
+          if (!isNaN(bal0) && isNaN(bal1)) return sortDirection ? -1 : 1
+          if (isNaN(bal0) && isNaN(bal1)) return 0
           return bal0 > bal1 ? (sortDirection ? -1 : 1) : sortDirection ? 1 : -1
         }
         return 1
