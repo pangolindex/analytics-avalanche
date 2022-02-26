@@ -304,8 +304,17 @@ export const USER_HISTORY = gql`
 `
 
 export const USER_POSITIONS = gql`
-  query liquidityPositions($user: Bytes!) {
-    liquidityPositions(where: { user: $user }) {
+  query liquidityPositions($user: Bytes!, $pointer: String) {
+    liquidityPositions(
+      first: 1000
+      where: {
+        user: $user
+        id_gt: $pointer
+      }
+      orderBy: id
+      orderDirection: asc
+    ) {
+      id
       pair {
         id
         reserve0

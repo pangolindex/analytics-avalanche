@@ -450,16 +450,19 @@ export function useUserPositions(account) {
   useEffect(() => {
     async function fetchData(account) {
       try {
-        let result = await client.query({
-          query: USER_POSITIONS,
-          variables: {
-            user: account,
-          },
-          fetchPolicy: 'no-cache',
-        })
-        if (result?.data?.liquidityPositions) {
-          let formattedPositions = await Promise.all(
-            result?.data?.liquidityPositions.map(async (positionData) => {
+        const result = await crawlSingleQuery(
+          USER_POSITIONS,
+          'liquidityPositions',
+          client,
+          { fetchPolicy: 'cache-first' },
+          { user: account },
+          '0',
+          'id'
+        )
+
+        if (result) {
+          const formattedPositions = await Promise.all(
+            result.map(async (positionData) => {
               const returnData = await getLPReturnsOnPair(account, positionData.pair, ethPrice, snapshots)
               return {
                 ...positionData,

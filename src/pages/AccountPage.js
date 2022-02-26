@@ -148,15 +148,14 @@ function AccountPage({ account }) {
   }, 0)
 
   const positionValue = useMemo(() => {
-    return dynamicPositions
-      ? dynamicPositions.reduce((total, position) => {
-        return (
-          total +
+    return (
+      dynamicPositions?.reduce((total, position) => {
+        const value =
           (parseFloat(position?.liquidityTokenBalance) / parseFloat(position?.pair?.totalSupply)) *
           position?.pair?.reserveUSD
-        )
-      }, 0)
-      : null
+        return isNaN(value) ? total : total + value
+      }, 0) ?? null
+    )
   }, [dynamicPositions])
 
   useEffect(() => {
