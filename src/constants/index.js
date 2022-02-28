@@ -18,16 +18,7 @@ export const timeframeOptions = {
 
 // token list urls to fetch tokens from - use for warnings on tokens and pairs
 export const SUPPORTED_LIST_URLS__NO_ENS = [
-  'https://raw.githubusercontent.com/pangolindex/tokenlists/main/ab.tokenlist.json',
-  'https://raw.githubusercontent.com/pangolindex/tokenlists/main/aeb.tokenlist.json',
-  'https://raw.githubusercontent.com/pangolindex/tokenlists/main/defi.tokenlist.json',
-  'https://raw.githubusercontent.com/pangolindex/tokenlists/main/stablecoin.tokenlist.json',
-  'https://raw.githubusercontent.com/pangolindex/tokenlists/main/top15.tokenlist.json',
-]
-
-// token list urls to fetch migrated tokens from - use for warnings on tokens and pairs
-export const MIGRATED_LIST_URLS__NO_ENS = [
-  'https://raw.githubusercontent.com/pangolindex/tokenlists/main/aeb.tokenlist.json',
+  'https://raw.githubusercontent.com/pangolindex/tokenlists/main/pangolin.tokenlist.json',
 ]
 
 // hide from overview list
@@ -48,6 +39,26 @@ export const OVERVIEW_TOKEN_BLACKLIST = [
   '0x99519acb025a0e0d44c3875a4bbf03af65933627', // YFI
 ]
 
+export const AEB_TOKEN_ADDRESSES = [
+  '0xf20d962a6c8f70c731bd838a3a388d7d48fa6e15',
+  '0xe54eb2c3009fa411bf24fb017f9725b973ce36f0',
+  '0x8ce2dee54bb9921a2ae0a63dbb2df8ed88b91dd9',
+  '0x6b329326e0f6b95b93b52229b213334278d6f277',
+  '0xaeb044650278731ef3dc244692ab9f64c78ffaea',
+  '0xb3fe5374f67d7a22886a0ee082b2e2f9d2651651',
+  '0xba7deebbfc5fa1100fb055a87773e1e99cd3507a',
+  '0x46c54b16af7747067f412c78ebadae203a26ada0',
+  '0xe1463e8991c8a62e64b77b5fb6b22f190344c2a9',
+  '0x39cf1bd5f15fb22ec3d9ff86b0727afc203427cc',
+  '0x68e44c4619db40ae1a0725e77c02587bc8fbd1c9',
+  '0xde3a24028580884448a5397872046a019649b084',
+  '0x390ba0fb0bd3aa2a5484001606329701148074e6',
+  '0xc84d7bff2555955b44bdf6a307180810412d751b',
+  '0xf39f9671906d8630812f9d9863bbef5d523c84ab',
+  '0x408d4cd0adb7cebd1f1a1c33a0ba2098e1295bab',
+  '0x99519acb025a0e0d44c3875a4bbf03af65933627',
+]
+
 // pair blacklist
 export const PAIR_BLACKLIST = []
 
@@ -56,7 +67,7 @@ export const PAIR_BLACKLIST = []
  */
 export const FEE_WARNING_TOKENS = []
 
-export const PAIR_CHART_VIEW_OPTIONS  = {
+export const PAIR_CHART_VIEW_OPTIONS = {
   VOLUME: 'Volume',
   LIQUIDITY: 'Liquidity',
   RATE0: 'Rate 0',
