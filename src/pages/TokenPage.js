@@ -31,8 +31,9 @@ import { usePathDismissed, useSavedTokens } from '../contexts/LocalStorage'
 import { Hover, PageWrapper, ContentWrapper, StyledIcon } from '../components'
 import { PlusCircle, Bookmark } from 'react-feather'
 import FormattedName from '../components/FormattedName'
-import { useListedTokens, useMigratedTokens } from '../contexts/Application'
+import { useListedTokens } from '../contexts/Application'
 import METAMASK_IMAGE from '../assets/MetaMask.png'
+import { AEB_TOKEN_ADDRESSES } from '../constants'
 
 const DashboardWrapper = styled.div`
   width: 100%;
@@ -274,7 +275,6 @@ function TokenPage({ address, history }) {
   const [dismissed, markAsDismissed] = usePathDismissed(history.location.pathname)
   const [savedTokens, addToken] = useSavedTokens()
   const listedTokens = useListedTokens()
-  const migratedTokens = useMigratedTokens()
 
   useEffect(() => {
     window.scrollTo({
@@ -325,7 +325,7 @@ function TokenPage({ address, history }) {
         setShow={markAsDismissed}
         address={address}
       />
-      <MigrateWarning show={migratedTokens && migratedTokens.includes(address)} />
+      <MigrateWarning show={AEB_TOKEN_ADDRESSES.includes(address)} />
 
       <ContentWrapper>
         <RowBetween style={{ flexWrap: 'wrap', alingItems: 'start' }}>
