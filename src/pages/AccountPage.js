@@ -20,7 +20,6 @@ import { BasicLink } from '../components/Link'
 import { useMedia } from 'react-use'
 import Search from '../components/Search'
 import { ExportTransactionsButton } from '../components/ExportTransactionsButton'
-import Markr from '../assets/markr.png'
 import Zapper from '../assets/zapper.png'
 import Debank from '../assets/debank.png'
 import Xtracker from '../assets/0xtracker.png'
@@ -93,7 +92,7 @@ const Warning = styled.div`
 `
 
 const TrackerButton = styled(ButtonLight)`
-  margin-left: .5rem;
+  margin-left: 0.5rem;
   padding: 4px 6px;
   border-radius: 4px;
   display: flex;
@@ -189,11 +188,6 @@ function AccountPage({ account }) {
               </Link>
               <RowFixed gap="8px" justify="flex-start">
                 <TYPE.body>Or track on</TYPE.body>
-                <Link external href={'https://markr.io/#/wallet?address=' + account}>
-                  <TrackerButton>
-                    <img src={Markr} alt="Markr.io" />
-                  </TrackerButton>
-                </Link>
                 <Link external href={'https://zapper.fi/account/' + account}>
                   <TrackerButton>
                     <img src={Zapper} alt="Zapper.fi" />
