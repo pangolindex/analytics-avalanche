@@ -23,6 +23,14 @@ const TOKEN_OVERRIDES: { [address: string]: { name: string; symbol: string } } =
     name: 'Wave Token',
     symbol: 'WAVE',
   },
+  '0x260bbf5698121eb85e7a74f2e45e16ce762ebe11': {
+    name: 'Axelar Wrapped UST',
+    symbol: 'axlUST',
+  },
+  '0xb599c3590f42f8f995ecfa0f85d2980b76862fc1': {
+    name: 'Wormhole UST',
+    symbol: 'UST',
+  },
 }
 const TOKEN_SET: Set<string> = new Set(Object.keys(TOKEN_OVERRIDES))
 
