@@ -16,6 +16,7 @@ import { getLPReturnsOnPair, getHistoricalPairReturns } from '../utils/returns'
 import { timeframeOptions } from '../constants'
 import _ from 'lodash'
 import { crawlSingleQuery } from '../utils'
+import { updateNameData } from '../utils/data'
 
 dayjs.extend(utc)
 
@@ -466,6 +467,7 @@ export function useUserPositions(account) {
               const returnData = await getLPReturnsOnPair(account, positionData.pair, ethPrice, snapshots)
               return {
                 ...positionData,
+                pair: updateNameData(positionData.pair),
                 ...returnData,
               }
             })
