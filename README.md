@@ -4,7 +4,7 @@ An open source analytics platform for Pangolin -- a community-driven decentraliz
 
 - Website: [pangolin.exchange](https://pangolin.exchange/)
 - Interface: [app.pangolin.exchange](https://app.pangolin.exchange)
-- Telegram: [Pangolin](https://t.me/pangolindex)
+- Telegram: [Pangolin](https://t.me/pangolindexV2)
 - Discord: [Pangolin](https://discord.com/invite/pangolindex)
 - Twitter: [@pangolindex](https://twitter.com/pangolindex)
 
