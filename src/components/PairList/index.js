@@ -158,7 +158,7 @@ function PairList({ pairs, color, disableLinks, maxItems = 10 }) {
           <DataText area="name" fontWeight="500">
             {!below600 && <div style={{ marginRight: '20px', width: '10px' }}>{index}</div>}
             <DoubleTokenLogo
-              size={below600 ? 16 : 20}
+              size={below600 ? 16 : 24}
               a0={pairData.token0.id}
               a1={pairData.token1.id}
               margin={!below740}
@@ -175,7 +175,9 @@ function PairList({ pairs, color, disableLinks, maxItems = 10 }) {
           <DataText area="liq">{liquidity}</DataText>
           <DataText area="vol">{volume}</DataText>
           {!below1080 && <DataText area="volWeek">{formattedNum(pairData.oneWeekVolumeUSD, true)}</DataText>}
-          {!below1080 && <DataText area="fees">{formattedNum(pairData.oneDayVolumeUSD * SWAP_FEE_TO_LP, true)}</DataText>}
+          {!below1080 && (
+            <DataText area="fees">{formattedNum(pairData.oneDayVolumeUSD * SWAP_FEE_TO_LP, true)}</DataText>
+          )}
           {!below1080 && <DataText area="apy">{apy}</DataText>}
         </DashGrid>
       )
@@ -191,13 +193,19 @@ function PairList({ pairs, color, disableLinks, maxItems = 10 }) {
         const pairA = pairs[addressA]
         const pairB = pairs[addressB]
         if (sortedColumn === SORT_FIELD.APY) {
-          const apy0 = parseFloat(pairA.oneDayVolumeUSD * SWAP_FEE_TO_LP * 365 * 100) / parseFloat(pairA.trackedReserveUSD)
-          const apy1 = parseFloat(pairB.oneDayVolumeUSD * SWAP_FEE_TO_LP * 365 * 100) / parseFloat(pairB.trackedReserveUSD)
-          return apy0 > apy1 ? (sortDirection ? -1 : 1) : (sortDirection ? 1 : -1)
+          const apy0 =
+            parseFloat(pairA.oneDayVolumeUSD * SWAP_FEE_TO_LP * 365 * 100) / parseFloat(pairA.trackedReserveUSD)
+          const apy1 =
+            parseFloat(pairB.oneDayVolumeUSD * SWAP_FEE_TO_LP * 365 * 100) / parseFloat(pairB.trackedReserveUSD)
+          return apy0 > apy1 ? (sortDirection ? -1 : 1) : sortDirection ? 1 : -1
         }
         return parseFloat(pairA[FIELD_TO_VALUE[sortedColumn]]) > parseFloat(pairB[FIELD_TO_VALUE[sortedColumn]])
-          ? (sortDirection ? -1 : 1)
-          : (sortDirection ? 1 : -1)
+          ? sortDirection
+            ? -1
+            : 1
+          : sortDirection
+          ? 1
+          : -1
       })
       .slice(ITEMS_PER_PAGE * (page - 1), page * ITEMS_PER_PAGE)
       .map((pairAddress, index) => {
