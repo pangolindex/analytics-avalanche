@@ -94,7 +94,7 @@ export const PRICES_BY_BLOCK = (tokenAddress, blocks) => {
   queryString += blocks.map(
     (block) => `
       t${block.timestamp}:token(id:"${tokenAddress}", block: { number: ${block.number} }) { 
-        derivedETH
+        derivedUSD
       }
     `
   )
@@ -150,10 +150,10 @@ export const SHARE_VALUE = (pairAddress, blocks) => {
         reserveUSD
         totalSupply 
         token0{
-          derivedETH
+          derivedUSD
         }
         token1{
-          derivedETH
+          derivedUSD
         }
       }
     `
@@ -296,11 +296,13 @@ export const USER_POSITIONS = gql`
           id
           symbol
           derivedETH
+          derivedUSD
         }
         token1 {
           id
           symbol
           derivedETH
+          derivedUSD
         }
         totalSupply
       }
@@ -641,6 +643,7 @@ const PairFields = `
       name
       totalLiquidity
       derivedETH
+      derivedUSD
     }
     token1 {
       id
@@ -648,12 +651,14 @@ const PairFields = `
       name
       totalLiquidity
       derivedETH
+      derivedUSD
     }
     reserve0
     reserve1
     reserveUSD
     totalSupply
     trackedReserveETH
+    trackedReserveUSD
     reserveETH
     volumeUSD
     untrackedVolumeUSD
@@ -727,6 +732,7 @@ export const PAIRS_HISTORICAL_BULK = (block, pairs) => {
       id
       reserveUSD
       trackedReserveETH
+      trackedReserveUSD
       volumeUSD
       untrackedVolumeUSD
     }
@@ -758,6 +764,7 @@ const TokenFields = `
     symbol
     decimals
     derivedETH
+    derivedUSD
     tradeVolume
     tradeVolumeUSD
     untrackedVolumeUSD
