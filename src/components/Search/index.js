@@ -267,6 +267,25 @@ export const Search = ({ small = false }) => {
   const filteredTokenList = useMemo(() => {
     return uniqueTokens
       ? uniqueTokens
+        .filter((token) => {
+          if (OVERVIEW_TOKEN_BLACKLIST.includes(token.id)) {
+            return false
+          }
+          const regexMatches = Object.keys(token).map((tokenEntryKey) => {
+            const isAddress = value.slice(0, 2) === '0x'
+            if (tokenEntryKey === 'id' && isAddress) {
+              return token[tokenEntryKey].match(new RegExp(escapeRegExp(value), 'i'))
+            }
+            if (tokenEntryKey === 'symbol' && !isAddress) {
+              return token[tokenEntryKey].match(new RegExp(escapeRegExp(value), 'i'))
+            }
+            if (tokenEntryKey === 'name' && !isAddress) {
+              return token[tokenEntryKey].match(new RegExp(escapeRegExp(value), 'i'))
+            }
+            return false
+          })
+          return regexMatches.some((m) => m)
+        })
         .sort((a, b) => {
           if (OVERVIEW_TOKEN_BLACKLIST.includes(a.id)) {
             return 1
@@ -286,25 +305,6 @@ export const Search = ({ small = false }) => {
             return tokenA?.totalLiquidity > tokenB?.totalLiquidity ? -1 : 1
           }
           return 1
-        })
-        .filter((token) => {
-          if (OVERVIEW_TOKEN_BLACKLIST.includes(token.id)) {
-            return false
-          }
-          const regexMatches = Object.keys(token).map((tokenEntryKey) => {
-            const isAddress = value.slice(0, 2) === '0x'
-            if (tokenEntryKey === 'id' && isAddress) {
-              return token[tokenEntryKey].match(new RegExp(escapeRegExp(value), 'i'))
-            }
-            if (tokenEntryKey === 'symbol' && !isAddress) {
-              return token[tokenEntryKey].match(new RegExp(escapeRegExp(value), 'i'))
-            }
-            if (tokenEntryKey === 'name' && !isAddress) {
-              return token[tokenEntryKey].match(new RegExp(escapeRegExp(value), 'i'))
-            }
-            return false
-          })
-          return regexMatches.some((m) => m)
         })
       : []
   }, [allTokenData, uniqueTokens, value])
