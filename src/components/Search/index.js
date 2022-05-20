@@ -187,8 +187,8 @@ export const Search = ({ small = false }) => {
         if (value?.length > 0) {
           let tokens = await client.query({
             variables: {
-              value: value ? value.toUpperCase() : '',
-              id: value,
+              value: value.toUpperCase(),
+              id: value.toLowerCase(),
             },
             query: TOKEN_SEARCH,
           })
