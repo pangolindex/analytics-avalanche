@@ -197,7 +197,7 @@ export const Search = ({ small = false }) => {
             query: PAIR_SEARCH,
             variables: {
               tokens: tokens.data.asSymbol?.map((t) => t.id),
-              id: value,
+              id: value.toLowerCase(),
             },
           })
           setSearchedPairs(pairs.data.as0.concat(pairs.data.as1).concat(pairs.data.asAddress))
