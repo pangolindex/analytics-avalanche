@@ -9,6 +9,7 @@ import { RowFixed } from '../Row'
 import { OptionButton } from '../ButtonStyled'
 import { getTimeframe } from '../../utils'
 import { TYPE } from '../../Theme'
+import LocalLoader from '../LocalLoader'
 
 const CHART_VIEW = {
   VOLUME: 'Volume',
@@ -167,7 +168,7 @@ const GlobalChart = ({ display }) => {
       )}
     </>
   ) : (
-    ''
+    <LocalLoader />
   )
 }
 
