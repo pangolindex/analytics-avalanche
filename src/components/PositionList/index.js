@@ -240,7 +240,6 @@ function PositionList({ positions }) {
   const positionsSorted =
     positions &&
     positions
-
       .sort((p0, p1) => {
         if (sortedColumn === SORT_FIELD.PRINCIPAL) {
           return p0?.principal?.usd > p1?.principal?.usd ? (sortDirection ? -1 : 1) : sortDirection ? 1 : -1
@@ -249,7 +248,7 @@ function PositionList({ positions }) {
           return p0?.hodl?.sum > p1?.hodl?.sum ? (sortDirection ? -1 : 1) : sortDirection ? 1 : -1
         }
         if (sortedColumn === SORT_FIELD.UNISWAP_RETURN) {
-          return p0?.uniswap?.return > p1?.uniswap?.return ? (sortDirection ? -1 : 1) : sortDirection ? 1 : -1
+          return p0?.fees?.sum > p1?.fees?.sum ? (sortDirection ? -1 : 1) : sortDirection ? 1 : -1
         }
         if (sortedColumn === SORT_FIELD.VALUE) {
           const bal0 = (p0.liquidityTokenBalance / p0.pair.totalSupply) * p0.pair.reserveUSD
