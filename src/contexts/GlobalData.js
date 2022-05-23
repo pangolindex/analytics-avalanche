@@ -525,22 +525,20 @@ async function getAllTokensOnUniswap() {
 export function useGlobalData() {
   const [state, { update, updateAllPairsInUniswap, updateAllTokensInUniswap }] = useGlobalDataContext()
 
-  const data = state?.globalData
+  const globalData = state?.globalData
 
   useEffect(() => {
     async function fetchData() {
-      const globalDataPromise = getGlobalData().then((globalData) => globalData && update(globalData))
-      const allPairsPromise = getAllPairsOnUniswap().then((allPairs) => updateAllPairsInUniswap(allPairs))
-      const allTokensPromise = getAllTokensOnUniswap().then((allTokens) => updateAllTokensInUniswap(allTokens))
-
-      await Promise.all([globalDataPromise, allPairsPromise, allTokensPromise])
+      getGlobalData().then((globalData) => globalData && update(globalData))
+      getAllPairsOnUniswap().then((allPairs) => updateAllPairsInUniswap(allPairs))
+      getAllTokensOnUniswap().then((allTokens) => updateAllTokensInUniswap(allTokens))
     }
-    if (!data) {
+    if (!globalData) {
       fetchData()
     }
-  }, [update, data, updateAllPairsInUniswap, updateAllTokensInUniswap])
+  }, [globalData, update, updateAllPairsInUniswap, updateAllTokensInUniswap])
 
-  return data || {}
+  return globalData
 }
 
 export function useGlobalChartData() {

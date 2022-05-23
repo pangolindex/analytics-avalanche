@@ -6,7 +6,7 @@ import { Route, Switch, Redirect, HashRouter } from 'react-router-dom'
 import GlobalPage from './pages/GlobalPage'
 import TokenPage from './pages/TokenPage'
 import PairPage from './pages/PairPage'
-import { useGlobalData, useGlobalChartData } from './contexts/GlobalData'
+import { useEthPrice, useGlobalData, useGlobalChartData } from './contexts/GlobalData'
 import { isAddress } from './utils'
 import AccountPage from './pages/AccountPage'
 import AllTokensPage from './pages/AllTokensPage'
@@ -97,6 +97,9 @@ const BLOCK_DIFFERENCE_THRESHOLD = 30
 function App() {
   const [savedOpen, setSavedOpen] = useState(false)
 
+  // Pre-load to prevent an unknown race condition
+  const ethPrice = useEthPrice()
+
   const globalData = useGlobalData()
   const globalChartData = useGlobalChartData()
   const [latestBlock, headBlock] = useLatestBlocks()
@@ -114,7 +117,8 @@ function App() {
             </WarningBanner>
           </WarningWrapper>
         )}
-        {latestBlock &&
+        {ethPrice &&
+        latestBlock &&
         globalData &&
         Object.keys(globalData).length > 0 &&
         globalChartData &&
