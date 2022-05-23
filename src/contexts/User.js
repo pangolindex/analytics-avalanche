@@ -213,10 +213,13 @@ export function useUserSnapshots(account) {
           'liquidityPositionSnapshots',
           client,
           { fetchPolicy: 'cache-first' },
-          { user: account },
-          dayjs.utc().unix(),
+          {
+            user: account,
+            now: dayjs.utc().unix(),
+          },
+          0,
           'timestamp',
-          false
+          true
         )
         if (allResults) {
           updateUserSnapshots(account, allResults)
@@ -248,12 +251,6 @@ export function useUserPositionChart(position, account) {
 
   // get users adds and removes on this pair
   const snapshots = useUserSnapshots(account)
-  const pairSnapshots =
-    snapshots &&
-    position &&
-    snapshots.filter((currentSnapshot) => {
-      return currentSnapshot.pair.id === position.pair.id
-    })
 
   // get data needed for calculations
   const currentPairData = usePairData(pairAddress)
@@ -263,29 +260,33 @@ export function useUserPositionChart(position, account) {
 
   useEffect(() => {
     async function fetchData() {
-      let fetchedData = await getHistoricalPairReturns(startDateTimestamp, currentPairData, pairSnapshots)
+      const pairSnapshots = snapshots.filter((currentSnapshot) => {
+        return currentSnapshot.pair.id === position.pair.id
+      })
+      const fetchedData = await getHistoricalPairReturns(startDateTimestamp, currentPairData, pairSnapshots)
       updateUserPairReturns(account, pairAddress, fetchedData)
     }
     if (
       account &&
       startDateTimestamp &&
-      pairSnapshots &&
       !formattedHistory &&
       currentPairData &&
       Object.keys(currentPairData).length > 0 &&
-      pairAddress
+      pairAddress &&
+      snapshots &&
+      position
     ) {
       fetchData()
     }
   }, [
     account,
     startDateTimestamp,
-    pairSnapshots,
     formattedHistory,
-    pairAddress,
     currentPairData,
-    updateUserPairReturns,
+    pairAddress,
+    snapshots,
     position.pair.id,
+    updateUserPairReturns,
   ])
 
   return formattedHistory
@@ -409,7 +410,7 @@ export function useUserLiquidityChart(account) {
         const dailyUSD = relevantDayDatas.reduce((totalUSD, dayData) => {
           return (
             totalUSD +
-            (ownershipPerPair[dayData.pairAddress]
+            (dayData && ownershipPerPair[dayData.pairAddress]
               ? (parseFloat(ownershipPerPair[dayData.pairAddress].lpTokenBalance) / parseFloat(dayData.totalSupply)) *
                 parseFloat(dayData.reserveUSD)
               : 0)

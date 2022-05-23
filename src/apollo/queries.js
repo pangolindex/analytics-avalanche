@@ -226,10 +226,10 @@ export const FIRST_SNAPSHOT = gql`
 `
 
 export const USER_HISTORY = gql`
-  query snapshots($user: Bytes!, $pointer: Int!) {
+  query snapshots($user: Bytes!, $now: Int!, $pointer: Int!) {
     liquidityPositionSnapshots(
       first: 1000
-      where: { user: $user, timestamp_lt: $pointer }
+      where: { user: $user, timestamp_lte: $now, timestamp_gt: $pointer }
       orderBy: timestamp
       orderDirection: asc
     ) {
