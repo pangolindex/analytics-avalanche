@@ -301,7 +301,6 @@ const getTopTokens = async () => {
           // new tokens
           if (!oneDayHistory && data) {
             data.oneDayVolumeUSD = data.tradeVolumeUSD
-            data.oneDayVolumeETH = data.tradeVolume * data.derivedETH
             data.oneDayTxns = data.txCount
           }
 
@@ -414,7 +413,6 @@ const getTokenData = async (address) => {
     // new tokens
     if (!oneDayData && data) {
       data.oneDayVolumeUSD = data.tradeVolumeUSD
-      data.oneDayVolumeETH = data.tradeVolume * data.derivedETH
       data.oneDayTxns = data.txCount
     }
 
