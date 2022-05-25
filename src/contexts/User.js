@@ -274,7 +274,7 @@ export function useUserPositionChart(position, account) {
       Object.keys(currentPairData).length > 0 &&
       pairAddress &&
       snapshots &&
-      position
+      position.pair.id
     ) {
       fetchData()
     }
