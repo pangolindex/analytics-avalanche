@@ -312,20 +312,6 @@ export const Search = ({ small = false }) => {
   const filteredPairList = useMemo(() => {
     return uniquePairs
       ? uniquePairs
-        .sort((a, b) => {
-          const pairA = allPairData[a.id]
-          const pairB = allPairData[b.id]
-          if (pairA?.trackedReserveETH && pairB?.trackedReserveETH) {
-            return parseFloat(pairA.trackedReserveETH) > parseFloat(pairB.trackedReserveETH) ? -1 : 1
-          }
-          if (pairA?.trackedReserveETH && !pairB?.trackedReserveETH) {
-            return -1
-          }
-          if (!pairA?.trackedReserveETH && pairB?.trackedReserveETH) {
-            return 1
-          }
-          return 0
-        })
         .filter((pair) => {
           if (PAIR_BLACKLIST.includes(pair.id)) {
             return false
@@ -369,6 +355,20 @@ export const Search = ({ small = false }) => {
             return false
           })
           return regexMatches.some((m) => m)
+        })
+        .sort((a, b) => {
+          const pairA = allPairData[a.id]
+          const pairB = allPairData[b.id]
+          if (pairA?.trackedReserveUSD && pairB?.trackedReserveUSD) {
+            return parseFloat(pairA.trackedReserveUSD) > parseFloat(pairB.trackedReserveUSD) ? -1 : 1
+          }
+          if (pairA?.trackedReserveUSD && !pairB?.trackedReserveUSD) {
+            return -1
+          }
+          if (!pairA?.trackedReserveUSD && pairB?.trackedReserveUSD) {
+            return 1
+          }
+          return 0
         })
       : []
   }, [allPairData, uniquePairs, value])
