@@ -183,102 +183,23 @@ export default function Provider({ children }) {
 }
 
 async function getTopPairsData() {
-  const [t1, t2, tWeek] = getTimestampsForChanges()
-  let blocks = await getBlocksFromTimestamps([t1, t2, tWeek])
-  let b1, b2, bWeek
-  if (blocks.length !== 3) {
-    b1 = await getMostRecentBlockSinceTimestamp(t1)
-    b2 = await getMostRecentBlockSinceTimestamp(t2)
-    bWeek = await getMostRecentBlockSinceTimestamp(tWeek)
-  } else {
-    b1 = blocks[0].number
-    b2 = blocks[1].number
-    bWeek = blocks[2].number
-  }
-
   try {
-    let current = await client.query({
+    const response = await client.query({
       query: TOP_PAIRS,
       fetchPolicy: 'cache-first',
     })
 
-    const pairList = current.data.pairs.map((result) => result.id)
+    const pairIds = response.data.pairs.map((result) => result.id)
 
-    let [oneDayResult, twoDayResult, oneWeekResult] = await Promise.all(
-      [b1, b2, bWeek].map(async (block) => {
-        return client.query({
-          query: PAIRS_HISTORICAL_BULK(block, pairList),
-          fetchPolicy: 'cache-first',
-        })
-      })
-    )
-
-    let oneDayData = oneDayResult?.data?.pairs.reduce((obj, cur, i) => {
-      return { ...obj, [cur.id]: cur }
-    }, {})
-
-    let twoDayData = twoDayResult?.data?.pairs.reduce((obj, cur, i) => {
-      return { ...obj, [cur.id]: cur }
-    }, {})
-
-    let oneWeekData = oneWeekResult?.data?.pairs.reduce((obj, cur, i) => {
-      return { ...obj, [cur.id]: cur }
-    }, {})
-
-    let pairData = await Promise.all(
-      current &&
-        current.data.pairs.map(async (pair) => {
-          let data = pair
-          let oneDayHistory = oneDayData?.[pair.id]
-          if (!oneDayHistory) {
-            let newData = await client.query({
-              query: PAIR_DATA(pair.id, b1),
-              fetchPolicy: 'cache-first',
-            })
-            oneDayHistory = newData.data.pairs[0]
-          }
-          let twoDayHistory = twoDayData?.[pair.id]
-          if (!twoDayHistory) {
-            let newData = await client.query({
-              query: PAIR_DATA(pair.id, b2),
-              fetchPolicy: 'cache-first',
-            })
-            twoDayHistory = newData.data.pairs[0]
-          }
-          let oneWeekHistory = oneWeekData?.[pair.id]
-          if (!oneWeekHistory) {
-            let newData = await client.query({
-              query: PAIR_DATA(pair.id, bWeek),
-              fetchPolicy: 'cache-first',
-            })
-            oneWeekHistory = newData.data.pairs[0]
-          }
-          data = parseData(data, oneDayHistory, twoDayHistory, oneWeekHistory, b1)
-          return data
-        })
-    )
-    return pairData
+    return await decoratePairsData(response, pairIds)
   } catch (e) {
     console.log(e)
   }
 }
 
 async function getBulkPairData(pairList) {
-  const [t1, t2, tWeek] = getTimestampsForChanges()
-  let blocks = await getBlocksFromTimestamps([t1, t2, tWeek])
-  let b1, b2, bWeek
-  if (blocks.length !== 3) {
-    b1 = await getMostRecentBlockSinceTimestamp(t1)
-    b2 = await getMostRecentBlockSinceTimestamp(t2)
-    bWeek = await getMostRecentBlockSinceTimestamp(tWeek)
-  } else {
-    b1 = blocks[0].number
-    b2 = blocks[1].number
-    bWeek = blocks[2].number
-  }
-
   try {
-    let current = await client.query({
+    const response = await client.query({
       query: BULK_PAIRS,
       variables: {
         allPairs: pairList,
@@ -286,63 +207,78 @@ async function getBulkPairData(pairList) {
       fetchPolicy: 'cache-first',
     })
 
-    let [oneDayResult, twoDayResult, oneWeekResult] = await Promise.all(
-      [b1, b2, bWeek].map(async (block) => {
-        return client.query({
-          query: PAIRS_HISTORICAL_BULK(block, pairList),
-          fetchPolicy: 'cache-first',
-        })
-      })
-    )
-
-    let oneDayData = oneDayResult?.data?.pairs.reduce((obj, cur, i) => {
-      return { ...obj, [cur.id]: cur }
-    }, {})
-
-    let twoDayData = twoDayResult?.data?.pairs.reduce((obj, cur, i) => {
-      return { ...obj, [cur.id]: cur }
-    }, {})
-
-    let oneWeekData = oneWeekResult?.data?.pairs.reduce((obj, cur, i) => {
-      return { ...obj, [cur.id]: cur }
-    }, {})
-
-    let pairData = await Promise.all(
-      current &&
-        current.data.pairs.map(async (pair) => {
-          let data = pair
-          let oneDayHistory = oneDayData?.[pair.id]
-          if (!oneDayHistory) {
-            let newData = await client.query({
-              query: PAIR_DATA(pair.id, b1),
-              fetchPolicy: 'cache-first',
-            })
-            oneDayHistory = newData.data.pairs[0]
-          }
-          let twoDayHistory = twoDayData?.[pair.id]
-          if (!twoDayHistory) {
-            let newData = await client.query({
-              query: PAIR_DATA(pair.id, b2),
-              fetchPolicy: 'cache-first',
-            })
-            twoDayHistory = newData.data.pairs[0]
-          }
-          let oneWeekHistory = oneWeekData?.[pair.id]
-          if (!oneWeekHistory) {
-            let newData = await client.query({
-              query: PAIR_DATA(pair.id, bWeek),
-              fetchPolicy: 'cache-first',
-            })
-            oneWeekHistory = newData.data.pairs[0]
-          }
-          data = parseData(data, oneDayHistory, twoDayHistory, oneWeekHistory, b1)
-          return data
-        })
-    )
-    return pairData
+    return await decoratePairsData(response, pairList)
   } catch (e) {
     console.log(e)
   }
+}
+
+async function decoratePairsData(pairsData, pairIds) {
+  const [t1, t2, tWeek] = getTimestampsForChanges()
+  const blocks = await getBlocksFromTimestamps([t1, t2, tWeek])
+  let b1, b2, bWeek
+  if (blocks.length !== 3) {
+    b1 = await getMostRecentBlockSinceTimestamp(t1)
+    b2 = await getMostRecentBlockSinceTimestamp(t2)
+    bWeek = await getMostRecentBlockSinceTimestamp(tWeek)
+  } else {
+    b1 = blocks[0].number
+    b2 = blocks[1].number
+    bWeek = blocks[2].number
+  }
+
+  const [oneDayResult, twoDayResult, oneWeekResult] = await Promise.all(
+    [b1, b2, bWeek].map(async (block) => {
+      return client.query({
+        query: PAIRS_HISTORICAL_BULK(block, pairIds),
+        fetchPolicy: 'cache-first',
+      })
+    })
+  )
+
+  const oneDayData = oneDayResult?.data?.pairs.reduce((obj, cur) => {
+    return { ...obj, [cur.id]: cur }
+  }, {})
+
+  const twoDayData = twoDayResult?.data?.pairs.reduce((obj, cur) => {
+    return { ...obj, [cur.id]: cur }
+  }, {})
+
+  const oneWeekData = oneWeekResult?.data?.pairs.reduce((obj, cur) => {
+    return { ...obj, [cur.id]: cur }
+  }, {})
+
+  return await Promise.all(
+    pairsData &&
+      pairsData.data.pairs.map(async (pair) => {
+        let data = pair
+        let oneDayHistory = oneDayData?.[pair.id]
+        if (!oneDayHistory) {
+          const newData = await client.query({
+            query: PAIR_DATA(pair.id, b1),
+            fetchPolicy: 'cache-first',
+          })
+          oneDayHistory = newData.data.pairs[0]
+        }
+        let twoDayHistory = twoDayData?.[pair.id]
+        if (!twoDayHistory) {
+          const newData = await client.query({
+            query: PAIR_DATA(pair.id, b2),
+            fetchPolicy: 'cache-first',
+          })
+          twoDayHistory = newData.data.pairs[0]
+        }
+        let oneWeekHistory = oneWeekData?.[pair.id]
+        if (!oneWeekHistory) {
+          const newData = await client.query({
+            query: PAIR_DATA(pair.id, bWeek),
+            fetchPolicy: 'cache-first',
+          })
+          oneWeekHistory = newData.data.pairs[0]
+        }
+        return parseData(data, oneDayHistory, twoDayHistory, oneWeekHistory, b1)
+      })
+  )
 }
 
 function parseData(data, oneDayData, twoDayData, oneWeekData, oneDayBlock) {
