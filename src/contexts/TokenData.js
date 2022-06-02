@@ -272,12 +272,12 @@ const getTopTokens = async () => {
 
           // calculate percentage changes and daily changes
           const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-            data.tradeVolumeUSD,
+            data?.tradeVolumeUSD,
             oneDayHistory?.tradeVolumeUSD ?? 0,
             twoDayHistory?.tradeVolumeUSD ?? 0
           )
           const [oneDayTxns, txnChange] = get2DayPercentChange(
-            data.txCount,
+            data?.txCount,
             oneDayHistory?.txCount ?? 0,
             twoDayHistory?.txCount ?? 0
           )
@@ -373,21 +373,21 @@ const getTokenData = async (address) => {
 
     // calculate percentage changes and daily changes
     const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-      data.tradeVolumeUSD,
+      data?.tradeVolumeUSD,
       oneDayData?.tradeVolumeUSD ?? 0,
       twoDayData?.tradeVolumeUSD ?? 0
     )
 
     // calculate percentage changes and daily changes
     const [oneDayVolumeUT, volumeChangeUT] = get2DayPercentChange(
-      data.untrackedVolumeUSD,
+      data?.untrackedVolumeUSD,
       oneDayData?.untrackedVolumeUSD ?? 0,
       twoDayData?.untrackedVolumeUSD ?? 0
     )
 
     // calculate percentage changes and daily changes
     const [oneDayTxns, txnChange] = get2DayPercentChange(
-      data.txCount,
+      data?.txCount,
       oneDayData?.txCount ?? 0,
       twoDayData?.txCount ?? 0
     )
@@ -405,8 +405,7 @@ const getTokenData = async (address) => {
     data.priceChangeUSD = priceChangeUSD
     data.oneDayVolumeUT = oneDayVolumeUT
     data.volumeChangeUT = volumeChangeUT
-    const liquidityChangeUSD = getPercentChange(currentLiquidityUSD ?? 0, oldLiquidityUSD ?? 0)
-    data.liquidityChangeUSD = liquidityChangeUSD
+    data.liquidityChangeUSD = getPercentChange(currentLiquidityUSD ?? 0, oldLiquidityUSD ?? 0)
     data.oneDayTxns = oneDayTxns
     data.txnChange = txnChange
 

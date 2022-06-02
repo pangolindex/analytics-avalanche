@@ -40,8 +40,6 @@ export default (tokenAddress, symbol, base, pair) => {
         has_weekly_and_monthly: true,
         has_emtpy_bars: true,
       }
-
-      console.log('[resolveSymbol]: Symbol resolved', symbolName)
       onSymbolResolvedCallback(symbolInfo)
     },
 
