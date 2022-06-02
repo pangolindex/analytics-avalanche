@@ -723,7 +723,7 @@ export const TOKEN_CHART = gql`
 
 export const TOKENS_CURRENT = gql`
   query tokens {
-    tokens(first: 200, orderBy: tradeVolumeUSD, orderDirection: desc) {
+    tokens(first: 100, orderBy: tradeVolumeUSD, orderDirection: desc) {
       id
       name
       symbol
