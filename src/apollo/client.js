@@ -18,14 +18,6 @@ export const healthClient = new ApolloClient({
   shouldBatch: true,
 })
 
-export const stakingClient = new ApolloClient({
-  link: new HttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/name/way2rach/talisman',
-  }),
-  cache: new InMemoryCache(),
-  shouldBatch: true,
-})
-
 export const blockClient = new ApolloClient({
   link: new HttpLink({
     uri: 'https://api.thegraph.com/subgraphs/name/dasconnor/avalanche-blocks',
