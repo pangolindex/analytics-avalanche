@@ -590,14 +590,6 @@ export const ALL_PAIRS = gql`
   }
 `
 
-export const PAIRS_CURRENT = gql`
-  query pairs {
-    pairs(first: 200, orderBy: trackedReserveUSD, orderDirection: desc) {
-      id
-    }
-  }
-`
-
 export const PAIR_DATA = (pairAddress, block) => {
   const queryString = `
     query pairs {
@@ -636,31 +628,37 @@ export const PAIR_DATA = (pairAddress, block) => {
   return gql(queryString)
 }
 
-export const MINING_POSITIONS = (account) => {
-  const queryString = `
-    query users {
-      user(id: "${account}") {
-        miningPosition {
-          id
-          user {
-            id
-          }
-          miningPool {
-              pair {
-                id
-                token0
-                token1
-              }
-          }
-          balance
-        }
+export const TOP_PAIRS = gql`
+  query pairs {
+    pairs(first: 100, orderBy: trackedReserveUSD, orderDirection: desc) {
+      id
+      token0 {
+        id
+        symbol
+        name
+        derivedUSD
       }
+      token1 {
+        id
+        symbol
+        name
+        derivedUSD
+      }
+      reserveUSD
+      totalSupply
+      trackedReserveUSD
+      reserveETH
+      volumeUSD
+      untrackedVolumeUSD
+      token0Price
+      token1Price
+      createdAtTimestamp
+      createdAtBlockNumber
     }
+  }
 `
-  return gql(queryString)
-}
 
-export const PAIRS_BULK = gql`
+export const BULK_PAIRS = gql`
   query pairs($allPairs: [Bytes]!) {
     pairs(where: { id_in: $allPairs }, orderBy: trackedReserveUSD, orderDirection: desc) {
       id
@@ -698,7 +696,7 @@ export const PAIRS_HISTORICAL_BULK = (block, pairs) => {
   pairsString += ']'
   let queryString = `
   query pairs {
-    pairs(first: 200, where: {id_in: ${pairsString}}, block: {number: ${block}}, orderBy: trackedReserveUSD, orderDirection: desc) {
+    pairs(where: {id_in: ${pairsString}}, block: {number: ${block}}, orderBy: trackedReserveUSD, orderDirection: desc) {
       id
       reserveUSD
       trackedReserveUSD
