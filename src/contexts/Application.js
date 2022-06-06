@@ -203,7 +203,7 @@ export function useLatestBlocks() {
           {
             data: {
               _meta: {
-                block: { number: latestBlock },
+                block: { number: syncedBlock },
               },
             },
           },
@@ -212,10 +212,12 @@ export function useLatestBlocks() {
           client.query({
             query: SUBGRAPH_LATEST_BLOCK,
           }),
-          new ethers.providers.JsonRpcProvider('https://api.avax.network/ext/bc/C/rpc').getBlockNumber()
+          new ethers.providers.JsonRpcProvider('https://api.avax.network/ext/bc/C/rpc').getBlockNumber(),
         ])
-        updateLatestBlock(latestBlock)
-        updateHeadBlock(headBlock)
+        if (syncedBlock && headBlock) {
+          updateLatestBlock(syncedBlock)
+          updateHeadBlock(headBlock)
+        }
       } catch (e) {
         console.error(e)
       }
