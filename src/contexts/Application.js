@@ -3,8 +3,9 @@ import { timeframeOptions, SUPPORTED_LIST_URLS__NO_ENS } from '../constants'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import getTokenList from '../utils/tokenLists'
-import { healthClient } from '../apollo/client'
-import { SUBGRAPH_HEALTH } from '../apollo/queries'
+import { client, healthClient } from '../apollo/client'
+import { SUBGRAPH_HEALTH, SUBGRAPH_LATEST_BLOCK } from '../apollo/queries'
+import { ethers } from 'ethers'
 dayjs.extend(utc)
 
 const UPDATE = 'UPDATE'
@@ -196,8 +197,32 @@ export function useLatestBlocks() {
         console.log(e)
       }
     }
+    async function altFetch() {
+      try {
+        const [
+          {
+            data: {
+              _meta: {
+                block: { number: latestBlock },
+              },
+            },
+          },
+          headBlock,
+        ] = await Promise.all([
+          client.query({
+            query: SUBGRAPH_LATEST_BLOCK,
+          }),
+          new ethers.providers.JsonRpcProvider('https://api.avax.network/ext/bc/C/rpc').getBlockNumber()
+        ])
+        updateLatestBlock(latestBlock)
+        updateHeadBlock(headBlock)
+      } catch (e) {
+        console.error(e)
+      }
+    }
     if (!latestBlock) {
-      fetch()
+      altFetch()
+      // fetch()
     }
   }, [latestBlock, updateHeadBlock, updateLatestBlock])
 
