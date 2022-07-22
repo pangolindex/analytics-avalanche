@@ -41,7 +41,6 @@ export default (tokenAddress, symbol, base, pair) => {
         has_emtpy_bars: true,
       }
 
-      console.log('[resolveSymbol]: Symbol resolved', symbolName)
       onSymbolResolvedCallback(symbolInfo)
     },
 
