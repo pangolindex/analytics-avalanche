@@ -187,8 +187,8 @@ export const Search = ({ small = false }) => {
         if (value?.length > 0) {
           let tokens = await client.query({
             variables: {
-              value: value ? value.toUpperCase() : '',
-              id: value,
+              value: value.toUpperCase(),
+              id: value.toLowerCase(),
             },
             query: TOKEN_SEARCH,
           })
@@ -197,7 +197,7 @@ export const Search = ({ small = false }) => {
             query: PAIR_SEARCH,
             variables: {
               tokens: tokens.data.asSymbol?.map((t) => t.id),
-              id: value,
+              id: value.toLowerCase(),
             },
           })
           setSearchedPairs(pairs.data.as0.concat(pairs.data.as1).concat(pairs.data.asAddress))
