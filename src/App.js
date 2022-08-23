@@ -18,6 +18,7 @@ import AccountLookup from './pages/AccountLookup'
 import { PAIR_BLACKLIST } from './constants'
 import LocalLoader from './components/LocalLoader'
 import { useLatestBlocks } from './contexts/Application'
+import MobileMenu from './components/MobileMenu'
 
 const AppWrapper = styled.div`
   position: relative;
@@ -78,11 +79,14 @@ const WarningBanner = styled.div`
 /**
  * Wrap the component with the header and sidebar pinned tab
  */
-const LayoutWrapper = ({ children, savedOpen, setSavedOpen }) => {
+const LayoutWrapper = ({ children, savedOpen, setSavedOpen, isMobileMenuActive, setIsMobileMenuActive }) => {
   return (
     <>
       <ContentWrapper open={savedOpen}>
-        <SideNav />
+        <SideNav isMobileMenuActive={isMobileMenuActive} setIsMobileMenuActive={setIsMobileMenuActive} />
+        {isMobileMenuActive ? (
+          <MobileMenu isMobileMenuActive={isMobileMenuActive} setIsMobileMenuActive={setIsMobileMenuActive} />
+        ) : null}
         <Center id="center">{children}</Center>
         <Right open={savedOpen}>
           <PinnedData open={savedOpen} setSavedOpen={setSavedOpen} />
@@ -96,6 +100,7 @@ const BLOCK_DIFFERENCE_THRESHOLD = 30
 
 function App() {
   const [savedOpen, setSavedOpen] = useState(false)
+  const [isMobileMenuActive, setIsMobileMenuActive] = useState(false)
 
   const globalData = useGlobalData()
   const globalChartData = useGlobalChartData()
@@ -131,7 +136,12 @@ function App() {
                   // }
                   if (isAddress(match.params.tokenAddress.toLowerCase())) {
                     return (
-                      <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
+                      <LayoutWrapper
+                        savedOpen={savedOpen}
+                        setSavedOpen={setSavedOpen}
+                        isMobileMenuActive={isMobileMenuActive}
+                        setIsMobileMenuActive={setIsMobileMenuActive}
+                      >
                         <TokenPage address={match.params.tokenAddress.toLowerCase()} />
                       </LayoutWrapper>
                     )
@@ -150,7 +160,12 @@ function App() {
                   }
                   if (isAddress(match.params.pairAddress.toLowerCase())) {
                     return (
-                      <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
+                      <LayoutWrapper
+                        savedOpen={savedOpen}
+                        setSavedOpen={setSavedOpen}
+                        isMobileMenuActive={isMobileMenuActive}
+                        setIsMobileMenuActive={setIsMobileMenuActive}
+                      >
                         <PairPage pairAddress={match.params.pairAddress.toLowerCase()} />
                       </LayoutWrapper>
                     )
@@ -166,7 +181,12 @@ function App() {
                 render={({ match }) => {
                   if (isAddress(match.params.accountAddress.toLowerCase())) {
                     return (
-                      <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
+                      <LayoutWrapper
+                        savedOpen={savedOpen}
+                        setSavedOpen={setSavedOpen}
+                        isMobileMenuActive={isMobileMenuActive}
+                        setIsMobileMenuActive={setIsMobileMenuActive}
+                      >
                         <AccountPage account={match.params.accountAddress.toLowerCase()} />
                       </LayoutWrapper>
                     )
@@ -177,25 +197,45 @@ function App() {
               />
 
               <Route path="/home">
-                <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
+                <LayoutWrapper
+                  savedOpen={savedOpen}
+                  setSavedOpen={setSavedOpen}
+                  isMobileMenuActive={isMobileMenuActive}
+                  setIsMobileMenuActive={setIsMobileMenuActive}
+                >
                   <GlobalPage />
                 </LayoutWrapper>
               </Route>
 
               <Route path="/tokens">
-                <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
+                <LayoutWrapper
+                  savedOpen={savedOpen}
+                  setSavedOpen={setSavedOpen}
+                  isMobileMenuActive={isMobileMenuActive}
+                  setIsMobileMenuActive={setIsMobileMenuActive}
+                >
                   <AllTokensPage />
                 </LayoutWrapper>
               </Route>
 
               <Route path="/pairs">
-                <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
+                <LayoutWrapper
+                  savedOpen={savedOpen}
+                  setSavedOpen={setSavedOpen}
+                  isMobileMenuActive={isMobileMenuActive}
+                  setIsMobileMenuActive={setIsMobileMenuActive}
+                >
                   <AllPairsPage />
                 </LayoutWrapper>
               </Route>
 
               <Route path="/accounts">
-                <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
+                <LayoutWrapper
+                  savedOpen={savedOpen}
+                  setSavedOpen={setSavedOpen}
+                  isMobileMenuActive={isMobileMenuActive}
+                  setIsMobileMenuActive={setIsMobileMenuActive}
+                >
                   <AccountLookup />
                 </LayoutWrapper>
               </Route>
