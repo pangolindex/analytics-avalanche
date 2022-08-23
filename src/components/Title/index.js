@@ -4,7 +4,7 @@ import styled from 'styled-components'
 
 import { Flex } from 'rebass'
 import { RowFixed } from '../Row'
-import LogoAndTitle from '../../assets/logo_and_title.svg'
+import LogoAndTitle from '../../assets/logo_and_title.png'
 
 const TitleWrapper = styled.div`
   text-decoration: none;
@@ -23,7 +23,7 @@ export default function Title() {
     <TitleWrapper onClick={() => history.push('/')}>
       <Flex alignItems="center">
         <RowFixed>
-          <img width={'116px'} src={LogoAndTitle} alt="logo" />
+          <img width={'145px'} src={LogoAndTitle} alt="logo" />
         </RowFixed>
       </Flex>
     </TitleWrapper>
