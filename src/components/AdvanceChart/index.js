@@ -4,7 +4,7 @@ import { useDarkModeManager } from '../../contexts/LocalStorage'
 import { useMedia } from 'react-use'
 import { widget } from '@pangolindex/tradingview-chart'
 
-const PoweBy = styled.div`
+const PowerBy = styled.div`
   color: ${({ theme }) => theme.text4};
   margin-bottom: 1rem;
   position: absolute;
@@ -73,7 +73,7 @@ const AdvanceChart = ({ symbolName, style, datafeed }) => {
     <>
       <div id="tv_chart_container" className={'AdvanceChart'} style={style} />
 
-      <PoweBy>Powered by Tradingview</PoweBy>
+      <PowerBy>Powered by Tradingview</PowerBy>
     </>
   )
 }
