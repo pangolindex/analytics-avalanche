@@ -1,7 +1,22 @@
 import React, { useRef, useEffect } from 'react'
+import styled from 'styled-components'
 import { useDarkModeManager } from '../../contexts/LocalStorage'
 import { useMedia } from 'react-use'
 import { widget } from '@pangolindex/tradingview-chart'
+
+const PowerBy = styled.div`
+  color: ${({ theme }) => theme.text4};
+  margin-bottom: 1rem;
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  bottom: 12px;
+
+  @media screen and (max-width: 600px) {
+    position: relative;
+    bottom: 0px;
+  }
+`
 
 const AdvanceChart = ({ symbolName, style, datafeed }) => {
   const [darkMode] = useDarkModeManager()
@@ -54,7 +69,13 @@ const AdvanceChart = ({ symbolName, style, datafeed }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [darkMode])
 
-  return <div id="tv_chart_container" className={'AdvanceChart'} style={style} />
+  return (
+    <>
+      <div id="tv_chart_container" className={'AdvanceChart'} style={style} />
+
+      <PowerBy>Powered by Tradingview</PowerBy>
+    </>
+  )
 }
 
 export default AdvanceChart
