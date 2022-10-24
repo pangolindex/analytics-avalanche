@@ -30,6 +30,8 @@ const theme = (darkMode, color) => ({
   text4: darkMode ? '#565A69' : '#C3C5CB',
   text5: darkMode ? '#2C2F36' : '#EDEEF2',
 
+  // primary yellow color
+  philippineYellow: '#FFC800',
   // special case text types
   white: '#FFFFFF',
 

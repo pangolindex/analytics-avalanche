@@ -1,4 +1,5 @@
 import React from 'react'
+import { withRouter, useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { AutoColumn } from '../Column'
 import Title from '../Title'
@@ -6,7 +7,6 @@ import { BasicLink } from '../Link'
 import { useMedia } from 'react-use'
 import { transparentize } from 'polished'
 import { TYPE } from '../../Theme'
-import { withRouter } from 'react-router-dom'
 import { TrendingUp, List, PieChart, Disc } from 'react-feather'
 import Link from '../Link'
 import { useSessionStart } from '../../contexts/Application'
@@ -99,87 +99,114 @@ const PollingDot = styled.div`
   background-color: ${({ theme }) => theme.green1};
 `
 
-function SideNav({ history }) {
-  const below1080 = useMedia('(max-width: 1080px)')
+export const MenuOptions = ({ isMobileMenuActive, setIsMobileMenuActive }) => {
+  const history = useHistory()
 
+  return (
+    <AutoColumn gap="1.25rem" style={{ marginTop: '1rem' }}>
+      <BasicLink to="/home">
+        <Option
+          activeText={history.location.pathname === '/home' ?? undefined}
+          onClick={() => {
+            isMobileMenuActive && setIsMobileMenuActive(!isMobileMenuActive)
+          }}
+        >
+          <TrendingUp size={20} style={{ marginRight: '.75rem' }} />
+          Overview
+        </Option>
+      </BasicLink>
+      <BasicLink to="/tokens">
+        <Option
+          activeText={
+            (history.location.pathname.split('/')[1] === 'tokens' ||
+              history.location.pathname.split('/')[1] === 'token') ??
+            undefined
+          }
+          onClick={() => {
+            isMobileMenuActive && setIsMobileMenuActive(!isMobileMenuActive)
+          }}
+        >
+          <Disc size={20} style={{ marginRight: '.75rem' }} />
+          Tokens
+        </Option>
+      </BasicLink>
+      <BasicLink to="/pairs">
+        <Option
+          activeText={
+            (history.location.pathname.split('/')[1] === 'pairs' ||
+              history.location.pathname.split('/')[1] === 'pair') ??
+            undefined
+          }
+          onClick={() => {
+            isMobileMenuActive && setIsMobileMenuActive(!isMobileMenuActive)
+          }}
+        >
+          <PieChart size={20} style={{ marginRight: '.75rem' }} />
+          Pairs
+        </Option>
+      </BasicLink>
+
+      <BasicLink to="/accounts">
+        <Option
+          activeText={
+            (history.location.pathname.split('/')[1] === 'accounts' ||
+              history.location.pathname.split('/')[1] === 'account') ??
+            undefined
+          }
+          onClick={() => {
+            isMobileMenuActive && setIsMobileMenuActive(!isMobileMenuActive)
+          }}
+        >
+          <List size={20} style={{ marginRight: '.75rem' }} />
+          Accounts
+        </Option>
+      </BasicLink>
+    </AutoColumn>
+  )
+}
+
+export const SocialOptions = ({ showToggle }) => {
+  const [isDark, toggleDarkMode] = useDarkModeManager()
+
+  return (
+    <AutoColumn gap="0.5rem" style={{ marginLeft: '.75rem', marginBottom: '4rem' }}>
+      <HeaderText>
+        <Link href="https://app.pangolin.exchange" target="_blank">
+          Pangolin
+        </Link>
+      </HeaderText>
+      <HeaderText>
+        <Link href="https://discord.com/invite/PARrDYYbfw" target="_blank">
+          Discord
+        </Link>
+      </HeaderText>
+      <HeaderText>
+        <Link href="https://twitter.com/pangolindex" target="_blank">
+          Twitter
+        </Link>
+      </HeaderText>
+      {showToggle ? <Toggle isActive={isDark} toggle={toggleDarkMode} /> : null}
+    </AutoColumn>
+  )
+}
+
+function SideNav({ isMobileMenuActive, setIsMobileMenuActive }) {
+  const below1080 = useMedia('(max-width: 1080px)')
   const below1180 = useMedia('(max-width: 1180px)')
 
   const seconds = useSessionStart()
-
-  const [isDark, toggleDarkMode] = useDarkModeManager()
 
   return (
     <Wrapper isMobile={below1080}>
       {!below1080 ? (
         <DesktopWrapper>
           <AutoColumn gap="1rem" style={{ marginLeft: '.75rem', marginTop: '1.5rem' }}>
-            <Title />
+            <Title isMobileMenuActive={isMobileMenuActive} setIsMobileMenuActive={setIsMobileMenuActive} />
             {!below1080 && (
-              <AutoColumn gap="1.25rem" style={{ marginTop: '1rem' }}>
-                <BasicLink to="/home">
-                  <Option activeText={history.location.pathname === '/home' ?? undefined}>
-                    <TrendingUp size={20} style={{ marginRight: '.75rem' }} />
-                    Overview
-                  </Option>
-                </BasicLink>
-                <BasicLink to="/tokens">
-                  <Option
-                    activeText={
-                      (history.location.pathname.split('/')[1] === 'tokens' ||
-                        history.location.pathname.split('/')[1] === 'token') ??
-                      undefined
-                    }
-                  >
-                    <Disc size={20} style={{ marginRight: '.75rem' }} />
-                    Tokens
-                  </Option>
-                </BasicLink>
-                <BasicLink to="/pairs">
-                  <Option
-                    activeText={
-                      (history.location.pathname.split('/')[1] === 'pairs' ||
-                        history.location.pathname.split('/')[1] === 'pair') ??
-                      undefined
-                    }
-                  >
-                    <PieChart size={20} style={{ marginRight: '.75rem' }} />
-                    Pairs
-                  </Option>
-                </BasicLink>
-
-                <BasicLink to="/accounts">
-                  <Option
-                    activeText={
-                      (history.location.pathname.split('/')[1] === 'accounts' ||
-                        history.location.pathname.split('/')[1] === 'account') ??
-                      undefined
-                    }
-                  >
-                    <List size={20} style={{ marginRight: '.75rem' }} />
-                    Accounts
-                  </Option>
-                </BasicLink>
-              </AutoColumn>
+              <MenuOptions isMobileMenuActive={isMobileMenuActive} setIsMobileMenuActive={setIsMobileMenuActive} />
             )}
           </AutoColumn>
-          <AutoColumn gap="0.5rem" style={{ marginLeft: '.75rem', marginBottom: '4rem' }}>
-            <HeaderText>
-              <Link href="https://app.pangolin.exchange" target="_blank">
-                Pangolin
-              </Link>
-            </HeaderText>
-            <HeaderText>
-              <Link href="https://discord.com/invite/PARrDYYbfw" target="_blank">
-                Discord
-              </Link>
-            </HeaderText>
-            <HeaderText>
-              <Link href="https://twitter.com/pangolindex" target="_blank">
-                Twitter
-              </Link>
-            </HeaderText>
-            <Toggle isActive={isDark} toggle={toggleDarkMode} />
-          </AutoColumn>
+          <SocialOptions showToggle={true} />
           {!below1180 && (
             <Polling style={{ marginLeft: '.5rem' }}>
               <PollingDot />
@@ -193,7 +220,7 @@ function SideNav({ history }) {
         </DesktopWrapper>
       ) : (
         <MobileWrapper>
-          <Title />
+          <Title isMobileMenuActive={isMobileMenuActive} setIsMobileMenuActive={setIsMobileMenuActive} />
         </MobileWrapper>
       )}
     </Wrapper>
