@@ -40,13 +40,13 @@ export function getTimeframe(timeWindow) {
 export function getPoolLink(token0Address, token1Address = null, remove = false) {
   if (!token1Address) {
     return (
-      `https://app.pangolin.exchange/#/` +
+      `https://legacy.pangolin.exchange/#/` +
       (remove ? `remove` : `add`) +
       `/${token0Address === WAVAX_ADDRESS ? 'AVAX' : token0Address}/${'AVAX'}`
     )
   } else {
     return (
-      `https://app.pangolin.exchange/#/` +
+      `https://legacy.pangolin.exchange/#/` +
       (remove ? `remove` : `add`) +
       `/${token0Address === WAVAX_ADDRESS ? 'AVAX' : token0Address}/${
         token1Address === WAVAX_ADDRESS ? 'AVAX' : token1Address
