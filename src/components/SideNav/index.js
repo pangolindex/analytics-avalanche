@@ -7,11 +7,12 @@ import { useMedia } from 'react-use'
 import { transparentize } from 'polished'
 import { TYPE } from '../../Theme'
 import { withRouter } from 'react-router-dom'
-import { TrendingUp, List, PieChart, Disc } from 'react-feather'
+import { TrendingUp, PieChart, Disc } from 'react-feather'
 import Link from '../Link'
 import { useSessionStart } from '../../contexts/Application'
 import { useDarkModeManager } from '../../contexts/LocalStorage'
 import Toggle from '../Toggle'
+import { SOCIAL_LINK_DISCORD, PANGOLIN_LINK_APP, SOCIAL_LINK_TWITTER } from '../../constants'
 
 const Wrapper = styled.div`
   height: ${({ isMobile }) => (isMobile ? 'initial' : '100vh')};
@@ -146,35 +147,22 @@ function SideNav({ history }) {
                     Pairs
                   </Option>
                 </BasicLink>
-
-                <BasicLink to="/accounts">
-                  <Option
-                    activeText={
-                      (history.location.pathname.split('/')[1] === 'accounts' ||
-                        history.location.pathname.split('/')[1] === 'account') ??
-                      undefined
-                    }
-                  >
-                    <List size={20} style={{ marginRight: '.75rem' }} />
-                    Accounts
-                  </Option>
-                </BasicLink>
               </AutoColumn>
             )}
           </AutoColumn>
           <AutoColumn gap="0.5rem" style={{ marginLeft: '.75rem', marginBottom: '4rem' }}>
             <HeaderText>
-              <Link href="https://app.pangolin.exchange" target="_blank">
+              <Link href={PANGOLIN_LINK_APP} target="_blank">
                 Pangolin
               </Link>
             </HeaderText>
             <HeaderText>
-              <Link href="https://discord.com/invite/PARrDYYbfw" target="_blank">
+              <Link href={SOCIAL_LINK_DISCORD} target="_blank">
                 Discord
               </Link>
             </HeaderText>
             <HeaderText>
-              <Link href="https://twitter.com/pangolindex" target="_blank">
+              <Link href={SOCIAL_LINK_TWITTER} target="_blank">
                 Twitter
               </Link>
             </HeaderText>

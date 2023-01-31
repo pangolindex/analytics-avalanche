@@ -25,13 +25,13 @@ import DoubleTokenLogo from '../components/DoubleLogo'
 import TokenLogo from '../components/TokenLogo'
 import { Hover } from '../components'
 import { useEthPrice } from '../contexts/GlobalData'
-import { ArbitraryWarning, MigrateWarning } from '../components/Warning'
+import { ArbitraryWarning } from '../components/Warning'
 import { usePathDismissed, useSavedPairs } from '../contexts/LocalStorage'
 
 import { Bookmark, PlusCircle } from 'react-feather'
 import FormattedName from '../components/FormattedName'
 import { useListedTokens } from '../contexts/Application'
-import { AEB_TOKEN_ADDRESSES, SWAP_FEE_TO_LP } from '../constants'
+import { EXPLORER_LINK_BASE, EXPLORER_NAME, SWAP_FEE_TO_LP } from '../constants'
 
 const DashboardWrapper = styled.div`
   width: 100%;
@@ -211,7 +211,6 @@ function PairPage({ pairAddress, history }) {
         setShow={markAsDismissed}
         address={pairAddress}
       />
-      <MigrateWarning show={AEB_TOKEN_ADDRESSES.includes(token0?.id) || AEB_TOKEN_ADDRESSES.includes(token1?.id)} />
 
       <ContentWrapperLarge>
         <RowBetween style={{ flexWrap: 'wrap', alingItems: 'start' }}>
@@ -224,7 +223,7 @@ function PairPage({ pairAddress, history }) {
               style={{ width: 'fit-content' }}
               color={backgroundColor}
               external
-              href={'https://snowtrace.io/address/' + pairAddress}
+              href={`${EXPLORER_LINK_BASE}/address/${pairAddress}`}
             >
               <Text style={{ marginLeft: '.15rem' }} fontSize={'14px'} fontWeight={400}>
                 ({pairAddress.slice(0, 8) + '...' + pairAddress.slice(36, 42)})
@@ -493,8 +492,8 @@ function PairPage({ pairAddress, history }) {
                     </AutoRow>
                   </Column>
                   <ButtonLight color={backgroundColor}>
-                    <Link color={backgroundColor} external href={'https://snowtrace.io/address/' + pairAddress}>
-                      View on the Snowtrace Explorer ↗
+                    <Link color={backgroundColor} external href={`${EXPLORER_LINK_BASE}/address/${pairAddress}`}>
+                      View on {EXPLORER_NAME} ↗
                     </Link>
                   </ButtonLight>
                 </TokenDetailsLayout>

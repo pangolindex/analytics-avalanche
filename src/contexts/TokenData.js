@@ -614,7 +614,7 @@ export function Updater() {
       let topTokens = await getTopTokens(ethPrice, ethPriceOld)
       topTokens && updateTopTokens(topTokens)
     }
-    ethPrice && ethPriceOld && getData()
+    ethPrice !== undefined && ethPriceOld !== undefined && getData()
   }, [ethPrice, ethPriceOld, updateTopTokens])
   return null
 }

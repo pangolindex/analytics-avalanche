@@ -6,7 +6,7 @@ import { useGlobalData, useEthPrice } from '../../contexts/GlobalData'
 import { formattedNum, localNumber } from '../../utils'
 
 import { TYPE } from '../../Theme'
-import { SWAP_FEE_TO_LP } from '../../constants'
+import { SWAP_FEE_TO_LP, WNAT_SYMBOL_UNWRAPPED } from '../../constants'
 
 const Header = styled.div`
   width: 100%;
@@ -36,7 +36,7 @@ export default function GlobalStats() {
         <RowFixed>
           {!below400 && (
             <TYPE.main mr={'1rem'} style={{ position: 'relative' }}>
-              AVAX Price: <Medium>{formattedEthPrice}</Medium>
+              {WNAT_SYMBOL_UNWRAPPED} Price: <Medium>{formattedEthPrice}</Medium>
             </TYPE.main>
           )}
 

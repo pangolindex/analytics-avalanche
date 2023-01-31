@@ -26,14 +26,14 @@ import CopyHelper from '../components/Copy'
 import { useMedia } from 'react-use'
 import { useDataForList } from '../contexts/PairData'
 import { useEffect } from 'react'
-import { ArbitraryWarning, MigrateWarning } from '../components/Warning'
+import { ArbitraryWarning } from '../components/Warning'
 import { usePathDismissed, useSavedTokens } from '../contexts/LocalStorage'
 import { Hover, PageWrapper, ContentWrapper, StyledIcon } from '../components'
 import { PlusCircle, Bookmark } from 'react-feather'
 import FormattedName from '../components/FormattedName'
 import { useListedTokens } from '../contexts/Application'
 import METAMASK_IMAGE from '../assets/MetaMask.png'
-import { AEB_TOKEN_ADDRESSES } from '../constants'
+import { EXPLORER_LINK_BASE, EXPLORER_NAME } from '../constants'
 
 const DashboardWrapper = styled.div`
   width: 100%;
@@ -325,7 +325,6 @@ function TokenPage({ address, history }) {
         setShow={markAsDismissed}
         address={address}
       />
-      <MigrateWarning show={AEB_TOKEN_ADDRESSES.includes(address)} />
 
       <ContentWrapper>
         <RowBetween style={{ flexWrap: 'wrap', alingItems: 'start' }}>
@@ -338,7 +337,7 @@ function TokenPage({ address, history }) {
               style={{ width: 'fit-content' }}
               color={backgroundColor}
               external
-              href={'https://snowtrace.io/address/' + address}
+              href={`${EXPLORER_LINK_BASE}/address/${address}`}
             >
               <Text style={{ marginLeft: '.15rem' }} fontSize={'14px'} fontWeight={400}>
                 ({address.slice(0, 8) + '...' + address.slice(36, 42)})
@@ -625,9 +624,9 @@ function TokenPage({ address, history }) {
                     <Link
                       color={backgroundColor}
                       external
-                      href={'https://snowtrace.io/address/' + address}
+                      href={`${EXPLORER_LINK_BASE}/address/${address}`}
                     >
-                      View on the Snowtrace Explorer ↗
+                      View on {EXPLORER_NAME} ↗
                     </Link>
                   </ButtonLight>
                 </TokenDetailsLayout>

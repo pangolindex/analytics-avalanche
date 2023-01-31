@@ -6,13 +6,12 @@ const VERSION = 'VERSION'
 const CURRENT_VERSION = 0
 const LAST_SAVED = 'LAST_SAVED'
 const DISMISSED_PATHS = 'DISMISSED_PATHS'
-const SAVED_ACCOUNTS = 'SAVED_ACCOUNTS'
 const SAVED_TOKENS = 'SAVED_TOKENS'
 const SAVED_PAIRS = 'SAVED_PAIRS'
 
 const DARK_MODE = 'DARK_MODE'
 
-const UPDATABLE_KEYS = [DARK_MODE, DISMISSED_PATHS, SAVED_ACCOUNTS, SAVED_PAIRS, SAVED_TOKENS]
+const UPDATABLE_KEYS = [DARK_MODE, DISMISSED_PATHS, SAVED_PAIRS, SAVED_TOKENS]
 
 const UPDATE_KEY = 'UPDATE_KEY'
 
@@ -46,7 +45,6 @@ function init() {
     [VERSION]: CURRENT_VERSION,
     [DARK_MODE]: true,
     [DISMISSED_PATHS]: {},
-    [SAVED_ACCOUNTS]: [],
     [SAVED_TOKENS]: {},
     [SAVED_PAIRS]: {},
   }
@@ -110,28 +108,6 @@ export function usePathDismissed(path) {
   }
 
   return [pathDismissed, dismiss]
-}
-
-export function useSavedAccounts() {
-  const [state, { updateKey }] = useLocalStorageContext()
-  const savedAccounts = state?.[SAVED_ACCOUNTS]
-
-  function addAccount(account) {
-    let newAccounts = state?.[SAVED_ACCOUNTS]
-    newAccounts.push(account)
-    updateKey(SAVED_ACCOUNTS, newAccounts)
-  }
-
-  function removeAccount(account) {
-    let newAccounts = state?.[SAVED_ACCOUNTS]
-    let index = newAccounts.indexOf(account)
-    if (index > -1) {
-      newAccounts.splice(index, 1)
-    }
-    updateKey(SAVED_ACCOUNTS, newAccounts)
-  }
-
-  return [savedAccounts, addAccount, removeAccount]
 }
 
 export function useSavedPairs() {

@@ -8,7 +8,7 @@ import { GET_BLOCK, GET_BLOCKS, GET_BLOCK_BEFORE, GET_BLOCK_AFTER, SHARE_VALUE }
 import { Text } from 'rebass'
 import _Decimal from 'decimal.js-light'
 import toFormat from 'toformat'
-import { timeframeOptions, WAVAX_ADDRESS } from '../constants'
+import { EXPLORER_LINK_BASE, PANGOLIN_LINK_APP, timeframeOptions, WNAT_ADDRESS } from '../constants'
 import Numeral from 'numeral'
 
 // format libraries
@@ -40,28 +40,27 @@ export function getTimeframe(timeWindow) {
 export function getPoolLink(token0Address, token1Address = null, remove = false) {
   if (!token1Address) {
     return (
-      `https://legacy.pangolin.exchange/#/` +
+      `${PANGOLIN_LINK_APP}/#/` +
       (remove ? `remove` : `add`) +
-      `/${token0Address === WAVAX_ADDRESS ? 'AVAX' : token0Address}/${'AVAX'}`
+      `/${token0Address === WNAT_ADDRESS ? 'AVAX' : token0Address}/AVAX`
     )
   } else {
     return (
-      `https://legacy.pangolin.exchange/#/` +
+      `${PANGOLIN_LINK_APP}/#/` +
       (remove ? `remove` : `add`) +
-      `/${token0Address === WAVAX_ADDRESS ? 'AVAX' : token0Address}/${
-        token1Address === WAVAX_ADDRESS ? 'AVAX' : token1Address
-      }`
+      `/${token0Address === WNAT_ADDRESS ? 'AVAX' : token0Address}` +
+      `/${token1Address === WNAT_ADDRESS ? 'AVAX' : token1Address}`
     )
   }
 }
 
 export function getSwapLink(token0Address, token1Address = null) {
   if (!token1Address) {
-    return `https://app.pangolin.exchange/#/swap?inputCurrency=${token0Address}`
+    return `${PANGOLIN_LINK_APP}/#/swap?inputCurrency=${token0Address}`
   } else {
-    return `https://app.pangolin.exchange/#/swap?inputCurrency=${
-      token0Address === WAVAX_ADDRESS ? 'AVAX' : token0Address
-    }&outputCurrency=${token1Address === WAVAX_ADDRESS ? 'AVAX' : token1Address}`
+    return `${PANGOLIN_LINK_APP}/#/swap?inputCurrency=${
+      token0Address === WNAT_ADDRESS ? 'AVAX' : token0Address
+    }&outputCurrency=${token1Address === WNAT_ADDRESS ? 'AVAX' : token1Address}`
   }
 }
 
@@ -351,10 +350,10 @@ export const setThemeColor = (theme) => document.documentElement.style.setProper
 export const Big = (number) => new BigNumber(number)
 
 export const urls = {
-  showTransaction: (tx) => `https://snowtrace.io/tx/${tx}/`,
-  showAddress: (address) => `https://snowtrace.io/address/${address}/`,
-  showToken: (address) => `https://snowtrace.io/token/${address}/`,
-  showBlock: (block) => `https://snowtrace.io/block/${block}/`,
+  showTransaction: (tx) => `${EXPLORER_LINK_BASE}/tx/${tx}/`,
+  showAddress: (address) => `${EXPLORER_LINK_BASE}/address/${address}/`,
+  showToken: (address) => `${EXPLORER_LINK_BASE}/token/${address}/`,
+  showBlock: (block) => `${EXPLORER_LINK_BASE}/block/${block}/`,
 }
 
 export const formatTime = (unix) => {

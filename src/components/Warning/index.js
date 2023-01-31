@@ -9,6 +9,7 @@ import { AutoColumn } from '../Column'
 import { Hover } from '..'
 import Link from '../Link'
 import { useMedia } from 'react-use'
+import { EXPLORER_LINK_BASE, EXPLORER_NAME } from '../../constants'
 
 const WarningWrapper = styled.div`
   border-radius: 20px;
@@ -38,7 +39,7 @@ export function ArbitraryWarning({ type, show, setShow, address }) {
   const textContent = below800 ? (
     <div>
       <Text fontWeight={500} lineHeight={'145.23%'} mt={'10px'}>
-        Anyone can create and name any ERC-20 token on Avalanche, including creating fake versions of existing tokens and
+        Anyone can create and name any ERC-20 token, including creating fake versions of existing tokens and
         tokens that claim to represent projects that do not have a token.
       </Text>
       <Text fontWeight={500} lineHeight={'145.23%'} mt={'10px'}>
@@ -48,7 +49,7 @@ export function ArbitraryWarning({ type, show, setShow, address }) {
     </div>
   ) : (
     <Text fontWeight={500} lineHeight={'145.23%'} mt={'10px'}>
-      Anyone can create and name any ERC-20 token on Avalanche, including creating fake versions of existing tokens and
+      Anyone can create and name any ERC-20 token, including creating fake versions of existing tokens and
       tokens that claim to represent projects that do not have a token. Similar to Etherscan, this site automatically
       tracks analytics for all ERC-20 tokens independent of token integrity. Please do your own research before
       interacting with any ERC-20 token.
@@ -72,10 +73,10 @@ export function ArbitraryWarning({ type, show, setShow, address }) {
                 fontWeight={500}
                 lineHeight={'145.23%'}
                 color={'#2172E5'}
-                href={'https://snowtrace.io/address/' + address}
+                href={`${EXPLORER_LINK_BASE}/address/${address}`}
                 target="_blank"
               >
-                View {type === 'token' ? 'token' : 'pair'} contract on Etherscan
+                View {type === 'token' ? 'token' : 'pair'} contract on {EXPLORER_NAME}
               </Link>
             </Hover>
             <RowBetween style={{ marginTop: '20px' }}>
@@ -92,10 +93,10 @@ export function ArbitraryWarning({ type, show, setShow, address }) {
                 fontWeight={500}
                 lineHeight={'145.23%'}
                 color={'#2172E5'}
-                href={'https://snowtrace.io/address/' + address}
+                href={`${EXPLORER_LINK_BASE}/address/${address}`}
                 target="_blank"
               >
-                View {type === 'token' ? 'token' : 'pair'} contract on Etherscan
+                View {type === 'token' ? 'token' : 'pair'} contract on {EXPLORER_NAME}
               </Link>
             </Hover>
             <ButtonDark color={'#f82d3a'} style={{ minWidth: '140px' }} onClick={() => setShow(false)}>
@@ -103,34 +104,6 @@ export function ArbitraryWarning({ type, show, setShow, address }) {
             </ButtonDark>
           </RowBetween>
         )}
-      </AutoColumn>
-    </WarningWrapper>
-  )
-}
-
-export function MigrateWarning({ show }) {
-  return (
-    <WarningWrapper show={show}>
-      <AutoColumn gap="4px">
-        <RowFixed>
-          <StyledWarningIcon />
-          <Text fontWeight={600} lineHeight={'145.23%'} ml={'10px'}>
-            Token Migration Alert
-          </Text>
-        </RowFixed>
-        <Text fontWeight={500} lineHeight={'145.23%'} mt={'10px'}>
-          Due to the introduction of the faster, cheaper, and safer AB bridge, assets bridged via the old AEB bridge are
-          being migrated 1:1 to their new equivalent token. These tokens are still being traded, but should be migrated
-          for ease of integration with Avalanche dapps.
-        </Text>
-        <RowBetween style={{ marginTop: '10px' }}>
-          <div />
-          <Link href={'https://bridge.avax.network/convert'} target="_blank">
-            <ButtonDark color={'#f82d3a'} style={{ minWidth: '140px' }}>
-              Migrate
-            </ButtonDark>
-          </Link>
-        </RowBetween>
       </AutoColumn>
     </WarningWrapper>
   )

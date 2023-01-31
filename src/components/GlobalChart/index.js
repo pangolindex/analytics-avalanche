@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { ResponsiveContainer } from 'recharts'
-import { timeframeOptions } from '../../constants'
+import { timeframeOptions, WNAT_SYMBOL_UNWRAPPED } from '../../constants'
 import { useGlobalChartData, useGlobalData } from '../../contexts/GlobalData'
 import { useMedia } from 'react-use'
 import DropdownSelect from '../DropdownSelect'
@@ -21,7 +21,7 @@ const VOLUME_WINDOW = {
 }
 const LIQUIDITY_BASE = {
   USD: 'USD',
-  AVAX: 'AVAX',
+  WNAT: 'WNAT',
 }
 const GlobalChart = ({ display }) => {
   // chart options
@@ -96,7 +96,7 @@ const GlobalChart = ({ display }) => {
             isUSD={liquidityBase === LIQUIDITY_BASE.USD}
             base={liquidityBase === LIQUIDITY_BASE.USD ? totalLiquidityUSD : totalLiquidityETH}
             baseChange={liquidityBase === LIQUIDITY_BASE.USD ? liquidityChangeUSD : liquidityChangeETH}
-            title={liquidityBase === LIQUIDITY_BASE.USD ? 'Liquidity' : 'Liquidity (AVAX)'}
+            title={liquidityBase === LIQUIDITY_BASE.USD ? 'Liquidity' : `Liquidity (${WNAT_SYMBOL_UNWRAPPED})`}
             field={liquidityBase === LIQUIDITY_BASE.USD ? 'totalLiquidityUSD' : 'totalLiquidityETH'}
             width={width}
             type={CHART_TYPES.AREA}
@@ -158,10 +158,10 @@ const GlobalChart = ({ display }) => {
           </OptionButton>
           <OptionButton
             style={{ marginLeft: '4px' }}
-            active={liquidityBase === LIQUIDITY_BASE.AVAX}
-            onClick={() => setLiquidityBase(LIQUIDITY_BASE.AVAX)}
+            active={liquidityBase === LIQUIDITY_BASE.WNAT}
+            onClick={() => setLiquidityBase(LIQUIDITY_BASE.WNAT)}
           >
-            <TYPE.body>AVAX</TYPE.body>
+            <TYPE.body>{WNAT_SYMBOL_UNWRAPPED}</TYPE.body>
           </OptionButton>
         </RowFixed>
       )}

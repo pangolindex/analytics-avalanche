@@ -8,7 +8,6 @@ import TokenDataContextProvider, { Updater as TokenDataContextUpdater } from './
 import GlobalDataContextProvider from './contexts/GlobalData'
 import PairDataContextProvider, { Updater as PairDataContextUpdater } from './contexts/PairData'
 import ApplicationContextProvider from './contexts/Application'
-import UserContextProvider from './contexts/User'
 import App from './App'
 
 // initialize GA
@@ -33,7 +32,7 @@ function ContextProviders({ children }) {
         <TokenDataContextProvider>
           <GlobalDataContextProvider>
             <PairDataContextProvider>
-              <UserContextProvider>{children}</UserContextProvider>
+              {children}
             </PairDataContextProvider>
           </GlobalDataContextProvider>
         </TokenDataContextProvider>

@@ -7,7 +7,6 @@ import { TYPE } from '../../Theme'
 import { useSavedTokens, useSavedPairs } from '../../contexts/LocalStorage'
 import { Hover } from '..'
 import TokenLogo from '../TokenLogo'
-import AccountSearch from '../AccountSearch'
 import { Bookmark, ChevronRight, X } from 'react-feather'
 import { ButtonFaded } from '../ButtonStyled'
 import FormattedName from '../FormattedName'
@@ -72,7 +71,6 @@ function PinnedData({ history, open, setSavedOpen }) {
           <ChevronRight />
         </StyledIcon>
       </SavedButton>
-      <AccountSearch small={true} />
       <AutoColumn gap="40px" style={{ marginTop: '2rem' }}>
         <AutoColumn gap={'12px'}>
           <TYPE.main>Pinned Pairs</TYPE.main>

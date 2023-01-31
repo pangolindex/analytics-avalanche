@@ -4,13 +4,14 @@ import Vibrant from 'node-vibrant'
 import { hex } from 'wcag-contrast'
 import { isAddress } from '../utils'
 import copy from 'copy-to-clipboard'
+import { CHAIN_ID, PANGOLIN_TOKEN_IMAGE_REPO_BASE } from '../constants'
 
 export function useColor(tokenAddress, token) {
   const [color, setColor] = useState('#2172E5')
   if (tokenAddress) {
-    const path = `https://raw.githubusercontent.com/pangolindex/tokens/main/assets/${isAddress(
+    const path = `${PANGOLIN_TOKEN_IMAGE_REPO_BASE}/main/assets/${CHAIN_ID}/${isAddress(
       tokenAddress
-    )}/logo.png`
+    )}/logo_24.png`
     if (path) {
       Vibrant.from(path).getPalette((err, palette) => {
         if (palette && palette.Vibrant) {

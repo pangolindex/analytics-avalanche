@@ -1,9 +1,9 @@
 import gql from 'graphql-tag'
-import { FACTORY_ADDRESS, BUNDLE_ID } from '../constants'
+import { SUBGRAPH_NAME } from '../constants'
 
 export const SUBGRAPH_HEALTH = gql`
   query health {
-    indexingStatusForCurrentVersion(subgraphName: "pangolindex/exchange") {
+    indexingStatusForCurrentVersion(subgraphName: "${SUBGRAPH_NAME}") {
       synced
       health
       chains {
@@ -14,34 +14,6 @@ export const SUBGRAPH_HEALTH = gql`
           number
         }
       }
-    }
-  }
-`
-
-export const V1_DATA_QUERY = gql`
-  query uniswap($date: Int!, $date2: Int!) {
-    current: uniswap(id: "1") {
-      totalVolumeUSD
-      totalLiquidityUSD
-      txCount
-    }
-    oneDay: uniswapHistoricalDatas(where: { timestamp_lt: $date }, first: 1, orderBy: timestamp, orderDirection: desc) {
-      totalVolumeUSD
-      totalLiquidityUSD
-      txCount
-    }
-    twoDay: uniswapHistoricalDatas(
-      where: { timestamp_lt: $date2 }
-      first: 1
-      orderBy: timestamp
-      orderDirection: desc
-    ) {
-      totalVolumeUSD
-      totalLiquidityUSD
-      txCount
-    }
-    exchanges(first: 200, orderBy: ethBalance, orderDirection: desc) {
-      ethBalance
     }
   }
 `
@@ -99,24 +71,6 @@ export const GET_BLOCKS = (timestamps) => {
   return gql(queryString)
 }
 
-export const POSITIONS_BY_BLOCK = (account, blocks) => {
-  let queryString = 'query blocks {'
-  queryString += blocks.map(
-    (block) => `
-      t${block.timestamp}:liquidityPositions(where: {user: "${account}"}, block: { number: ${block.number} }) { 
-        liquidityTokenBalance
-        pair  {
-          id
-          totalSupply
-          reserveUSD
-        }
-      }
-    `
-  )
-  queryString += '}'
-  return gql(queryString)
-}
-
 export const PRICES_BY_BLOCK = (tokenAddress, blocks) => {
   let queryString = 'query blocks {'
   queryString += blocks.map(
@@ -138,20 +92,6 @@ export const PRICES_BY_BLOCK = (tokenAddress, blocks) => {
   queryString += '}'
   return gql(queryString)
 }
-
-export const TOP_LPS_PER_PAIRS = gql`
-  query lps($pair: Bytes!) {
-    liquidityPositions(where: { pair: $pair }, orderBy: liquidityTokenBalance, orderDirection: desc, first: 100) {
-      user {
-        id
-      }
-      pair {
-        id
-      }
-      liquidityTokenBalance
-    }
-  }
-`
 
 export const HOURLY_PAIR_RATES = (pairAddress, blocks) => {
   let queryString = 'query blocks {'
@@ -203,30 +143,19 @@ export const ETH_PRICE = (block) => {
   const queryString = block
     ? `
     query bundles {
-      bundles(where: { id: ${BUNDLE_ID} } block: {number: ${block}}) {
+      bundles(where: { id: 1 } block: {number: ${block}}) {
         id
         ethPrice
       }
     }
   `
     : ` query bundles {
-      bundles(where: { id: ${BUNDLE_ID} }) {
+      bundles(where: { id: 1 }) {
         id
         ethPrice
       }
     }
   `
-  return gql(queryString)
-}
-
-export const USER = (block, account) => {
-  const queryString = `
-    query users {
-      user(id: "${account}", block: {number: ${block}}) {
-        liquidityPositions
-      }
-    }
-`
   return gql(queryString)
 }
 
@@ -259,80 +188,6 @@ export const USER_MINTS_BUNRS_PER_PAIR = gql`
           id
         }
       }
-    }
-  }
-`
-
-export const FIRST_SNAPSHOT = gql`
-  query snapshots($user: Bytes!) {
-    liquidityPositionSnapshots(first: 1, where: { user: $user }, orderBy: timestamp, orderDirection: asc) {
-      timestamp
-    }
-  }
-`
-
-export const USER_HISTORY = gql`
-  query snapshots($user: Bytes!, $pointer: Int!) {
-    liquidityPositionSnapshots(
-      first: 1000
-      where: { user: $user, timestamp_lt: $pointer }
-      orderBy: timestamp
-      orderDirection: asc
-    ) {
-      timestamp
-      reserveUSD
-      liquidityTokenBalance
-      liquidityTokenTotalSupply
-      reserve0
-      reserve1
-      token0PriceUSD
-      token1PriceUSD
-      pair {
-        id
-        reserve0
-        reserve1
-        reserveUSD
-        token0 {
-          id
-        }
-        token1 {
-          id
-        }
-      }
-    }
-  }
-`
-
-export const USER_POSITIONS = gql`
-  query liquidityPositions($user: Bytes!, $pointer: String) {
-    liquidityPositions(
-      first: 1000
-      where: {
-        user: $user
-        id_gt: $pointer
-      }
-      orderBy: id
-      orderDirection: asc
-    ) {
-      id
-      pair {
-        id
-        reserve0
-        reserve1
-        reserveUSD
-        token0 {
-          id
-          symbol
-          derivedETH
-        }
-        token1 {
-          id
-          symbol
-          derivedETH
-        }
-        totalSupply
-      }
-      liquidityTokenBalance
     }
   }
 `
@@ -478,7 +333,7 @@ export const GLOBAL_DATA = (block) => {
   const queryString = ` query pangolinFactories {
       pangolinFactories(
        ${block ? `block: { number: ${block}}` : ``} 
-       where: { id: "${FACTORY_ADDRESS}" }) {
+       where: { id: "1" }) {
         id
         totalVolumeUSD
         totalVolumeETH
@@ -707,30 +562,6 @@ export const PAIR_DATA = (pairAddress, block) => {
         ...PairFields
       }
     }`
-  return gql(queryString)
-}
-
-export const MINING_POSITIONS = (account) => {
-  const queryString = `
-    query users {
-      user(id: "${account}") {
-        miningPosition {
-          id
-          user {
-            id
-          }
-          miningPool {
-              pair {
-                id
-                token0
-                token1
-              }
-          }
-          balance
-        }
-      }
-    }
-`
   return gql(queryString)
 }
 
