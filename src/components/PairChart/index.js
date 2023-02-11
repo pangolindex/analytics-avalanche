@@ -8,7 +8,7 @@ import { toK, toNiceDate, toNiceDateYear, formattedNum, getTimeframe } from '../
 import { OptionButton } from '../ButtonStyled'
 import { darken } from 'polished'
 import { usePairChartData, usePairData } from '../../contexts/PairData'
-import { timeframeOptions, PAIR_CHART_VIEW_OPTIONS } from '../../constants'
+import { timeframeOptions, PAIR_CHART_VIEW_OPTIONS, SYMBOL_MAX_DISPLAY_LENGTH } from '../../constants'
 import { useMedia } from 'react-use'
 import { EmptyCard } from '..'
 import DropdownSelect from '../DropdownSelect'
@@ -90,9 +90,9 @@ const PairChart = ({ address, color, base0, base1 }) => {
 
   // formatted symbols for overflow
   const formattedSymbol0 =
-    pairData?.token0?.symbol.length > 6 ? pairData?.token0?.symbol.slice(0, 5) + '...' : pairData?.token0?.symbol
+    pairData?.token0?.symbol.length > SYMBOL_MAX_DISPLAY_LENGTH ? pairData?.token0?.symbol.slice(0, SYMBOL_MAX_DISPLAY_LENGTH - 1) + '...' : pairData?.token0?.symbol
   const formattedSymbol1 =
-    pairData?.token1?.symbol.length > 6 ? pairData?.token1?.symbol.slice(0, 5) + '...' : pairData?.token1?.symbol
+    pairData?.token1?.symbol.length > SYMBOL_MAX_DISPLAY_LENGTH ? pairData?.token1?.symbol.slice(0, SYMBOL_MAX_DISPLAY_LENGTH - 1) + '...' : pairData?.token1?.symbol
 
   const below1600 = useMedia('(max-width: 1600px)')
   const below1080 = useMedia('(max-width: 1080px)')

@@ -17,7 +17,7 @@ import TxnList from '../components/TxnList'
 import TokenChart from '../components/TokenChart'
 import { BasicLink } from '../components/Link'
 import Search from '../components/Search'
-import { formattedNum, formattedPercent, getPoolLink, getSwapLink, localNumber, isAddress } from '../utils'
+import { formattedNum, formattedPercent, getPoolLink, getSwapLink, localNumber, isAddress, urls } from '../utils'
 import { useTokenData, useTokenTransactions, useTokenPairs, useCoinGeckoTokenData } from '../contexts/TokenData'
 import { TYPE, ThemedBackground } from '../Theme'
 import { transparentize } from 'polished'
@@ -33,7 +33,7 @@ import { PlusCircle, Bookmark } from 'react-feather'
 import FormattedName from '../components/FormattedName'
 import { useListedTokens } from '../contexts/Application'
 import METAMASK_IMAGE from '../assets/MetaMask.png'
-import { EXPLORER_LINK_BASE, EXPLORER_NAME } from '../constants'
+import { EXPLORER_NAME } from '../constants'
 
 const DashboardWrapper = styled.div`
   width: 100%;
@@ -337,7 +337,7 @@ function TokenPage({ address, history }) {
               style={{ width: 'fit-content' }}
               color={backgroundColor}
               external
-              href={`${EXPLORER_LINK_BASE}/address/${address}`}
+              href={urls.showToken(address)}
             >
               <Text style={{ marginLeft: '.15rem' }} fontSize={'14px'} fontWeight={400}>
                 ({address.slice(0, 8) + '...' + address.slice(36, 42)})
@@ -624,7 +624,7 @@ function TokenPage({ address, history }) {
                     <Link
                       color={backgroundColor}
                       external
-                      href={`${EXPLORER_LINK_BASE}/address/${address}`}
+                      href={urls.showToken(address)}
                     >
                       View on {EXPLORER_NAME} ↗
                     </Link>

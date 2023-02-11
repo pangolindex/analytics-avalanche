@@ -14,7 +14,7 @@ import DoubleTokenLogo from '../DoubleLogo'
 import FormattedName from '../FormattedName'
 import QuestionHelper from '../QuestionHelper'
 import { TYPE } from '../../Theme'
-import { SWAP_FEE_TO_LP } from '../../constants'
+import {SWAP_FEE_TO_LP, SYMBOL_MAX_DISPLAY_LENGTH} from '../../constants'
 
 dayjs.extend(utc)
 
@@ -166,7 +166,7 @@ function PairList({ pairs, color, disableLinks, maxItems = 10 }) {
             <CustomLink style={{ marginLeft: '20px', whiteSpace: 'nowrap' }} to={'/pair/' + pairAddress} color={color}>
               <FormattedName
                 text={pairData.token0.symbol + '-' + pairData.token1.symbol}
-                maxCharacters={below600 ? 8 : 16}
+                maxCharacters={below740 ? 9 : SYMBOL_MAX_DISPLAY_LENGTH * 2 + 1}
                 adjustSize={true}
                 link={true}
               />

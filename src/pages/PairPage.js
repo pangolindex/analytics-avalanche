@@ -14,7 +14,7 @@ import TxnList from '../components/TxnList'
 import Loader from '../components/LocalLoader'
 import { BasicLink } from '../components/Link'
 import Search from '../components/Search'
-import { formattedNum, formattedPercent, getPoolLink, getSwapLink } from '../utils'
+import { formattedNum, formattedPercent, getPoolLink, getSwapLink, urls } from '../utils'
 import { useColor } from '../hooks'
 import { usePairData, usePairTransactions } from '../contexts/PairData'
 import { TYPE, ThemedBackground } from '../Theme'
@@ -31,7 +31,7 @@ import { usePathDismissed, useSavedPairs } from '../contexts/LocalStorage'
 import { Bookmark, PlusCircle } from 'react-feather'
 import FormattedName from '../components/FormattedName'
 import { useListedTokens } from '../contexts/Application'
-import { EXPLORER_LINK_BASE, EXPLORER_NAME, SWAP_FEE_TO_LP } from '../constants'
+import { EXPLORER_NAME, SWAP_FEE_TO_LP, SYMBOL_MAX_DISPLAY_LENGTH } from '../constants'
 
 const DashboardWrapper = styled.div`
   width: 100%;
@@ -181,8 +181,8 @@ function PairPage({ pairAddress, history }) {
   const token1Rate = reserve0 && reserve1 ? formattedNum(reserve0 / reserve1) : '-'
 
   // formatted symbols for overflow
-  const formattedSymbol0 = token0?.symbol.length > 6 ? token0?.symbol.slice(0, 5) + '...' : token0?.symbol
-  const formattedSymbol1 = token1?.symbol.length > 6 ? token1?.symbol.slice(0, 5) + '...' : token1?.symbol
+  const formattedSymbol0 = token0?.symbol.length > SYMBOL_MAX_DISPLAY_LENGTH ? token0?.symbol.slice(0, SYMBOL_MAX_DISPLAY_LENGTH - 1) + '...' : token0?.symbol
+  const formattedSymbol1 = token1?.symbol.length > SYMBOL_MAX_DISPLAY_LENGTH ? token1?.symbol.slice(0, SYMBOL_MAX_DISPLAY_LENGTH - 1) + '...' : token1?.symbol
 
   const below1080 = useMedia('(max-width: 1080px)')
   const below900 = useMedia('(max-width: 900px)')
@@ -223,7 +223,7 @@ function PairPage({ pairAddress, history }) {
               style={{ width: 'fit-content' }}
               color={backgroundColor}
               external
-              href={`${EXPLORER_LINK_BASE}/address/${pairAddress}`}
+              href={urls.showAccount(pairAddress)}
             >
               <Text style={{ marginLeft: '.15rem' }} fontSize={'14px'} fontWeight={400}>
                 ({pairAddress.slice(0, 8) + '...' + pairAddress.slice(36, 42)})
@@ -492,7 +492,7 @@ function PairPage({ pairAddress, history }) {
                     </AutoRow>
                   </Column>
                   <ButtonLight color={backgroundColor}>
-                    <Link color={backgroundColor} external href={`${EXPLORER_LINK_BASE}/address/${pairAddress}`}>
+                    <Link color={backgroundColor} external href={urls.showAccount(pairAddress)}>
                       View on {EXPLORER_NAME} ↗
                     </Link>
                   </ButtonLight>

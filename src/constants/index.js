@@ -1,16 +1,15 @@
 export const WNAT_ADDRESS = '0x0000000000000000000000000000000002dfa5b2'
 export const WNAT_SYMBOL = 'WHBAR'
 export const WNAT_SYMBOL_UNWRAPPED = 'HBAR'
+export const SYMBOL_MAX_DISPLAY_LENGTH = 9
 
-
-export const SWAP_FEE = 0.003
-export const SWAP_FEE_TO_LP = 0.0025
+export const SWAP_FEE_TO_LP = 0.003
 
 export const PANGOLIN_LINK_APP = 'https://app.pangolin.exchange'
-export const SOCIAL_LINK_DISCORD = 'https://discord.com/invite/PARrDYYbfw'
+export const SOCIAL_LINK_DISCORD = 'https://discord.com/invite/pangolindex'
 export const SOCIAL_LINK_TWITTER = 'https://twitter.com/Pangolin_Hedera'
 
-export const EXPLORER_LINK_BASE = 'https://hashscan.io'
+export const EXPLORER_LINK_BASE = 'https://hashscan.io/mainnet'
 export const EXPLORER_NAME = 'HashScan'
 
 export const SUBGRAPH_NAME = 'pangolin'

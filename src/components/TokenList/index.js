@@ -187,7 +187,7 @@ function TopTokenList({ tokens, itemMax = 10 }) {
             <CustomLink style={{ marginLeft: '16px', whiteSpace: 'nowrap' }} to={'/token/' + item.id}>
               <FormattedName
                 text={below680 ? item.symbol : item.name}
-                maxCharacters={below600 ? 8 : 16}
+                maxCharacters={below600 ? 9 : 16}
                 adjustSize={true}
                 link={true}
               />

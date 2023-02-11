@@ -350,8 +350,9 @@ export const setThemeColor = (theme) => document.documentElement.style.setProper
 export const Big = (number) => new BigNumber(number)
 
 export const urls = {
-  showTransaction: (tx) => `${EXPLORER_LINK_BASE}/tx/${tx}/`,
+  showTransaction: (txHash) => `${EXPLORER_LINK_BASE}/transaction/${txHash}/`,
   showAddress: (address) => `${EXPLORER_LINK_BASE}/address/${address}/`,
+  showAccount: (address) => `${EXPLORER_LINK_BASE}/account/${address}/`,
   showToken: (address) => `${EXPLORER_LINK_BASE}/token/${address}/`,
   showBlock: (block) => `${EXPLORER_LINK_BASE}/block/${block}/`,
 }

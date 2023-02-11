@@ -9,7 +9,8 @@ import { AutoColumn } from '../Column'
 import { Hover } from '..'
 import Link from '../Link'
 import { useMedia } from 'react-use'
-import { EXPLORER_LINK_BASE, EXPLORER_NAME } from '../../constants'
+import { EXPLORER_NAME } from '../../constants'
+import { urls } from '../../utils'
 
 const WarningWrapper = styled.div`
   border-radius: 20px;
@@ -73,7 +74,7 @@ export function ArbitraryWarning({ type, show, setShow, address }) {
                 fontWeight={500}
                 lineHeight={'145.23%'}
                 color={'#2172E5'}
-                href={`${EXPLORER_LINK_BASE}/address/${address}`}
+                href={urls.showToken(address)}
                 target="_blank"
               >
                 View {type === 'token' ? 'token' : 'pair'} contract on {EXPLORER_NAME}
@@ -93,7 +94,7 @@ export function ArbitraryWarning({ type, show, setShow, address }) {
                 fontWeight={500}
                 lineHeight={'145.23%'}
                 color={'#2172E5'}
-                href={`${EXPLORER_LINK_BASE}/address/${address}`}
+                href={urls.showToken(address)}
                 target="_blank"
               >
                 View {type === 'token' ? 'token' : 'pair'} contract on {EXPLORER_NAME}
