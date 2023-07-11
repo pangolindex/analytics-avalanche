@@ -18,6 +18,16 @@ export const SUBGRAPH_HEALTH = gql`
   }
 `
 
+export const SUBGRAPH_LATEST_BLOCK = gql`
+  query health {
+    _meta {
+      block {
+        number
+      }
+    }
+  }
+`
+
 export const V1_DATA_QUERY = gql`
   query uniswap($date: Int!, $date2: Int!) {
     current: uniswap(id: "1") {
