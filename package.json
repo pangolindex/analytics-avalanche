@@ -3,7 +3,7 @@
   "private": true,
   "homepage": "https://info.pangolin.exchange",
   "engines": {
-    "node": ">=14.21.1 <=16.18.1"
+    "node": ">=18.x.x <=20.x.x"
   },
   "devDependencies": {
     "@babel/preset-env": "7.8.7",
@@ -76,10 +76,10 @@
     "wcag-contrast": "^3.0.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "react-scripts --openssl-legacy-providerstart",
+    "build": "react-scripts --openssl-legacy-provider build",
+    "test": "react-scripts --openssl-legacy-provider test",
+    "eject": "react-scripts --openssl-legacy-provider eject",
     "postinstall": "copyfiles ./node_modules/@pangolindex/tradingview-chart/** ./public/ -u 2 && copyfiles ./node_modules/@pangolindex/tradingview-chart/**/** ./public/ -u 2"
   },
   "browserslist": {
