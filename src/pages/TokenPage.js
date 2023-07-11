@@ -17,7 +17,7 @@ import TxnList from '../components/TxnList'
 import TokenChart from '../components/TokenChart'
 import { BasicLink } from '../components/Link'
 import Search from '../components/Search'
-import { formattedNum, formattedPercent, getPoolLink, getSwapLink, localNumber, isAddress } from '../utils'
+import { formattedNum, formattedPercent, getPoolLink, getSwapLink, localNumber } from '../utils'
 import { useTokenData, useTokenTransactions, useTokenPairs, useCoinGeckoTokenData } from '../contexts/TokenData'
 import { TYPE, ThemedBackground } from '../Theme'
 import { transparentize } from 'polished'
@@ -34,6 +34,7 @@ import FormattedName from '../components/FormattedName'
 import { useListedTokens } from '../contexts/Application'
 import METAMASK_IMAGE from '../assets/MetaMask.png'
 import { AEB_TOKEN_ADDRESSES } from '../constants'
+import { getTokenLogo } from '../utils'
 
 const DashboardWrapper = styled.div`
   width: 100%;
@@ -284,7 +285,7 @@ function TokenPage({ address, history }) {
   }, [])
 
   const addMetamask = async () => {
-    const image = `https://raw.githubusercontent.com/pangolindex/tokens/main/assets/${isAddress(address)}/logo.png`
+    const image = getTokenLogo(address, 48)
     const provider = window.ethereum
     if (provider) {
       try {
@@ -622,11 +623,7 @@ function TokenPage({ address, history }) {
                     </AutoRow>
                   </Column>
                   <ButtonLight color={backgroundColor}>
-                    <Link
-                      color={backgroundColor}
-                      external
-                      href={'https://snowtrace.io/address/' + address}
-                    >
+                    <Link color={backgroundColor} external href={'https://snowtrace.io/address/' + address}>
                       View on the Snowtrace Explorer ↗
                     </Link>
                   </ButtonLight>
