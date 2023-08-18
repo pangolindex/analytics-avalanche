@@ -76,7 +76,7 @@
     "wcag-contrast": "^3.0.0"
   },
   "scripts": {
-    "start": "react-scripts --openssl-legacy-providerstart",
+    "start": "react-scripts --openssl-legacy-provider start",
     "build": "react-scripts --openssl-legacy-provider build",
     "test": "react-scripts --openssl-legacy-provider test",
     "eject": "react-scripts --openssl-legacy-provider eject",
