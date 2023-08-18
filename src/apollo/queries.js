@@ -485,8 +485,8 @@ export const GLOBAL_CHART = gql`
 `
 
 export const GLOBAL_DATA = (block) => {
-  const queryString = ` query pangolinFactories {
-      pangolinFactories(
+  const queryString = ` query factories {
+      factories(
        ${block ? `block: { number: ${block}}` : ``} 
        where: { id: "${FACTORY_ADDRESS}" }) {
         id
