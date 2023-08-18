@@ -4,7 +4,7 @@ import { HttpLink } from 'apollo-link-http'
 
 export const client = new ApolloClient({
   link: new HttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/name/pangolindex/exchange',
+    uri: 'https://graph-avalanche.pangolin.network/subgraphs/name/avalanche/pangolin-v2',
   }),
   cache: new InMemoryCache(),
   shouldBatch: true,
@@ -12,7 +12,7 @@ export const client = new ApolloClient({
 
 export const healthClient = new ApolloClient({
   link: new HttpLink({
-    uri: 'https://api.thegraph.com/index-node/graphql',
+    uri: 'https://graph-avalanche.pangolin.network/graphql',
   }),
   cache: new InMemoryCache(),
   shouldBatch: true,
@@ -20,7 +20,7 @@ export const healthClient = new ApolloClient({
 
 export const blockClient = new ApolloClient({
   link: new HttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/name/dasconnor/avalanche-blocks',
+    uri: 'https://graph-avalanche.pangolin.network/subgraphs/name/avalanche/blocks',
   }),
   cache: new InMemoryCache(),
 })
