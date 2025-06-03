@@ -26,7 +26,7 @@ if (typeof GOOGLE_ANALYTICS_ID === 'string') {
   ReactGA.initialize('test', { testMode: true, debug: true })
 }
 
-function ContextProviders({ children }) {//ss
+function ContextProviders({ children }) {
   return (
     <LocalStorageContextProvider>
       <ApplicationContextProvider>
