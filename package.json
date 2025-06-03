@@ -1,14 +1,10 @@
 {
-  "name": "@pangolindex/analytics",
+  "name": "@pangolindex/analytics-avalanche",
   "private": true,
   "homepage": "https://info.pangolin.exchange",
-  "engines": {
-    "node": ">=18.x.x <=20.x.x"
-  },
   "devDependencies": {
     "@babel/preset-env": "7.8.7",
     "@pangolindex/token-lists": "^1.0.1",
-    "@pangolindex/tradingview-chart": "^1.0.1",
     "@popperjs/core": "^2.4.2",
     "@reach/portal": "^0.10.3",
     "@reach/router": "^1.2.1",
@@ -76,10 +72,10 @@
     "wcag-contrast": "^3.0.0"
   },
   "scripts": {
-    "start": "react-scripts --openssl-legacy-providerstart",
-    "build": "react-scripts --openssl-legacy-provider build",
-    "test": "react-scripts --openssl-legacy-provider test",
-    "eject": "react-scripts --openssl-legacy-provider eject",
+    "start": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
     "postinstall": "copyfiles ./node_modules/@pangolindex/tradingview-chart/** ./public/ -u 2 && copyfiles ./node_modules/@pangolindex/tradingview-chart/**/** ./public/ -u 2"
   },
   "browserslist": {

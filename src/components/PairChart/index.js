@@ -14,7 +14,6 @@ import { EmptyCard } from '..'
 import DropdownSelect from '../DropdownSelect'
 import LocalLoader from '../LocalLoader'
 import { useDarkModeManager } from '../../contexts/LocalStorage'
-import AdvanceChart from '../AdvanceChart'
 import datafeed from './datafeed.js'
 
 const ChartWrapper = styled.div`
@@ -278,16 +277,7 @@ const PairChart = ({ address, color, base0, base1 }) => {
       {chartFilter === PAIR_CHART_VIEW_OPTIONS.RATE1 &&
         (formattedSymbol0 && formattedSymbol1 && chartVisible ? (
           <div style={{ height: isFullScreen ? '100%' : '380px' }}>
-            <AdvanceChart
-              symbolName={formattedSymbol0 + '/' + formattedSymbol1}
-              style={{ height: isFullScreen ? 'calc(100% - 60px)' : '100%' }}
-              datafeed={datafeed(
-                address,
-                formattedSymbol0 + '/' + formattedSymbol1,
-                base0,
-                PAIR_CHART_VIEW_OPTIONS.RATE1
-              )}
-            />
+
           </div>
         ) : (
           <LocalLoader />
@@ -296,16 +286,7 @@ const PairChart = ({ address, color, base0, base1 }) => {
       {chartFilter === PAIR_CHART_VIEW_OPTIONS.RATE0 &&
         (formattedSymbol0 && formattedSymbol1 && chartVisible ? (
           <div style={{ height: isFullScreen ? '100%' : '380px' }}>
-            <AdvanceChart
-              symbolName={formattedSymbol1 + '/' + formattedSymbol0}
-              style={{ height: isFullScreen ? 'calc(100% - 60px)' : '100%' }}
-              datafeed={datafeed(
-                address,
-                formattedSymbol1 + '/' + formattedSymbol0,
-                base1,
-                PAIR_CHART_VIEW_OPTIONS.RATE0
-              )}
-            />
+
           </div>
         ) : (
           <LocalLoader />

@@ -14,7 +14,6 @@ import DropdownSelect from '../DropdownSelect'
 import LocalLoader from '../LocalLoader'
 import { AutoColumn } from '../Column'
 import { useDarkModeManager } from '../../contexts/LocalStorage'
-import AdvanceChart from '../AdvanceChart'
 import datafeed from './datafeed.js'
 
 const ChartWrapper = styled.div`
@@ -133,8 +132,8 @@ const TokenChart = ({ address, color, base, symbol }) => {
         <RowBetween
           mb={
             chartFilter === CHART_VIEW.LIQUIDITY ||
-            chartFilter === CHART_VIEW.VOLUME ||
-            (chartFilter === CHART_VIEW.PRICE && frequency === DATA_FREQUENCY.LINE)
+              chartFilter === CHART_VIEW.VOLUME ||
+              (chartFilter === CHART_VIEW.PRICE && frequency === DATA_FREQUENCY.LINE)
               ? 40
               : 0
           }
@@ -281,11 +280,6 @@ const TokenChart = ({ address, color, base, symbol }) => {
       {chartFilter === CHART_VIEW.PRICE &&
         (symbol && chartVisible ? (
           <div style={{ height: isFullScreen ? '100%' : '500px' }}>
-            <AdvanceChart
-              symbolName={symbol}
-              style={{ marginTop: isFullScreen ? 0 : '10px', height: isFullScreen ? 'calc(100% - 60px)' : '100%' }}
-              datafeed={datafeed(address, symbol, base)}
-            />
           </div>
         ) : (
           <LocalLoader />
